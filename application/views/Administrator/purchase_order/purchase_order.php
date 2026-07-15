@@ -541,9 +541,9 @@
 						if (conf) {
 							window.open(`/purchase_order_invoice_print/${r.purchaseId}`, '_blank');
 							await new Promise(r => setTimeout(r, 1000));
-							window.location = '/purchase';
+							window.location = '/purchase_order';
 						} else {
-							window.location = '/purchase';
+							window.location = '/purchase_order';
 						}
 					} else {
 						this.purchaseOnProgress = false;
