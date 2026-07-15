@@ -61,10 +61,10 @@
 		color: white;
 	}
 
-	tr th, tr td{
+	tr th,
+	tr td {
 		vertical-align: middle !important;
 	}
-
 </style>
 
 <div id="sales" class="row">
@@ -174,53 +174,64 @@
 						</div>
 
 						<div class="col-md-5">
-							<div class="form-group">
-								<label class="col-xs-3 control-label no-padding-right"> Category </label>
-								<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
-									<div style="width: 86%;">
-										<v-select v-bind:options="categories" id="category" style="margin: 0;" v-model="selectedCategory" label="ProductCategory_Name" @input="onChangeCategory" placeholder="Select Category"></v-select>
+							<form v-on:submit.prevent="barcode ? '' : addToCart()">
+								<!-- <div class="form-group">
+									<label class="col-xs-3 control-label no-padding-right"> Category </label>
+									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
+										<div style="width: 86%;">
+											<v-select v-bind:options="categories" id="category" style="margin: 0;" v-model="selectedCategory" label="ProductCategory_Name" @input="onChangeCategory" placeholder="Select Category"></v-select>
+										</div>
+										<div style="width: 13%;margin-left:2px;">
+											<a href="<?= base_url('category') ?>" class="add-button" target="_blank" title="Add New Category"><i class="fa fa-plus" aria-hidden="true"></i></a>
+										</div>
 									</div>
-									<div style="width: 13%;margin-left:2px;">
-										<a href="<?= base_url('category') ?>" class="add-button" target="_blank" title="Add New Category"><i class="fa fa-plus" aria-hidden="true"></i></a>
-									</div>
-								</div>
-							</div>
+								</div> -->
 
-							<div class="form-group">
-								<label class="col-xs-3 control-label no-padding-right"> Product </label>
-								<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
-									<div style="width: 86%;">
-										<v-select v-show="!barcode" v-bind:options="products" id="product" style="margin: 0;" v-model="selectedProduct" label="display_text" @input="productOnChange" @search="onSearchProduct"></v-select>
-										<input v-show="barcode" placeholder="barcode here" id="barcode" ref="barcode" v-model="barcodeVal" type="text" class="form-control" @change="barcodeProduct($event)" />
+								<div class="form-group">
+									<label class="col-xs-3 control-label no-padding-right"> Product </label>
+									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
+										<div style="width: 86%;">
+											<v-select v-show="!barcode" v-bind:options="products" id="product" style="margin: 0;" v-model="selectedProduct" label="display_text" @input="productOnChange" @search="onSearchProduct"></v-select>
+											<input v-show="barcode" placeholder="barcode here" style="margin-bottom: 0;" @change.enter="addToCart" id="barcode" ref="barcode" v-model="barcodeVal" type="text" class="form-control" />
+										</div>
+										<div style="width: 13%;margin-left:2px;">
+											<a class="add-button" @click="barcode = !barcode"><i class="fa fa-barcode" aria-hidden="true"></i></a>
+										</div>
 									</div>
-									<div style="width: 13%;margin-left:2px;">
-										<a class="add-button" @click="barcode = !barcode"><i class="fa fa-barcode" aria-hidden="true"></i></a>
+								</div>
+
+								<div class="form-group">
+									<label class="col-xs-3 control-label no-padding-right"> Exp. Date </label>
+									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
+										<div style="width: 100%;">
+											<v-select v-bind:options="exp_dates" :disabled="barcode" id="exp_date" style="margin: 0;" v-model="selectedExpStock" label="exp_date" @input="onChangeExpDate"></v-select>
+										</div>
 									</div>
 								</div>
-							</div>
 
-							<div class="form-group">
-								<label class="col-xs-3 control-label no-padding-right"> Sale Rate </label>
-								<div class="col-xs-4">
-									<input type="number" id="salesRate" placeholder="Rate" step="0.01" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
+								<div class="form-group">
+									<label class="col-xs-3 control-label no-padding-right"> Sale Rate </label>
+									<div class="col-xs-4">
+										<input type="number" id="salesRate" placeholder="Rate" step="0.01" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
+									</div>
+									<label class="col-xs-1 control-label no-padding-right"> Qty </label>
+									<div class="col-xs-4">
+										<input type="number" step="0.01" id="quantity" placeholder="Qty" class="form-control" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" autocomplete="off" required />
+									</div>
 								</div>
-								<label class="col-xs-1 control-label no-padding-right"> Qty </label>
-								<div class="col-xs-4">
-									<input type="number" step="0.01" id="quantity" placeholder="Qty" class="form-control" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" autocomplete="off" required />
+								<div class="form-group">
+									<label class="col-xs-3 control-label no-padding-right"> Amount </label>
+									<div class="col-xs-9">
+										<input type="text" id="productTotal" placeholder="Amount" class="form-control" v-model="selectedProduct.total" readonly />
+									</div>
 								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-xs-3 control-label no-padding-right"> Amount </label>
-								<div class="col-xs-9">
-									<input type="text" id="productTotal" placeholder="Amount" class="form-control" v-model="selectedProduct.total" readonly />
-								</div>
-							</div>
 
-							<div class="form-group">
-								<div class="col-xs-12">
-									<button type="button" @click="addToCart" style="padding: 3px 6px; background: rgb(0, 126, 187) !important; border-color: rgb(0, 126, 187) !important; outline: none; border-radius: 6px;" class="btn pull-right">Add to Cart</button>
+								<div class="form-group">
+									<div class="col-xs-12">
+										<button type="submit" style="padding: 3px 6px; background: rgb(0, 126, 187) !important; border-color: rgb(0, 126, 187) !important; outline: none; border-radius: 6px;" class="btn pull-right">Add to Cart</button>
+									</div>
 								</div>
-							</div>
+							</form>
 						</div>
 						<div class="col-md-2">
 							<div style="display:none;" v-bind:style="{display:sales.isService == 'true' ? 'none' : ''}">
@@ -245,10 +256,11 @@
 							<th style="width:10%;color:#000;">Sl</th>
 							<th style="width:25%;color:#000;">Description</th>
 							<th style="width:15%;color:#000;">Category</th>
+							<th style="width:12%;color:#000;">Exp.Date</th>
 							<th style="width:7%;color:#000;">Qty</th>
 							<th style="width:8%;color:#000;">Rate</th>
 							<th style="width:15%;color:#000;">Total</th>
-							<th style="width:10%;color:#000;">Action</th>
+							<th style="width:5%;color:#000;">Action</th>
 						</tr>
 					</thead>
 					<tbody style="display:none;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
@@ -257,6 +269,7 @@
 								<td>{{ sl + 1 }}</td>
 								<td>{{ product.name }} - {{ product.productCode }}</td>
 								<td>{{ product.categoryName }}</td>
+								<td>{{ product.exp_date }}</td>
 								<td>
 									<input type="number" min="0" step="any" @input="quantityRateChange(product)" v-model="product.quantity" style="height:26px;width:100px;text-align:center;" />
 								</td>
@@ -265,7 +278,7 @@
 								<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
 							</tr>
 							<tr v-if="product.is_offer == 'yes' && product.campaignProducts.length > 0">
-								<td colspan="7" style="padding: 0; border: none;">
+								<td colspan="8" style="padding: 0; border: none;">
 									<table class="table table-striped table-bordered" style="margin-bottom:0;">
 										<thead>
 											<tr>
@@ -287,16 +300,16 @@
 						</template>
 
 						<tr>
-							<td colspan="7"></td>
+							<td colspan="8"></td>
 						</tr>
 
 						<tr style="font-weight: bold;">
-							<td colspan="4">Note</td>
+							<td colspan="5">Note</td>
 							<td colspan="3">Total</td>
 						</tr>
 
 						<tr>
-							<td colspan="4"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="sales.note"></textarea></td>
+							<td colspan="5"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="sales.note"></textarea></td>
 							<td colspan="3" style="padding-top: 15px;font-size:18px;">{{ sales.total }}</td>
 						</tr>
 					</tbody>
@@ -402,17 +415,6 @@
 										</td>
 									</tr>
 
-									<!-- <tr v-if="sales.bankPaid > 0" style="display:none;" :style="{display: sales.bankPaid > 0 ? '' : 'none'}">
-										<td>
-											<div class="form-group">
-												<label class="col-xs-12 control-label">Bank Account</label>
-												<div class="col-xs-12">
-													<v-select v-bind:options="banks" v-model="selectedBank" label="display_name" placeholder="Select Bank Name"></v-select>
-												</div>
-											</div>
-										</td>
-									</tr> -->
-
 									<tr>
 										<td>
 											<div class="form-group">
@@ -451,7 +453,7 @@
 													<a class="btn btn-info btn-sm" v-bind:href="`/sales/${sales.isService == 'true' ? 'service' : 'product'}`" style="background: rgb(209, 91, 71) !important; border: 0px !important; margin-top: 0px; width: 100%; padding: 7px 5px; font-weight: bold; outline: none; border-radius: 5px;">Reset</a>
 												</div>
 											</div>
-											
+
 										</td>
 									</tr>
 								</table>
@@ -605,6 +607,8 @@
 					vat: 0,
 					total: 0
 				},
+				exp_dates: [],
+				selectedExpStock: null,
 				productPurchaseRate: '',
 				productStockText: '',
 				productStock: '',
@@ -848,69 +852,38 @@
 					}).then(res => {
 						return res.data;
 					})
+
+					await axios.post('/get_expire_stock', {
+						productId: this.selectedProduct.Product_SlNo
+					}).then(res => {
+						this.exp_dates = res.data;
+						this.selectedExpStock = null;
+						if (this.barcode) {
+							let exp_date = this.barcodeVal.slice(0, -5);
+							this.selectedExpStock = this.exp_dates.find(ed => moment(ed.exp_date).format("YYYYMMDD") == exp_date);
+						}
+					});
+
 					this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
-					if (this.barcode == true) {
-						this.$refs.barcode.focus();
-					} else {
-						this.$refs.quantity.focus();
-					}
 				}
 
 			},
+			onChangeExpDate() {
+				if (this.selectedExpStock == null) {
+					return;
+				}
+				if (this.selectedExpStock.exp_date != '') {
+					this.productStock = this.selectedExpStock.stock;
+					this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
+				}
+				if (this.barcode) {
+					this.$refs.barcode.focus();
+				} else {
+					this.$refs.quantity.focus();
+				}
+			},
 			toggleProductPurchaseRate() {
 				this.$refs.productPurchaseRate.type = this.$refs.productPurchaseRate.type == 'text' ? 'password' : 'text';
-			},
-			async barcodeProduct(event) {
-				await axios.post('/get_sales_barcode_product', {
-					isService: this.sales.isService,
-					categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
-					name: event.target.value
-				}).then(async res => {
-					if (this.sales.salesType == 'wholesale') {
-						this.products = res.data;
-						this.products.map((product) => {
-							return product.Product_SellingPrice = product.Product_WholesaleRate;
-						})
-						let prod = this.products[0];
-						if (prod == undefined) {
-							alert("Product not found");
-							this.barcodeVal = "";
-							return;
-						}
-						this.selectedProduct = prod;
-						this.selectedProduct.quantity = prod.quantity ?? 1;
-						await this.productTotal();
-						await this.productOnChange();
-						if (parseFloat(this.productStock) < parseFloat(this.selectedProduct.quantity)) {
-							alert("Stock unavailable");
-							this.barcodeVal = "";
-							return;
-						}
-						await this.addToCart();
-					} else {
-						this.products = res.data;
-						let prod = this.products[0];
-						if (prod == undefined) {
-							alert("Product not found");
-							this.barcodeVal = "";
-							return;
-						}
-						this.selectedProduct = prod;
-						
-						this.selectedProduct.quantity = prod.quantity ?? 1;
-						await this.productTotal();
-						await this.productOnChange();
-						if (parseFloat(this.productStock) < parseFloat(this.selectedProduct.quantity)) {
-							alert("Stock unavailable");
-							this.barcodeVal = "";
-							return;
-						}
-						await this.addToCart();
-					}
-					this.barcodeVal = "";
-					this.productStock = '';
-					this.productStockText = '';
-				})
 			},
 			onChangeFreeProduct() {
 				if (this.selectedProduct == null) {
@@ -933,7 +906,39 @@
 					this.productTotal();
 				}
 			},
+
 			async addToCart() {
+				if (this.barcode && this.barcodeVal != '') {
+					await axios.post('/get_products', {
+						isService: this.sales.isService,
+						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
+						name: this.barcodeVal,
+						barcode: 'yes'
+					}).then(async res => {
+						if (res.data.length > 0) {
+							this.selectedProduct = res.data.length > 0 ? res.data[0] : this.selectedProduct;
+							await this.productOnChange();
+							this.selectedProduct.quantity = 1;
+							await this.productTotal();
+							this.barcodeVal = '';
+						} else {
+							this.selectedProduct = {
+								Product_SlNo: '',
+								Product_Code: '',
+								display_text: 'Select Product',
+								Product_Name: '',
+								Unit_Name: '',
+								quantity: '',
+								Product_Purchase_Rate: '',
+								Product_SellingPrice: 0,
+								total: ''
+							}
+							this.barcodeVal = '';
+							return;
+						}
+					})
+				}
+
 				let product = {
 					productId: this.selectedProduct.Product_SlNo,
 					productCode: this.selectedProduct.Product_Code,
@@ -945,18 +950,19 @@
 					discount: this.selectedProduct.discount,
 					discountAmount: this.selectedProduct.discountAmount,
 					total: this.selectedProduct.total,
+					exp_date: this.selectedExpStock ? this.selectedExpStock.exp_date : null,
 					purchaseRate: this.selectedProduct.Product_Purchase_Rate,
 					is_offer: this.selectedProduct.productType == 'offer' ? 'yes' : 'no',
 					range_quantity: this.selectedProduct.productType == 'offer' ? this.selectedProduct.range_quantity : 0,
 					campaignProducts: []
-				}			
-				
-				if (product.productId == '' && !this.barcode) {
+				}				
+
+				if (product.productId == '') {
 					alert('Select Product');
 					return;
 				}
 
-				if ((product.quantity == 0 || product.quantity == '') && !this.barcode) {
+				if (product.quantity == 0 || product.quantity == '') {
 					alert('Enter quantity');
 					return;
 				}
@@ -972,7 +978,7 @@
 								...op,
 								offer_quantity: Math.floor(product.quantity / parseFloat(this.selectedProduct.range_quantity)) * op.offer_quantity
 							}
-						});						
+						});
 
 						for (let index = 0; index < campaignProducts.length; index++) {
 							const op = campaignProducts[index];
@@ -991,37 +997,37 @@
 						product.campaignProducts = campaignProducts;
 					}
 					product.total = parseFloat(+cartProduct.total + +product.total).toFixed(2);
-				}else{					
+				} else {
 					if (this.selectedProduct.productType == 'offer' && parseFloat(this.selectedProduct.range_quantity) <= parseFloat(product.quantity)) {
-                        let campaignProducts = this.selectedProduct.campaignProducts.map(op => {
-                            return {
-                                ...op,
-                                offer_quantity: Math.floor(product.quantity / parseFloat(product.range_quantity)) * op.offer_quantity
-                            }
-                        });
+						let campaignProducts = this.selectedProduct.campaignProducts.map(op => {
+							return {
+								...op,
+								offer_quantity: Math.floor(product.quantity / parseFloat(product.range_quantity)) * op.offer_quantity
+							}
+						});
 
-                        for (let index = 0; index < campaignProducts.length; index++) {
-                            const op = campaignProducts[index];
-                            const opId = op.product_id;
-                            const requiredQty = parseFloat(op.offer_quantity || 0);
+						for (let index = 0; index < campaignProducts.length; index++) {
+							const op = campaignProducts[index];
+							const opId = op.product_id;
+							const requiredQty = parseFloat(op.offer_quantity || 0);
 
-                            if (opId && this.sales.isService == 'false') {
-                                const opStock = await this.getProductStock(opId);
-                                if (requiredQty > parseFloat(opStock)) {
-                                    alert(`Offer product "${op.Product_Name || op.Product_Code}" stock unavailable`);
-                                    return;
-                                }
-                            }
-                        }
+							if (opId && this.sales.isService == 'false') {
+								const opStock = await this.getProductStock(opId);
+								if (requiredQty > parseFloat(opStock)) {
+									alert(`Offer product "${op.Product_Name || op.Product_Code}" stock unavailable`);
+									return;
+								}
+							}
+						}
 
-                        product.campaignProducts = campaignProducts;						
-                    }
+						product.campaignProducts = campaignProducts;
+					}
 				}
 				if (parseFloat(this.productStock) < parseFloat(product.quantity)) {
 					alert("Stock unavailable");
 					return;
 				}
-				
+
 				if (cartInd > -1) {
 					this.cart.splice(cartInd, 1);
 				}
@@ -1031,7 +1037,7 @@
 				this.calculateTotal();
 			},
 
-			async quantityRateChange(product){
+			async quantityRateChange(product) {
 				let stock = await this.getProductStock(product.productId);
 				if (parseFloat(product.quantity) > parseFloat(stock)) {
 					alert("Unavailable Stock");
@@ -1049,12 +1055,12 @@
 			},
 
 			async getProductStock(productId) {
-                return await axios.post('/get_product_stock', {
-                    productId: productId
-                }).then(res => {
-                    return res.data;
-                })
-            },
+				return await axios.post('/get_product_stock', {
+					productId: productId
+				}).then(res => {
+					return res.data;
+				})
+			},
 			removeFromCart(ind) {
 				this.cart.splice(ind, 1);
 				this.calculateTotal();
@@ -1071,6 +1077,8 @@
 					vat: 0,
 					total: 0,
 				}
+				this.exp_dates = [];
+				this.selectedExpStock = null;
 				this.productStock = '';
 				this.productStockText = '';
 				this.isFree = 'no';
@@ -1099,13 +1107,13 @@
 				this.sales.total = ((parseFloat(this.sales.subTotal) + parseFloat(this.sales.vat) + parseFloat(this.sales.transportCost)) - parseFloat(+this.sales.discount + +this.sales.pointAmount)).toFixed(2);
 
 				if (event.target.id == 'cashPaid' || this.bankCart.length > 0) {
-					this.sales.paid = parseFloat(parseFloat(this.sales.cashPaid) + parseFloat(this.sales.bankPaid)).toFixed(2);					
+					this.sales.paid = parseFloat(parseFloat(this.sales.cashPaid) + parseFloat(this.sales.bankPaid)).toFixed(2);
 					if (parseFloat(this.sales.paid) > parseFloat(this.sales.total)) {
 						this.sales.returnAmount = parseFloat(this.sales.paid - this.sales.total).toFixed(2);
 						this.sales.due = 0;
 					} else {
 						this.sales.returnAmount = 0;
-						this.sales.due = parseFloat(+this.sales.total - + this.sales.paid).toFixed(2);
+						this.sales.due = parseFloat(+this.sales.total - +this.sales.paid).toFixed(2);
 					}
 				} else {
 					this.sales.cashPaid = this.sales.total;
@@ -1179,7 +1187,7 @@
 				}, 0).toFixed(2);
 				this.calculateTotal();
 			},
-			async saveSales(print= 0) {
+			async saveSales(print = 0) {
 				if (this.selectedCustomer == null) {
 					alert('Select Customer');
 					return;
@@ -1193,7 +1201,7 @@
 				if (quantityCheck.length > 0) {
 					alert('Please fill in the cart product quantity');
 					return;
-				}				
+				}
 
 				if (this.selectedCustomer.Customer_Type == 'G' && parseFloat(this.sales.due) != 0) {
 					alert('Due sale does not accept on general customer');
@@ -1226,14 +1234,14 @@
 				axios.post(url, data).then(async res => {
 					let r = res.data;
 					if (r.success) {
-						if(print == 1){
-					        // window.open('/sale_invoice_print/' + r.salesId+'?print=1', '');
-							location.href = "/sale_invoice_print/"+r.salesId+"?print=1";
+						if (print == 1) {
+							// window.open('/sale_invoice_print/' + r.salesId+'?print=1', '');
+							location.href = "/sale_invoice_print/" + r.salesId + "?print=1";
 							await new Promise(r => setTimeout(r, 1000));
 							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
-					    }else{
-					        window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
-					    }
+						} else {
+							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
+						}
 
 						// let conf = confirm('Sale success, Do you want to view invoice?');
 						// if (conf) {
@@ -1321,19 +1329,19 @@
 							discount: product.SaleDetails_Discount,
 							discountAmount: product.Discount_amount,
 							is_offer: product.is_offer,
-                            range_quantity: product.range_quantity,
-                            detail_id: product.detail_id,
-                            campaignProducts: []
+							range_quantity: product.range_quantity,
+							detail_id: product.detail_id,
+							campaignProducts: []
 						}
 
 						cartProduct.campaignProducts = details.filter(op => op.detail_id == product.SaleDetails_SlNo).map(op => {
-                            return {
-                                product_id: op.Product_IDNo,
-                                Product_Name: op.Product_Name,
-                                Product_Code: op.Product_Code,
-                                offer_quantity: op.SaleDetails_TotalQuantity,
-                            }
-                        });						
+							return {
+								product_id: op.Product_IDNo,
+								Product_Name: op.Product_Name,
+								Product_Code: op.Product_Code,
+								offer_quantity: op.SaleDetails_TotalQuantity,
+							}
+						});
 
 						this.cart.push(cartProduct);
 					})
@@ -1342,20 +1350,20 @@
 		},
 		mounted() {
 			var ownThis = this;
-            window.addEventListener('keydown', function(e) {				
-				if(e.key == 'Escape'){
+			window.addEventListener('keydown', function(e) {
+				if (e.key == 'Escape') {
 					document.querySelector("#barcode").focus();
-				}else if(e.ctrlKey && e.code == 'Space'){
-					e.preventDefault();					
+				} else if (e.ctrlKey && e.code == 'Space') {
+					e.preventDefault();
 					document.querySelector("#customer [type='search']").focus();
-				}else if(e.ctrlKey && e.code == 'Enter'){
-					e.preventDefault();					
-					ownThis.saveSales();			
-				}else if(e.ctrlKey && e.shiftKey && e.key == 'Enter'){
-					e.preventDefault();					
+				} else if (e.ctrlKey && e.code == 'Enter') {
+					e.preventDefault();
+					ownThis.saveSales();
+				} else if (e.ctrlKey && e.shiftKey && e.key == 'Enter') {
+					e.preventDefault();
 					ownThis.saveSales(1);
-				}			
+				}
 			});
-        }
+		}
 	})
 </script>

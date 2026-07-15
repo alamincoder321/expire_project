@@ -24,10 +24,10 @@ if (! function_exists('get_client_ip')) {
 
 function getExpiryFromBarcode($barcode)
 {
-    return substr($barcode, 0, -4);
+    return substr($barcode, 0, -5);
 }
 
 function getIdFromBarcode($barcode)
 {
-    return substr($barcode, -4);
+    return substr($barcode, -5);
 }

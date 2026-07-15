@@ -137,6 +137,7 @@ class Sales extends CI_Controller
                 $saleDetails = array(
                     'SaleMaster_IDNo'           => $salesId,
                     'Product_IDNo'              => $cartProduct->productId,
+                    'exp_date'                  => $cartProduct->exp_date ?? NULL,
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
                     'Purchase_Rate'             => $cartProduct->purchaseRate,
                     'SaleDetails_Rate'          => $cartProduct->salesRate,
@@ -166,21 +167,22 @@ class Sales extends CI_Controller
                     foreach ($cartProduct->campaignProducts as $offerProduct) {
                         $offer_product = $this->db->where('Product_SlNo', $offerProduct->product_id)->get('tbl_product')->row();
                         $campaignDetails = array(
-                            'SaleMaster_IDNo' => $salesId,
-                            'detail_id' => $detailId,
-                            'Product_IDNo' => $offerProduct->product_id,
+                            'SaleMaster_IDNo'           => $salesId,
+                            'detail_id'                 => $detailId,
+                            'Product_IDNo'              => $offerProduct->product_id,
+                            'exp_date'                  => NULL,
                             'SaleDetails_TotalQuantity' => $offerProduct->offer_quantity,
                             'Purchase_Rate'             => $offer_product->Product_Purchase_Rate ?? 0,
-                            'SaleDetails_Rate' => 0,
-                            'SaleDetails_Tax' => 0,
-                            'Discount_amount' => 0,
-                            'SaleDetails_TotalAmount' => 0,
-                            'is_offer' => 'yes',
-                            'offer_quantity' => floor(($cartProduct->range_quantity * $offerProduct->offer_quantity) / $cartProduct->quantity),
-                            'Status' => 'a',
-                            'AddBy' => $this->session->userdata("FullName"),
-                            'AddTime' => date('Y-m-d H:i:s'),
-                            'SaleDetails_BranchId' => $this->session->userdata("BRANCHid")
+                            'SaleDetails_Rate'          => 0,
+                            'SaleDetails_Tax'           => 0,
+                            'Discount_amount'           => 0,
+                            'SaleDetails_TotalAmount'   => 0,
+                            'is_offer'                  => 'yes',
+                            'offer_quantity'            => floor(($cartProduct->range_quantity * $offerProduct->offer_quantity) / $cartProduct->quantity),
+                            'Status'                    => 'a',
+                            'AddBy'                     => $this->session->userdata("FullName"),
+                            'AddTime'                   => date('Y-m-d H:i:s'),
+                            'SaleDetails_BranchId'      => $this->session->userdata("BRANCHid")
                         );
 
                         $this->db->insert('tbl_saledetails', $campaignDetails);
@@ -456,10 +458,9 @@ class Sales extends CI_Controller
 
         if (isset($data->status) && $data->status != '') {
             $status_clause .= " and sm.Status = '$data->status'";
-        }elseif(isset($_GET['status'])){
+        } elseif (isset($_GET['status'])) {
             $status = $_GET['status'];
             $status_clause .= " and sm.Status = '$status'";
-
         }
 
 
@@ -576,7 +577,7 @@ class Sales extends CI_Controller
             limit 1
         ", [$barcode])->result();
         }
-        
+
 
         if (empty($products)) {
             echo json_encode([]);
@@ -602,7 +603,7 @@ class Sales extends CI_Controller
             ) {
                 $quantity = ((float)$weightPart) / 1000;
             }
-        }else
+        } else
         if (strpos($barcode, '2300') === 0) {
             // Rongta style weighted barcode example:
             // barcode: 2100023007159, product code: 2100023, weight part: 00715 => 0.715
@@ -667,7 +668,7 @@ class Sales extends CI_Controller
         if ($status == 'a') {
             $sales_record = $this->db->query("select * from tbl_salesmaster where SaleMaster_SlNo = ?", [$salesId])->row();
 
-            $this->db->query("update tbl_salesmaster set Status = ?, SaleMaster_cashPaid = ?, SaleMaster_PaidAmount = ?, SaleMaster_DueAmount = ?  where SaleMaster_SlNo = ?", [$status, $sales_record->SaleMaster_cashPaid + $sales_record->SaleMaster_DueAmount,$sales_record->SaleMaster_cashPaid + $sales_record->SaleMaster_DueAmount, 0, $salesId]);
+            $this->db->query("update tbl_salesmaster set Status = ?, SaleMaster_cashPaid = ?, SaleMaster_PaidAmount = ?, SaleMaster_DueAmount = ?  where SaleMaster_SlNo = ?", [$status, $sales_record->SaleMaster_cashPaid + $sales_record->SaleMaster_DueAmount, $sales_record->SaleMaster_cashPaid + $sales_record->SaleMaster_DueAmount, 0, $salesId]);
             $sales_details = $this->db->query("select * from tbl_saledetails where SaleMaster_IDNo = ?", [$salesId])->result();
             foreach ($sales_details as $key => $value) {
 
@@ -846,6 +847,7 @@ class Sales extends CI_Controller
                 $saleDetails = array(
                     'SaleMaster_IDNo'           => $salesId,
                     'Product_IDNo'              => $cartProduct->productId,
+                    'exp_date'                  => $cartProduct->exp_date ?? NULL,
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
                     'Purchase_Rate'             => $cartProduct->purchaseRate,
                     'SaleDetails_Rate'          => $cartProduct->salesRate,
@@ -875,21 +877,22 @@ class Sales extends CI_Controller
                     foreach ($cartProduct->campaignProducts as $offerProduct) {
                         $offer_product = $this->db->where('Product_SlNo', $offerProduct->product_id)->get('tbl_product')->row();
                         $campaignDetails = array(
-                            'SaleMaster_IDNo' => $salesId,
-                            'detail_id' => $detailId,
-                            'Product_IDNo' => $offerProduct->product_id,
+                            'SaleMaster_IDNo'           => $salesId,
+                            'detail_id'                 => $detailId,
+                            'Product_IDNo'              => $offerProduct->product_id,
+                            'exp_date'                  => NULL,
                             'SaleDetails_TotalQuantity' => $offerProduct->offer_quantity,
                             'Purchase_Rate'             => $offer_product->Product_Purchase_Rate ?? 0,
-                            'SaleDetails_Rate' => 0,
-                            'SaleDetails_Tax' => 0,
-                            'Discount_amount' => 0,
-                            'SaleDetails_TotalAmount' => 0,
-                            'is_offer' => 'yes',
-                            'offer_quantity' => floor(($cartProduct->range_quantity * $offerProduct->offer_quantity) / $cartProduct->quantity),
-                            'Status' => 'a',
-                            'AddBy' => $this->session->userdata("FullName"),
-                            'AddTime' => date('Y-m-d H:i:s'),
-                            'SaleDetails_BranchId' => $this->session->userdata("BRANCHid")
+                            'SaleDetails_Rate'          => 0,
+                            'SaleDetails_Tax'           => 0,
+                            'Discount_amount'           => 0,
+                            'SaleDetails_TotalAmount'   => 0,
+                            'is_offer'                  => 'yes',
+                            'offer_quantity'            => floor(($cartProduct->range_quantity * $offerProduct->offer_quantity) / $cartProduct->quantity),
+                            'Status'                    => 'a',
+                            'AddBy'                     => $this->session->userdata("FullName"),
+                            'AddTime'                   => date('Y-m-d H:i:s'),
+                            'SaleDetails_BranchId'      => $this->session->userdata("BRANCHid")
                         );
 
                         $this->db->insert('tbl_saledetails', $campaignDetails);
@@ -992,6 +995,7 @@ class Sales extends CI_Controller
                 $returnDetails = array(
                     'SaleReturn_IdNo' => $salesReturnId,
                     'SaleReturnDetailsProduct_SlNo' => $product->Product_IDNo,
+                    'exp_date' => $product->exp_date,
                     'SaleReturnDetails_ReturnQuantity' => $product->return_quantity,
                     'SaleReturnDetails_ReturnAmount' => $product->return_amount,
                     'Status' => 'a',
@@ -1078,6 +1082,7 @@ class Sales extends CI_Controller
                 $returnDetails = array(
                     'SaleReturn_IdNo' => $salesReturnId,
                     'SaleReturnDetailsProduct_SlNo' => $product->Product_IDNo,
+                    'exp_date' => $product->exp_date,
                     'SaleReturnDetails_ReturnQuantity' => $product->return_quantity,
                     'SaleReturnDetails_ReturnAmount' => $product->return_amount,
                     'Status' => 'a',

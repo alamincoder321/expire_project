@@ -253,7 +253,7 @@ class Purchase extends CI_Controller
                 $customerPayment = array(
                     'SPayment_date' => $data->purchaseReturn->returnDate,
                     'SPayment_invoice' => $data->invoice->PurchaseMaster_InvoiceNo,
-                    'SPayment_customerID' => $data->invoice->Supplier_SlNo,
+                    'SPayment_customerID' => NULL,
                     'SPayment_TransactionType' => 'CR',
                     'SPayment_amount' => $totalReturnAmount,
                     'SPayment_Paymentby' => 'cash',

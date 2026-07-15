@@ -194,7 +194,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 					</div>
 				<?php endif; ?>
 
-				<?php if (array_search("campaign_products", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+				<!-- <?php if (array_search("campaign_products", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>campaign_products">
@@ -222,7 +222,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 							</a>
 						</div>
 					</div>
-				<?php endif; ?>
+				<?php endif; ?> -->
 
 				<?php if (array_search("damageEntry", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">

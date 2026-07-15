@@ -18,9 +18,9 @@
 				<div class="row">
 					<div class="col-xs-7">
 						<strong>Customer Id:</strong> {{ saleReturn.Customer_Code }}<br>
-						<strong>Customer Name:</strong> {{ saleReturn.Customer_Name }}<br>
-						<strong>Customer Address:</strong> {{ saleReturn.Customer_Address }}<br>
-						<strong>Customer Mobile:</strong> {{ saleReturn.Customer_Mobile }}
+						<strong>Name:</strong> {{ saleReturn.Customer_Name }}<br>
+						<strong>Address:</strong> {{ saleReturn.Customer_Address }}<br>
+						<strong>Mobile:</strong> {{ saleReturn.Customer_Mobile }}
 					</div>
 					<div class="col-xs-5 text-right">
 						<strong>Invoice No.:</strong> {{ saleReturn.SaleMaster_InvoiceNo }}<br>

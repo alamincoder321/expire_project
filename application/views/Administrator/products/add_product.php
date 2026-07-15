@@ -110,7 +110,7 @@
 	<form @submit.prevent="saveProduct">
 		<div class="row"
 			style="margin-top: 10px;margin-bottom:15px;border-bottom: 1px solid #ccc;padding-bottom: 15px;">
-			<div class="col-md-5">
+			<div class="col-md-5 col-md-offset-1">
 				<div class="form-group clearfix">
 					<label class="control-label col-md-4">Product Id:</label>
 					<div class="col-md-7">
@@ -183,7 +183,12 @@
 					</div>
 				</div>
 				<div class="form-group clearfix">
-					<div class="col-md-11 text-right">
+					<label for="" class="col-md-4"></label>
+					<label for="is_mrp" class="col-md-4" style="display: flex;align-items:center;gap:5px;cursor:pointer;margin-top: 5px;">
+						<input type="checkbox" style="width: 18px;height:18px;margin:0;" id="is_mrp" v-model="product.is_mrp" :true-value="`yes`" :false-value="`no`">
+						<span style="margin: 0;margin-top: 1px;">Is MRP</span>
+					</label>
+					<div class="col-md-3 text-right">
 						<input type="submit" class="btn btn-success btn-sm" value="Save">
 					</div>
 				</div>
@@ -205,12 +210,12 @@
 					<template scope="{ row }">
 						<tr>
 							<td>{{ row.sl }}</td>
-							<td>
+							<!-- <td>
 								<a :href="row.imageSrc">
 									<img :src="row.imageSrc"
 										style="width: 45px; height: 45px; border: 1px solid gray; border-radius: 5px; padding: 1px;" />
 								</a>
-							</td>
+							</td> -->
 							<td>{{ row.Product_Code }}</td>
 							<td>{{ row.Product_Name }}</td>
 							<td>{{ row.ProductCategory_Name }}</td>
@@ -331,8 +336,6 @@
 		</div>
 	</form>
 
-
-
 </div>
 
 <script src="<?php echo base_url(); ?>assets/js/vue/vue.min.js"></script>
@@ -365,7 +368,8 @@
 					is_service: false,
 					Product_Description: '',
 					images: '',
-					tags: ''
+					tags: '',
+					is_mrp: 'no'
 				},
 				imageUrl: '',
 				selectedFile: null,
@@ -385,11 +389,11 @@
 						field: 'sl',
 						align: 'center'
 					},
-					{
-						label: 'Image',
-						field: 'imageSrc',
-						align: 'center'
-					},
+					// {
+					// 	label: 'Image',
+					// 	field: 'imageSrc',
+					// 	align: 'center'
+					// },
 					{
 						label: 'Product Id',
 						field: 'Product_Code',

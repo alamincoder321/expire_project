@@ -270,6 +270,18 @@ class Products extends CI_Controller
             if ($codeCheck == 21) {
                 $search = substr($data->name, 2, 5);
             }
+
+            if (!empty($data->barcode)) {
+                $search = (int) getIdFromBarcode($search);
+                $prod = $this->db->where('Product_SlNo', $search)->get('tbl_product')->row();
+                if ($prod) {
+                    $search = $prod->Product_Code;
+                } else {
+                    echo json_encode([]);
+                    exit;
+                }
+            }
+
             $clauses .= " and (p.Product_Code like '%$search%' or p.Product_Name like '%$search%')";
         }
 
@@ -394,6 +406,15 @@ class Products extends CI_Controller
         );
 
         echo json_encode($res);
+    }
+
+    public function getExpWiseStock()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+
+        $stock = $this->mt->expStock($data->productId, false);
+
+        echo json_encode($stock);
     }
 
     public function getTotalStock()

@@ -175,7 +175,7 @@ if ($panel == 'dashboard' or $panel == '') {
 						</li>
 					<?php endif; ?>
 
-					<?php if (array_search("campaign_products", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<!-- <?php if (array_search("campaign_products", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
 							<a href="<?php echo base_url(); ?>campaign_products">
 								<i class="menu-icon fa fa-caret-right"></i>
@@ -193,7 +193,7 @@ if ($panel == 'dashboard' or $panel == '') {
 							</a>
 							<b class="arrow"></b>
 						</li>
-					<?php endif; ?>
+					<?php endif; ?> -->
 				</ul>
 			</li>
 		<?php endif; ?>
