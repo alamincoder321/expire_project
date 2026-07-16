@@ -644,7 +644,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
-				
+
 				<?php if (array_search("purchase", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
@@ -1004,57 +1004,76 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
+
+				<?php if (array_search("salary_payment_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 col-xs-6 custom-padding ">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>salary_payment_report">
+								<div class="logo">
+									<i class="menu-icon fa fa-list"></i>
+								</div>
+								<div class="textModule" style="line-height: 13px;">
+									Payment Report
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
 				<?php if (array_search("employee", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>employee">
 								<div class="logo">
-									<i class="menu-icon fa fa-users"></i>
+									<i class="menu-icon fa fa-user-plus"></i>
 								</div>
 								<div class="textModule">
-									Add Employee
+									Employee Entry
 								</div>
 							</a>
 						</div>
 					</div>
 				<?php endif; ?>
+
 				<?php if (array_search("emplists/all", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>emplists/all">
 								<div class="logo">
-									<i class="menu-icon fa fa-list-ol"></i>
+									<i class="menu-icon fa fa-list"></i>
 								</div>
 								<div class="textModule">
-									All Employee List
+									Employee List
 								</div>
 							</a>
 						</div>
 					</div>
 				<?php endif; ?>
+
 				<?php if (array_search("designation", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>designation">
 								<div class="logo">
-									<i class="menu-icon fa fa-binoculars"></i>
+									<i class="menu-icon fa fa-plus-circle"></i>
 								</div>
 								<div class="textModule">
-									Add Designation
+									Designation Entry
 								</div>
 							</a>
 						</div>
 					</div>
 				<?php endif; ?>
+
 				<?php if (array_search("depertment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>depertment">
 								<div class="logo">
-									<i class="menu-icon fa fa-plus-square"></i>
+									<i class="menu-icon fa fa-plus-circle"></i>
 								</div>
 								<div class="textModule">
-									Add Department
+									Department Entry
 								</div>
 							</a>
 						</div>
@@ -1066,31 +1085,15 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>month">
 								<div class="logo">
-									<i class="menu-icon fa fa-calendar"></i>
+									<i class="menu-icon fa fa-plus-circle"></i>
 								</div>
 								<div class="textModule">
-									Add Month
+									Month Entry
 								</div>
 							</a>
 						</div>
 					</div>
 				<?php endif; ?>
-
-				<?php if (array_search("salary_payment_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding ">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>salary_payment_report">
-								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
-								</div>
-								<div class="textModule" style="line-height: 13px; margin-top: 0;">
-									Salary Payment Report
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-
 			</div>
 			<!-- PAGE CONTENT ENDS -->
 		</div><!-- /.col -->
@@ -1113,9 +1116,9 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>profitLoss">
 								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
+									<i class="menu-icon fa fa-list"></i>
 								</div>
-								<div class="textModule" style="line-height: 13px; margin-top: 0;">
+								<div class="textModule" style="line-height: 13px;">
 									Profit & Loss Report
 								</div>
 							</a>
@@ -1158,7 +1161,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 									<i class="menu-icon fa fa-money"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
-									Supplier Payment Report
+									Supplier Ledger
 								</div>
 							</a>
 						</div>
@@ -1173,90 +1176,6 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 								</div>
 								<div class="textModule">
 									Supplier List
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if ($this->session->userdata('BRANCHid') == 1 && (array_search("returnsList", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>returnsList">
-								<div class="logo">
-									<i class="menu-icon fa fa-th-list"></i>
-								</div>
-								<div class="textModule" style="line-height: 13px; margin-top: 0;">
-									Purchase Return List
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if ($this->session->userdata('BRANCHid') == 1 && (array_search("purchase_return_details", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>purchase_return_details">
-								<div class="logo">
-									<i class="menu-icon fa fa-th-list"></i>
-								</div>
-								<div class="textModule" style="line-height: 13px; margin-top: 0;">
-									Purchase Return Details
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if (array_search("salesinvoice", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>salesinvoice">
-								<div class="logo">
-									<i class="menu-icon fa fa-print"></i>
-								</div>
-								<div class="textModule">
-									Sales invoice
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if (array_search("salesrecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>salesrecord">
-								<div class="logo">
-									<i class="menu-icon fa fa-th-list"></i>
-								</div>
-								<div class="textModule">
-									Sales Record
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if (array_search("returnList", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>returnList">
-								<div class="logo">
-									<i class="menu-icon fa fa-rotate-right"></i>
-								</div>
-								<div class="textModule">
-									Sale Return List
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if (array_search("sale_return_details", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding ">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>sale_return_details">
-								<div class="logo">
-									<i class="menu-icon fa fa-list-ul"></i>
-								</div>
-								<div class="textModule">
-									Sale return Details
 								</div>
 							</a>
 						</div>
@@ -1284,7 +1203,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 									<i class="menu-icon fa fa-user-plus"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
-									Customer Payment Report
+									Customer Ledger
 								</div>
 							</a>
 						</div>
@@ -1318,48 +1237,6 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
-				<?php if (array_search("price_list", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>price_list">
-								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
-								</div>
-								<div class="textModule">
-									Product Price List
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<!-- <?php if (array_search("quotation_invoice_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>quotation_invoice_report">
-								<div class="logo">
-									<i class="fa fa-sticky-note-o" aria-hidden="true"></i>
-								</div>
-								<div class="textModule">
-									Quotation Invoice
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if (array_search("quotation_record", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>quotation_record">
-								<div class="logo">
-									<i class="fa fa-file-text" aria-hidden="true"></i>
-								</div>
-								<div class="textModule">
-									Quotation Record
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?> -->
 				<?php if (array_search("currentStock", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding">
 						<div class="col-md-12 section20">
@@ -1382,7 +1259,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 									<i class="menu-icon fa fa-money"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
-									Cash Transaction Report
+									CashTransaction Report
 								</div>
 							</a>
 						</div>
@@ -1416,7 +1293,8 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
-				<?php if (array_search("cashStatment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+
+				<!-- <?php if (array_search("cashStatment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>cashStatment">
@@ -1429,9 +1307,9 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 							</a>
 						</div>
 					</div>
-				<?php endif; ?>
+				<?php endif; ?> -->
 
-				<?php if (array_search("BalanceSheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+				<!-- <?php if (array_search("BalanceSheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>BalanceSheet">
@@ -1444,27 +1322,29 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 							</a>
 						</div>
 					</div>
-				<?php endif; ?>
+				<?php endif; ?> -->
+
 				<?php if (array_search("emplists/all", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>emplists/all">
 								<div class="logo">
-									<i class="menu-icon fa fa-user-plus"></i>
+									<i class="menu-icon fa fa-list"></i>
 								</div>
 								<div class="textModule">
-									All Employee List
+									Employee List
 								</div>
 							</a>
 						</div>
 					</div>
 				<?php endif; ?>
+
 				<?php if (array_search("salary_payment_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>salary_payment_report">
 								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
+									<i class="menu-icon fa fa-list"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Salary Payment Report

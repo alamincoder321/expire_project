@@ -38,8 +38,7 @@
 					<label class="col-xs-1 control-label">:</label>
 					<div class="col-xs-6">
 						<select class="form-control" style="padding:0;" name="branch_id" v-model="user.branch_id" id="branch_id">
-							<option value="1">Warehouse</option>
-							<option value="2">AJMAIN Mart</option>
+							<option :value="branch.brunch_id" v-for="branch in branches" v-text="branch.Brunch_name"></option>
 						</select>
 						<div id="brand_" class="col-xs-12"></div>
 					</div>
@@ -54,6 +53,18 @@
 							<option value="u">User</option>
 							<option value="e">Entry User</option>
 						</select>
+					</div>
+				</div>
+
+				<div class="form-group" v-if="user.UserType == 'e' || user.UserType == 'u'" style="display: none;" :style="{display: user.UserType == 'e' || user.UserType == 'u' ? '' : 'none'}">
+					<label class="col-xs-4 control-label" for="UserType"> Latitude </label>
+					<label class="col-xs-1 control-label">:</label>
+					<div class="col-xs-2 no-padding-right">
+						<input type="text" class="form-control" v-model="user.latitude" />
+					</div>
+					<label class="col-xs-2 control-label">Longitude</label>
+					<div class="col-xs-2 no-padding-left">
+						<input type="text" class="form-control" v-model="user.longitude" />
 					</div>
 				</div>
 			</div>
@@ -115,6 +126,8 @@
 							<td>{{ row.FullName }}</td>
 							<td>{{ row.User_Name }}</td>
 							<td>{{ row.UserEmail }}</td>
+							<td>{{ row.latitude }}</td>
+							<td>{{ row.longitude }}</td>
 							<td>
 								<span v-if="row.UserType == 'm'" class="badge" style="background: gray;">Super Admin</span>
 								<span v-if="row.UserType == 'a'" class="badge badge-success">Admin</span>
@@ -163,6 +176,8 @@
 					Password: '',
 					Re_Password: '',
 					branch_id: '<?= $this->session->userdata('BRANCHid'); ?>',
+					latitude: '',
+					longitude: '',
 					UserType: 'a',
 					status: 'a',
 				},
@@ -188,6 +203,16 @@
 					{
 						label: 'Email',
 						field: 'UserEmail',
+						align: 'center'
+					},
+					{
+						label: 'Latitude',
+						field: 'latitude',
+						align: 'center'
+					},
+					{
+						label: 'Longitude',
+						field: 'longitude',
 						align: 'center'
 					},
 					{
@@ -225,7 +250,7 @@
 		methods: {
 			getBranches() {
 				axios.get('/get_branches').then(res => {
-					this.branches = res.data;
+					this.branches = res.data.filter(b => b.status == 'a');
 				})
 			},
 			getUsers() {

@@ -87,6 +87,8 @@ class User_management extends CI_Controller
                 "userBrunch_id" => $data->branch_id,
                 "User_Password" => md5($data->Password),
                 "UserType"      => $data->UserType,
+                "latitude"      => $data->latitude,
+                "longitude"     => $data->longitude,
                 "status"        => $data->status,
                 "AddBy"         => $this->session->userdata("userId"),
                 "AddTime"       => date('Y-m-d H:i:s'),
@@ -127,6 +129,8 @@ class User_management extends CI_Controller
                 "Brunch_ID"     => $data->branch_id,
                 "userBrunch_id" => $data->branch_id,
                 "UserType"      => $data->UserType,
+                "latitude"      => $data->latitude,
+                "longitude"     => $data->longitude,
                 "status"         => $data->status,
                 "UpdateBy"      => $this->session->userdata("userId"),
                 "UpdateTime"    => date('Y-m-d H:i:s')
@@ -280,50 +284,48 @@ class User_management extends CI_Controller
         $this->load->view('Administrator/index', $data);
     }
 
-    public function password_change(){
+    public function password_change()
+    {
 
-		$this->form_validation->set_rules('current_password', 'Current Password', 'required|trim');
-		$this->form_validation->set_rules('password', 'New Password', 'required|trim');
-		$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|trim|matches[password]');
+        $this->form_validation->set_rules('current_password', 'Current Password', 'required|trim');
+        $this->form_validation->set_rules('password', 'New Password', 'required|trim');
+        $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|trim|matches[password]');
 
-		if($this->form_validation->run() == FALSE)
-		{
-			$data['title'] = "user profile";
-			$user= $this->db->where('User_SlNo', $this->access)->get('tbl_user')->row();
-			$data['branch_info'] = $this->db->where('brunch_id', $user->userBrunch_id)->get('tbl_brunch')->row();
-			$data['user'] = $user;
-			$data['content'] = $this->load->view('Administrator/profile', $data, TRUE);
-			$this->load->view('Administrator/index', $data);
-		}
-		else{
+        if ($this->form_validation->run() == FALSE) {
+            $data['title'] = "user profile";
+            $user = $this->db->where('User_SlNo', $this->access)->get('tbl_user')->row();
+            $data['branch_info'] = $this->db->where('brunch_id', $user->userBrunch_id)->get('tbl_brunch')->row();
+            $data['user'] = $user;
+            $data['content'] = $this->load->view('Administrator/profile', $data, TRUE);
+            $this->load->view('Administrator/index', $data);
+        } else {
 
-			$user_name = $this->session->userdata('User_Name');
-			$check = $this->db->where('User_Name', $user_name)->where('User_Password', md5($this->input->post('current_password')))->get('tbl_user')->row();
+            $user_name = $this->session->userdata('User_Name');
+            $check = $this->db->where('User_Name', $user_name)->where('User_Password', md5($this->input->post('current_password')))->get('tbl_user')->row();
 
-			if($check){
-				$attr = array(
-					'User_Password'=> md5($this->input->post('password'))
-				);
-				$this->db->where('User_SlNo', $this->access);
-				$res = $this->db->update('tbl_user', $attr);
+            if ($check) {
+                $attr = array(
+                    'User_Password' => md5($this->input->post('password'))
+                );
+                $this->db->where('User_SlNo', $this->access);
+                $res = $this->db->update('tbl_user', $attr);
 
-				if($this->db->affected_rows()){
-					$data['msg'] = 'Password Update Successful..!';
-					$this->session->set_flashdata($data);
-					return redirect('profile');
-				}else{
-					$data['msg'] = 'Password Update Un-Successful..!';
-					$this->session->set_flashdata($data);
-					return redirect('profile');
-				}
-
-			}else{
-				$data['msg'] = 'Current Password not match..!';
-				$this->session->set_flashdata($data);
-				return redirect('profile');
-			}
-		}
-	}
+                if ($this->db->affected_rows()) {
+                    $data['msg'] = 'Password Update Successful..!';
+                    $this->session->set_flashdata($data);
+                    return redirect('profile');
+                } else {
+                    $data['msg'] = 'Password Update Un-Successful..!';
+                    $this->session->set_flashdata($data);
+                    return redirect('profile');
+                }
+            } else {
+                $data['msg'] = 'Current Password not match..!';
+                $this->session->set_flashdata($data);
+                return redirect('profile');
+            }
+        }
+    }
 
     public function profileUpdate()
     {

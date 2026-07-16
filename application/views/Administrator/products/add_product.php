@@ -105,6 +105,14 @@
 		top: 7px;
 		right: 7px;
 	}
+
+	.table-responsive table {
+		margin-bottom: 0 !important;
+	}
+
+	.pagination {
+		margin-top: 10px !important;
+	}
 </style>
 <div id="products">
 	<form @submit.prevent="saveProduct">
@@ -112,7 +120,7 @@
 			style="margin-top: 10px;margin-bottom:15px;border-bottom: 1px solid #ccc;padding-bottom: 15px;">
 			<div class="col-md-5 col-md-offset-1">
 				<div class="form-group clearfix">
-					<label class="control-label col-md-4">Product Id:</label>
+					<label class="control-label col-md-4">Product Barcode:</label>
 					<div class="col-md-7">
 						<input type="text" class="form-control" v-model="product.Product_Code">
 					</div>
@@ -160,6 +168,13 @@
 			</div>
 
 			<div class="col-md-5">
+				<div class="form-group clearfix">
+					<label class="control-label col-md-4">ReOrder:</label>
+					<div class="col-md-7">
+						<input type="text" id="re_order" class="form-control"
+							v-model="product.Product_ReOrederLevel" />
+					</div>
+				</div>
 
 				<div class="form-group clearfix">
 					<label class="control-label col-md-4">Purchase Rate:</label>
@@ -176,12 +191,12 @@
 						<input type="text" class="form-control" v-model="product.Product_SellingPrice" required>
 					</div>
 				</div>
-				<div class="form-group clearfix">
+				<!-- <div class="form-group clearfix">
 					<label class="control-label col-md-4">Discount Amount:</label>
 					<div class="col-md-7">
 						<input type="number" min="0" step="any" class="form-control" v-model="product.discountAmount" @input="calculateDiscount" required>
 					</div>
-				</div>
+				</div> -->
 				<div class="form-group clearfix">
 					<label for="" class="col-md-4"></label>
 					<label for="is_mrp" class="col-md-4" style="display: flex;align-items:center;gap:5px;cursor:pointer;margin-top: 5px;">
@@ -221,14 +236,14 @@
 							<td>{{ row.ProductCategory_Name }}</td>
 							<td>{{ row.Product_Purchase_Rate }}</td>
 							<td>{{ row.Product_SellingPrice }}</td>
-							<td>{{ row.discountAmount }}</td>
+							<td>{{ row.Product_ReOrederLevel }}</td>
 							<td>{{ row.Unit_Name }}</td>
 							<td>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
-									<button type="button" class="button" @click="editProduct(row)" data-toggle="modal"
+									<!-- <button type="button" class="button" @click="editProduct(row)" data-toggle="modal"
 										data-target="#staticBackdrop">
 										<i class="fa fa-info-circle"></i>
-									</button>
+									</button> -->
 									<button type="button" class="button edit" @click="editProduct(row)">
 										<i class="fa fa-pencil"></i>
 									</button>
@@ -236,10 +251,10 @@
 										<i class="fa fa-trash"></i>
 									</button>
 								<?php } ?>
-								<button type="button" class="button"
+								<!-- <button type="button" class="button"
 									@click="window.location = `/barcode/${row.Product_SlNo}`">
 									<i class="fa fa-barcode"></i>
-								</button>
+								</button> -->
 							</td>
 						</tr>
 					</template>
@@ -420,8 +435,8 @@
 						align: 'center'
 					},
 					{
-						label: 'Discount Amount',
-						field: 'discountAmount',
+						label: 'ReOrder Level',
+						field: 'Product_ReOrederLevel',
 						align: 'center'
 					},
 					{
@@ -436,7 +451,7 @@
 					}
 				],
 				page: 1,
-				per_page: 10,
+				per_page: 20,
 				filter: ''
 			}
 		},

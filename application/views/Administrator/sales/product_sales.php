@@ -65,6 +65,7 @@
 	tr td {
 		vertical-align: middle !important;
 	}
+	
 </style>
 
 <div id="sales" class="row">
@@ -188,6 +189,16 @@
 								</div> -->
 
 								<div class="form-group">
+									<label for="" class="col-xs-3"></label>
+									<div class="col-xs-9">
+										<label for="is_weight_scale" style="display: flex;align-items:center;gap:5px;cursor:pointer;">
+											<input type="checkbox" v-model="is_weight_scale" :true-value="`on`" :false-value="`off`" id="is_weight_scale" style="margin: 0;width:18px;height:18px;">
+											<span>Weight Scale</span>
+										</label>
+									</div>
+								</div>
+
+								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Product </label>
 									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
 										<div style="width: 86%;">
@@ -219,6 +230,7 @@
 										<input type="number" step="0.01" id="quantity" placeholder="Qty" class="form-control" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" autocomplete="off" required />
 									</div>
 								</div>
+
 								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Amount </label>
 									<div class="col-xs-9">
@@ -535,6 +547,7 @@
 			return {
 				barcode: true,
 				barcodeVal: "",
+				is_weight_scale: "off",
 				sales: {
 					salesId: parseInt('<?php echo $salesId; ?>'),
 					invoiceNo: '<?php echo $invoice; ?>',
@@ -882,29 +895,9 @@
 					this.$refs.quantity.focus();
 				}
 			},
+
 			toggleProductPurchaseRate() {
 				this.$refs.productPurchaseRate.type = this.$refs.productPurchaseRate.type == 'text' ? 'password' : 'text';
-			},
-			onChangeFreeProduct() {
-				if (this.selectedProduct == null) {
-					this.selectedProduct = {
-						Product_SlNo: '',
-						Product_Code: '',
-						display_text: 'Select Product',
-						Product_Name: '',
-						Unit_Name: '',
-						quantity: '',
-						Product_Purchase_Rate: '',
-						Product_SellingPrice: 0,
-						total: ''
-					}
-					return
-				}
-				if (this.selectedProduct.Product_SlNo != '') {
-					this.selectedProduct.Product_SellingPrice = 0;
-					this.selectedProduct.total = 0;
-					this.productTotal();
-				}
 			},
 
 			async addToCart() {
@@ -913,7 +906,7 @@
 						isService: this.sales.isService,
 						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
 						name: this.barcodeVal,
-						barcode: 'yes'
+						barcode: this.is_weight_scale == 'on' ? null : 'yes'
 					}).then(async res => {
 						if (res.data.length > 0) {
 							this.selectedProduct = res.data.length > 0 ? res.data[0] : this.selectedProduct;
@@ -955,7 +948,7 @@
 					is_offer: this.selectedProduct.productType == 'offer' ? 'yes' : 'no',
 					range_quantity: this.selectedProduct.productType == 'offer' ? this.selectedProduct.range_quantity : 0,
 					campaignProducts: []
-				}				
+				}
 
 				if (product.productId == '') {
 					alert('Select Product');
@@ -967,7 +960,7 @@
 					return;
 				}
 
-				let cartInd = this.cart.findIndex(p => p.productId == product.productId);
+				let cartInd = this.cart.findIndex(p => (p.productId == product.productId) && (p.exp_date == product.exp_date));
 				if (cartInd > -1) {
 					let cartProduct = this.cart[cartInd];
 					product.quantity = parseFloat(+cartProduct.quantity + +product.quantity);
@@ -1061,10 +1054,12 @@
 					return res.data;
 				})
 			},
+
 			removeFromCart(ind) {
 				this.cart.splice(ind, 1);
 				this.calculateTotal();
 			},
+
 			clearProduct() {
 				this.selectedProduct = {
 					Product_SlNo: '',
@@ -1083,6 +1078,7 @@
 				this.productStockText = '';
 				this.isFree = 'no';
 			},
+
 			calculateTotal() {
 				this.sales.subTotal = this.cart.reduce((prev, curr) => {
 					return prev + parseFloat(curr.salesRate * curr.quantity)

@@ -954,7 +954,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		</li>
 		<li>
 			<a href="<?php echo base_url(); ?>panel/HRMPanel" style="background:gray !important;" class="panel_title">
-				<span>HR & Payroll</span>
+				<span>Manage HRM</span>
 			</a>
 		</li>
 
@@ -968,11 +968,31 @@ if ($panel == 'dashboard' or $panel == '') {
 			</li>
 		<?php endif; ?>
 
+		<?php if (array_search("salary_payment_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+			<li class="">
+				<a href="<?php echo base_url(); ?>salary_payment_report">
+					<i class="menu-icon fa fa-list"></i>
+					<span class="menu-text"> Payment Report </span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		<?php endif; ?>
+
 		<?php if (array_search("employee", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>employee">
-					<i class="menu-icon fa fa-users"></i>
-					<span class="menu-text"> Add Employee </span>
+					<i class="menu-icon fa fa-user-plus"></i>
+					<span class="menu-text"> Employee Entry </span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		<?php endif; ?>
+		
+		<?php if (array_search("emplists/all", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+			<li class="">
+				<a href="<?php echo base_url(); ?>emplists/all">
+					<i class="menu-icon fa fa-list"></i>
+					<span class="menu-text"> Employee List </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
@@ -981,8 +1001,8 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("designation", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>designation">
-					<i class="menu-icon fa fa-binoculars"></i>
-					<span class="menu-text"> Add Designation </span>
+					<i class="menu-icon fa fa-plus-circle"></i>
+					<span class="menu-text"> Designation Entry </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
@@ -991,8 +1011,8 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("depertment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>depertment">
-					<i class="menu-icon fa fa-plus-square"></i>
-					<span class="menu-text"> Add Department </span>
+					<i class="menu-icon fa fa-plus-circle"></i>
+					<span class="menu-text"> Department Entry </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
@@ -1001,73 +1021,12 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("month", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>month">
-					<i class="menu-icon fa fa-calendar"></i>
-					<span class="menu-text"> Add Month </span>
+					<i class="menu-icon fa fa-plus-circle"></i>
+					<span class="menu-text"> Month Entry </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
 		<?php endif; ?>
-
-		<?php if (
-			array_search("emplists/all", $access) > -1
-			|| array_search("emplists/active", $access) > -1
-			|| array_search("emplists/deactive", $access) > -1
-			|| array_search("salary_payment_report", $access) > -1
-			|| isset($CheckSuperAdmin) || isset($CheckAdmin)
-		) : ?>
-			<li class="">
-				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
-					<i class="menu-icon fa fa-file"></i>
-					<span class="menu-text"> Report </span>
-					<b class="arrow fa fa-angle-down"></b>
-				</a>
-
-				<b class="arrow"></b>
-
-				<ul class="submenu">
-
-					<?php if (array_search("emplists/all", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>emplists/all">
-								<i class="menu-icon fa fa-caret-right"></i>
-								All Employee List
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("emplists/active", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>emplists/active">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Active Employee List
-							</a>
-							<b class="arrow"></b>
-						</li>
-						<?php endif; ?><?php if (array_search("emplists/deactive", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>emplists/deactive">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Deactive Employee List
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("salary_payment_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>salary_payment_report">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Salary Payment Report
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-				</ul>
-			</li>
-		<?php endif; ?>
-
 	</ul><!-- /.nav-list -->
 <?php } elseif ($panel == 'ReportsPanel') { ?>
 	<ul class="nav nav-list">
@@ -1088,7 +1047,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("profitLoss", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>profitLoss">
-					<i class="menu-icon fa fa-medkit"></i>
+					<i class="menu-icon fa fa-list"></i>
 					<span class="menu-text"> Profit & Loss Report </span>
 				</a>
 				<b class="arrow"></b>
@@ -1116,7 +1075,6 @@ if ($panel == 'dashboard' or $panel == '') {
 			</li>
 		<?php endif; ?>
 
-
 		<?php if (
 			array_search("TransactionReport", $access) > -1
 			|| array_search("bank_transaction_report", $access) > -1
@@ -1130,7 +1088,7 @@ if ($panel == 'dashboard' or $panel == '') {
 			<li class="">
 				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
 					<i class="menu-icon fa fa-file"></i>
-					<span class="menu-text"> Accounts Report </span>
+					<span class="menu-text"> Reports </span>
 
 					<b class="arrow fa fa-angle-down"></b>
 				</a>
@@ -1142,7 +1100,7 @@ if ($panel == 'dashboard' or $panel == '') {
 						<li class="">
 							<a href="<?php echo base_url(); ?>TransactionReport">
 								<i class="menu-icon fa fa-caret-right"></i>
-								Cash Transaction Report
+								CashTransaction Report
 							</a>
 							<b class="arrow"></b>
 						</li>
@@ -1178,7 +1136,7 @@ if ($panel == 'dashboard' or $panel == '') {
 						</li>
 					<?php endif; ?>
 
-					<?php if (array_search("cashStatment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<!-- <?php if (array_search("cashStatment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
 							<a href="<?php echo base_url(); ?>cashStatment">
 								<i class="menu-icon fa fa-caret-right"></i>
@@ -1196,76 +1154,13 @@ if ($panel == 'dashboard' or $panel == '') {
 							</a>
 							<b class="arrow"></b>
 						</li>
-					<?php endif; ?>
+					<?php endif; ?> -->
 
 					<?php if (array_search("day_book", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
 							<a href="<?php echo base_url(); ?>day_book">
 								<i class="menu-icon fa fa-caret-right"></i>
 								Day Book
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-				</ul>
-			</li>
-		<?php endif; ?>
-
-
-		<?php if (
-			array_search("emplists/all", $access) > -1
-			|| array_search("emplists/active", $access) > -1
-			|| array_search("emplists/deactive", $access) > -1
-			|| array_search("salary_payment_report", $access) > -1
-			|| isset($CheckSuperAdmin) || isset($CheckAdmin)
-		) : ?>
-			<li class="">
-				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
-					<i class="menu-icon fa fa-file"></i>
-					<span class="menu-text"> Employee Report </span>
-					<b class="arrow fa fa-angle-down"></b>
-				</a>
-
-				<b class="arrow"></b>
-
-				<ul class="submenu">
-
-					<?php if (array_search("emplists/all", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>emplists/all">
-								<i class="menu-icon fa fa-caret-right"></i>
-								All Employee List
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("emplists/active", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>emplists/active">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Active Employee List
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("emplists/deactive", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>emplists/deactive">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Deactive Employee List
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("salary_payment_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>salary_payment_report">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Salary Payment Report
 							</a>
 							<b class="arrow"></b>
 						</li>
