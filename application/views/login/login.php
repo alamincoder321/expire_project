@@ -80,27 +80,50 @@
 			}
 		});
 
-		function Login(event) {
-			getLocation();
-			event.preventDefault();
-			let formdata = new FormData(event.target);
+		function getLocation(callback) {
+			if (!navigator.geolocation) {
+				callback();
+				return;
+			}
 
-			$.ajax({
-				url: "/Login/procedure",
-				method: "POST",
-				data: formdata,
-				dataType: "JSON",
-				processData: false,
-				contentType: false,
-				success: res => {
-					if (res.status) {
-						location.href = "/Administrator/"
-					} else {
-						toastr.error(res.message)
-					}
+			navigator.geolocation.getCurrentPosition(
+				function(position) {
+					$("#latitude").val(position.coords.latitude);
+					$("#longitude").val(position.coords.longitude);
+					callback();
+				},
+				function(error) {
+					callback();
 				}
-			})
+			);
 		}
+
+		function Login(event) {
+			event.preventDefault();
+
+			getLocation(function() {
+
+				let formdata = new FormData(event.target);
+
+				$.ajax({
+					url: "/Login/procedure",
+					method: "POST",
+					data: formdata,
+					dataType: "JSON",
+					processData: false,
+					contentType: false,
+					success: function(res) {
+						if (res.status) {
+							location.href = "/Administrator/";
+						} else {
+							toastr.error(res.message);
+						}
+					}
+				});
+
+			});
+		}
+
 		// show password
 		function passwordShow(event) {
 			let password = $(".password").find('input').prop('type');
@@ -112,22 +135,6 @@
 				$(".password").find('input').removeProp('type').prop('type', 'password');
 			}
 		}
-
-		function getLocation() {
-
-			if (!navigator.geolocation) {
-				alert("Geolocation is not supported.");
-				return;
-			}
-
-			navigator.geolocation.getCurrentPosition(
-				function(position) {
-					document.getElementById("latitude").value = position.coords.latitude;
-					document.getElementById("longitude").value = position.coords.longitude;
-				}
-			);
-		}
-
 	</script>
 </body>
 
