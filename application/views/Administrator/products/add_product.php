@@ -251,10 +251,10 @@
 										<i class="fa fa-trash"></i>
 									</button>
 								<?php } ?>
-								<!-- <button type="button" class="button"
+								<button type="button" class="button"
 									@click="window.location = `/barcode/${row.Product_SlNo}`">
 									<i class="fa fa-barcode"></i>
-								</button> -->
+								</button>
 							</td>
 						</tr>
 					</template>

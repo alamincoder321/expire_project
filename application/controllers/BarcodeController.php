@@ -22,7 +22,8 @@ class BarcodeController extends CI_Controller
 			redirect(base_url());
 		}
 		$data['title'] = "Product Barcode";
-		$data['product'] = $this->db->where('Product_SlNo', $id)->get('tbl_product')->row();
+		$data['product'] = $this->db->where('Product_SlNo', $id)->get('tbl_product')->row();		
+        $data['exp_dates'] = $this->mt->expStock($id);
 		$data['content'] = $this->load->view('Administrator/products/barcode/barcode', $data, TRUE);
 		$this->load->view('Administrator/index', $data);
 	}

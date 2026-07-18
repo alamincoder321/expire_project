@@ -152,9 +152,9 @@
 								</div>
 
 								<div class="form-group">
-									<label class="col-xs-4 control-label no-padding-right"> Short Date </label>
+									<label class="col-xs-4 control-label no-padding-right"> Short Date(Month) </label>
 									<div class="col-xs-8">
-										<input type="date" id="short_date" name="short_date" ref="short_date" class="form-control" v-model="selectedProduct.short_date" />
+										<input type="number" min="0" step="any" id="short_date_month" name="short_date_month" ref="short_date_month" class="form-control" v-model="selectedProduct.short_date_month" />
 									</div>
 								</div>
 
@@ -210,11 +210,11 @@
 							<th style="width:4%;color:#000;">SL</th>
 							<th style="width:20%;color:#000;">Product Name</th>
 							<th style="width:13%;color:#000;">Category</th>
-							<th style="width:8%;color:#000;">Exp.Date</th>
+							<th style="width:10%;color:#000;">Exp.Date</th>
 							<th style="width:8%;color:#000;">Short Date</th>
-							<th style="width:8%;color:#000;">Sale Rate</th>
+							<th style="width:10%;color:#000;">Sale Rate</th>
 							<th style="width:8%;color:#000;">Rate</th>
-							<th style="width:5%;color:#000;">Quantity</th>
+							<th style="width:10%;color:#000;">Qty</th>
 							<th style="width:13%;color:#000;">Total</th>
 							<th style="width:5%;color:#000;">Action</th>
 						</tr>
@@ -228,7 +228,7 @@
 								<input type="date" style="margin: 0px;" class="form-control" v-model="product.exp_date" />
 							</td>
 							<td>
-								<input type="date" style="margin: 0px;" class="form-control" v-model="product.short_date" />
+								<input type="number" step="any" min="0" style="margin: 0px;" class="form-control" v-model="product.short_date_month" />
 							</td>
 							<td>
 								<input type="text" style="margin-bottom: 0;" class="form-control" v-model="product.salesRate" />
@@ -244,16 +244,16 @@
 						</tr>
 
 						<tr>
-							<td colspan="9"></td>
+							<td colspan="10"></td>
 						</tr>
 
 						<tr style="font-weight: bold;">
-							<td colspan="6">Note</td>
+							<td colspan="7">Note</td>
 							<td colspan="3">Total</td>
 						</tr>
 
 						<tr>
-							<td colspan="6"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="purchase.note"></textarea></td>
+							<td colspan="7"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="purchase.note"></textarea></td>
 							<td colspan="3" style="padding-top: 15px;font-size:18px;">{{ purchase.total }}</td>
 						</tr>
 					</tbody>
@@ -619,7 +619,7 @@
 								quantity: product.PurchaseDetails_TotalQuantity,
 								total: product.PurchaseDetails_TotalAmount,
 								exp_date: '',
-								short_date: '',
+								short_date_month: '',
 								isFree: 'no'
 							}
 							this.cart.push(productObj);
@@ -646,7 +646,7 @@
 					return;
 				}
 
-				if (this.selectedProduct.exp_date == '' || this.selectedProduct.short_date == '') {
+				if (this.selectedProduct.exp_date == '' || this.selectedProduct.short_date_month == '' || this.selectedProduct.exp_date == undefined || this.selectedProduct.short_date_month == undefined) {
 					alert('Enter expiry and short date');
 					return;
 				}
@@ -661,7 +661,7 @@
 					quantity: this.selectedProduct.quantity,
 					total: this.selectedProduct.total,
 					exp_date: this.selectedProduct.exp_date,
-					short_date: this.selectedProduct.short_date,
+					short_date_month: this.selectedProduct.short_date_month,
 					isFree: this.isFree
 				}
 
@@ -729,7 +729,7 @@
 					return;
 				}
 
-				if (this.cart.some(product => product.exp_date == '' || product.short_date == '')) {
+				if (this.cart.some(product => product.exp_date == '' || product.short_date_month == '')) {
 					alert('Enter expiry and short date for all products in cart');
 					return;
 				}
@@ -817,7 +817,7 @@
 							quantity: product.PurchaseDetails_TotalQuantity,
 							total: product.PurchaseDetails_TotalAmount,
 							exp_date: product.exp_date,
-							short_date: product.short_date,
+							short_date_month: product.short_date_month,
 							isFree: product.isFree
 						}
 

@@ -445,7 +445,8 @@ class Purchase extends CI_Controller
                     'PurchaseMaster_IDNo'           => $purchaseId,
                     'Product_IDNo'                  => $product->productId,
                     'exp_date'                      => $product->exp_date,
-                    'short_date'                    => $product->short_date,
+                    'short_date_month'              => $product->short_date_month,
+                    'short_date'                    => date('Y-m-d', strtotime($product->exp_date . '-' . $product->short_date_month . 'months')),
                     'barcode'                       => $barcode,
                     'PurchaseDetails_TotalQuantity' => $product->quantity,
                     'PurchaseDetails_Rate'          => $product->purchaseRate,
@@ -478,7 +479,7 @@ class Purchase extends CI_Controller
                     ", [$product->quantity, $product->productId, $this->session->userdata('BRANCHid')]);
                 }
 
-                
+
                 if ($previousStock > 0) {
                     $this->db->query("
                         update tbl_product set 
@@ -621,7 +622,8 @@ class Purchase extends CI_Controller
                     'PurchaseMaster_IDNo'           => $purchaseId,
                     'Product_IDNo'                  => $product->productId,
                     'exp_date'                      => $product->exp_date,
-                    'short_date'                    => $product->short_date,
+                    'short_date_month'              => $product->short_date_month,
+                    'short_date'                    => date('Y-m-d', strtotime($product->exp_date . '-' . $product->short_date_month . 'months')),
                     'barcode'                       => $barcode,
                     'PurchaseDetails_TotalQuantity' => $product->quantity,
                     'PurchaseDetails_Rate'          => $product->purchaseRate,

@@ -769,6 +769,12 @@ class Model_Table extends CI_Model
                     " . ($withoutZero == true ? "" : "having stock > 0") . "
                     order by exp_date, sequence asc")->result();
 
+        if ($productId != null) {
+            foreach ($stock as $item) {
+                $item->barcode = $this->db->select('barcode')->where('exp_date', $item->exp_date)->where('Product_IDNo', $productId)->get("tbl_purchasedetails")->row()->barcode;
+            }
+        }
+
         return $stock;
     }
 

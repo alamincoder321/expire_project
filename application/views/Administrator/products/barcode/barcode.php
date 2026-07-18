@@ -98,12 +98,28 @@
 			<div class="col-md-10 col-xs-12" style="padding: 0;">
 
 				<div class="col-md-6" style="padding: 0;">
-					<div class="form-group clearfix">
-						<label class="control-label col-xs-4 col-md-4">Product Code:</label>
-						<div class=" col-xs-8 col-md-7">
-							<input type="text" class="form-control" id="code" value="<?= $product->Product_Code; ?>" readonly>
+					<?php if (count($exp_dates) > 0): ?>
+						<div class="form-group clearfix">
+							<label class="control-label col-xs-4 col-md-4">Expiry Date:</label>
+							<div class=" col-xs-8 col-md-7">
+								<select name="exp_date" id="exp_date" class="form-control">
+									<?php foreach ($exp_dates as $item) { ?>
+										<option value="<?= $item->barcode; ?>"><?= date('d-m-Y', strtotime($item->exp_date)); ?></option>
+									<?php } ?>
+								</select>
+							</div>
 						</div>
-					</div>
+					<?php endif; ?>
+
+					<?php if (count($exp_dates) == 0): ?>
+						<div class="form-group clearfix">
+							<label class="control-label col-xs-4 col-md-4">Product Code:</label>
+							<div class=" col-xs-8 col-md-7">
+								<input type="text" class="form-control" id="code" value="<?= $product->Product_Code; ?>" readonly>
+							</div>
+						</div>
+					<?php endif; ?>
+
 					<div class="form-group clearfix">
 						<label class="control-label col-xs-4 col-md-4">Sale Rate:</label>
 						<div class="col-xs-8 col-md-7">
@@ -163,22 +179,22 @@
 		</div>
 		<div class="row" style="display: flex;justify-content:center;">
 			<div class="output col-md-8 page-break">
-				<div v-show="!is_single" style="padding:3px;float: left; height: 95px; width: 140px; border: 1px solid #ddd;" v-for="(item, sl) in products">
-					<div style="width: 100%; text-align: center;">
-						<p style="font-size: 12px;margin:0;line-height: 1;">{{item.article}}</p>
+				<div v-if="!is_single" style="padding:3px;float: left; height: 95px; width: 140px; border: 1px solid #ddd;" v-for="(item, sl) in products">
+					<div style="width: 140px; text-align: center; float: right;">
+						<p class="article" style="font-size: 12px;margin:0;" :style="{marginLeft: item.article != '' ? '15px !important': '5px !important'}">{{item.article}}</p>
 						<p style="font-size: 10px;margin:0px 0px 2px 1px;padding:2px 0 0 0;font-weight: bolder;text-align: center;line-height: 1;">{{item.name}}</p>
 						<img class="barcode" style="line-height: 0;" />
 						<p style="margin:0;font-size: 12px;margin-top:-3px; text-align: center;font-weight: 900;">{{item.code}}</p>
 						<p style="margin:0;margin-top:-1px;text-align: center;font-size: 12px;font-weight: bolder;"><?= $this->session->userdata('Currency_Name'); ?> {{item.sale_rate}}</p>
 					</div>
 				</div>
-				<div v-show="is_single" style="float:left;margin:0px;padding:0; overflow:hidden;border:1px solid #ccc;box-sizing:border-box;border-bottom:none" :style="[{width: xAxis+'in', height: yAxis+'in'}]" v-for="(item, sl) in products">
+				<div v-if="is_single" style="float:left;margin:0px;padding:0; overflow:hidden;border:1px solid #ccc;box-sizing:border-box;border-bottom:none" :style="[{width: xAxis+'in', height: yAxis+'in'}]" v-for="(item, sl) in products">
 					<div style="text-align: center;margin:0;padding:0px 0px 0px 0px;" :style="[{width: xAxis+'in', height: yAxis+'in'}]">
-						<p style="font-size: 10px;margin:0;line-height: 1;margin-top:1.5px;">{{item.article}}</p>
+						<p class="article" style="font-size: 12px;margin:0;" :style="{marginLeft: item.article != '' ? '15px !important': '5px !important'}">{{item.article}}</p>
 						<p style="font-size: 10px;margin:0px 0px 2px 1px;padding:2px 0 0 0;font-weight: bolder;text-align: center;line-height: 1;">{{item.name}}</p>
 						<img class="singlebarcode" style="line-height: 0;" />
 						<p style="margin:0;font-size: 12px;margin-top:-3px; text-align: center;font-weight: 900;">{{item.code}}</p>
-						<p style="margin:0;margin-top:-2px;text-align: center;font-size: 12px;font-weight: bolder;"><?= $this->session->userdata('Currency_Name'); ?> {{item.sale_rate}}</p>
+						<p style="margin:0;margin-top:-1px;text-align: center;font-size: 12px;font-weight: bolder;"><?= $this->session->userdata('Currency_Name'); ?> {{item.sale_rate}}</p>
 					</div>
 				</div>
 			</div>
@@ -192,23 +208,6 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/JsBarcode.all.min.js"></script>
 <script>
-	let code = "<?= $product->Product_Code ?>";
-	JsBarcode(".barcode", code, {
-		format: "CODE128",
-		width: 1,
-		height: 30,
-		fontSize: 12,
-		margin: 0,
-		displayValue: false
-	});
-	JsBarcode(".singlebarcode", code, {
-		format: "CODE128",
-		width: 1,
-		height: 40,
-		fontSize: 12,
-		margin: 0,
-		displayValue: false
-	});
 	new Vue({
 		el: '#productList',
 		data() {
@@ -224,16 +223,21 @@
 
 		methods: {
 			async barcodeGenerate(event) {
+				let countExpDate = "<?= count($exp_dates) ?>";
+				if (countExpDate > 0 && $("#exp_date option:selected").val() == '') {
+					alert("Select expiry date")
+					return;
+				}
 				this.products = [];
 				this.onProgress = true;
 				await new Promise(resolve => setTimeout(resolve, 500));
-				let code = $("#code").val();
+				let code = countExpDate > 0 ? $("#exp_date option:selected").val() : "<?= $product->Product_Code; ?>";
 				let name = $("#name").val();
 				let article = $("#article").val();
 				let qty = $("#quantity").val();
 				let price = $("#price").val();
 				if (qty == '' || qty == 0) {
-					alert("Quantity is empty");
+					alert("Quantity is empty")
 					this.onProgress = false;
 					return;
 				}
@@ -246,7 +250,33 @@
 				for (let index = 0; index < qty; index++) {
 					this.products.push(product);
 				}
+
+				await this.$nextTick();
+				this.generateBarcodes(code);
 				this.onProgress = false;
+			},
+
+			generateBarcodes(code) {
+				if (document.querySelectorAll(".barcode").length > 0) {
+					JsBarcode(".barcode", code, {
+						format: "CODE128",
+						width: 1,
+						height: 25,
+						fontSize: 12,
+						margin: 0,
+						displayValue: false
+					});
+				}
+				if (document.querySelectorAll(".singlebarcode").length > 0) {
+					JsBarcode(".singlebarcode", code, {
+						format: "CODE128",
+						width: 1,
+						height: 40,
+						fontSize: 12,
+						margin: 0,
+						displayValue: false
+					});
+				}
 			}
 		},
 	})
@@ -277,7 +307,7 @@
             </html>
         `;
 		window.print();
-		window.location.href='/product'
 		document.body.innerHTML = originalContent;
+		location.reload();
 	}
 </script>
