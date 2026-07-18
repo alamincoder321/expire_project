@@ -212,6 +212,7 @@
 							<th style="width:13%;color:#000;">Category</th>
 							<th style="width:8%;color:#000;">Exp.Date</th>
 							<th style="width:8%;color:#000;">Short Date</th>
+							<th style="width:8%;color:#000;">Sale Rate</th>
 							<th style="width:8%;color:#000;">Rate</th>
 							<th style="width:5%;color:#000;">Quantity</th>
 							<th style="width:13%;color:#000;">Total</th>
@@ -229,9 +230,14 @@
 							<td>
 								<input type="date" style="margin: 0px;" class="form-control" v-model="product.short_date" />
 							</td>
-							<td>{{ product.purchaseRate }}</td>
 							<td>
-								<input type="number" style="margin: 0px;" class="form-control" v-model="product.quantity" v-on:input="product.total = product.quantity * product.purchaseRate; calculateTotal()" />
+								<input type="text" style="margin-bottom: 0;" class="form-control" v-model="product.salesRate" />
+							</td>
+							<td>
+								<input type="text" style="margin-bottom: 0;" class="form-control" v-model="product.purchaseRate" v-on:input="product.total = parseFloat(product.quantity * product.purchaseRate).toFixed(2); calculateTotal()" />
+							</td>
+							<td>
+								<input type="number" style="margin: 0px;" class="form-control" v-model="product.quantity" v-on:input="product.total = parseFloat(product.quantity * product.purchaseRate).toFixed(2); calculateTotal()" />
 							</td>
 							<td>{{ product.total }}</td>
 							<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>

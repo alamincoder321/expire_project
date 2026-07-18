@@ -458,6 +458,7 @@ class Purchase extends CI_Controller
                 );
 
                 $this->db->insert('tbl_purchasedetails', $purchaseDetails);
+                $previousStock = $this->mt->productStock($product->productId);
 
                 $inventoryCount = $this->db->query("select * from tbl_currentinventory where product_id = ? and branch_id = ?", [$product->productId, $this->session->userdata('BRANCHid')])->num_rows();
                 if ($inventoryCount == 0) {
@@ -477,16 +478,32 @@ class Purchase extends CI_Controller
                     ", [$product->quantity, $product->productId, $this->session->userdata('BRANCHid')]);
                 }
 
-                $this->db->query("
-                    update tbl_product set 
-                    Product_Purchase_Rate = ?, 
-                    Product_SellingPrice = ? 
-                    where Product_SlNo = ?
-                ", [
-                    $product->purchaseRate,
-                    $product->salesRate,
-                    $product->productId
-                ]);
+                
+                if ($previousStock > 0) {
+                    $this->db->query("
+                        update tbl_product set 
+                        Product_Purchase_Rate = (((Product_Purchase_Rate * ?) + ?) / ?), 
+                        Product_SellingPrice = ? 
+                        where Product_SlNo = ?
+                    ", [
+                        $previousStock,
+                        $product->total,
+                        ($previousStock + $product->quantity),
+                        $product->salesRate,
+                        $product->productId
+                    ]);
+                } else {
+                    $this->db->query("
+                        update tbl_product set 
+                        Product_Purchase_Rate = ?,
+                        Product_SellingPrice = ? 
+                        where Product_SlNo = ?
+                    ", [
+                        $product->purchaseRate,
+                        $product->salesRate,
+                        $product->productId
+                    ]);
+                }
             }
 
             // update purchase order status
@@ -617,7 +634,6 @@ class Purchase extends CI_Controller
                 );
 
                 $this->db->insert('tbl_purchasedetails', $purchaseDetails);
-
                 $previousStock = $this->mt->productStock($product->productId);
 
                 $inventoryCount = $this->db->query("select * from tbl_currentinventory where product_id = ? and branch_id = ?", [$product->productId, $this->session->userdata('BRANCHid')])->num_rows();
@@ -638,16 +654,31 @@ class Purchase extends CI_Controller
                     ", [$product->quantity, $product->productId, $this->session->userdata('BRANCHid')]);
                 }
 
-                $this->db->query("
-                    update tbl_product set 
-                    Product_Purchase_Rate = ?, 
-                    Product_SellingPrice = ? 
-                    where Product_SlNo = ?
-                ", [
-                    $product->purchaseRate,
-                    $product->salesRate,
-                    $product->productId
-                ]);
+                if ($previousStock > 0) {
+                    $this->db->query("
+                        update tbl_product set 
+                        Product_Purchase_Rate = (((Product_Purchase_Rate * ?) + ?) / ?), 
+                        Product_SellingPrice = ? 
+                        where Product_SlNo = ?
+                    ", [
+                        $previousStock,
+                        $product->total,
+                        ($previousStock + $product->quantity),
+                        $product->salesRate,
+                        $product->productId
+                    ]);
+                } else {
+                    $this->db->query("
+                        update tbl_product set 
+                        Product_Purchase_Rate = ?,
+                        Product_SellingPrice = ? 
+                        where Product_SlNo = ?
+                    ", [
+                        $product->purchaseRate,
+                        $product->salesRate,
+                        $product->productId
+                    ]);
+                }
             }
 
             $this->db->trans_commit();
