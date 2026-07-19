@@ -618,6 +618,7 @@
 								salesRate: product.Product_SellingPrice,
 								quantity: product.PurchaseDetails_TotalQuantity,
 								total: product.PurchaseDetails_TotalAmount,
+								is_mrp: product.is_mrp,
 								exp_date: '',
 								short_date_month: '',
 								isFree: 'no'
@@ -646,7 +647,7 @@
 					return;
 				}
 
-				if (this.selectedProduct.exp_date == '' || this.selectedProduct.short_date_month == '' || this.selectedProduct.exp_date == undefined || this.selectedProduct.short_date_month == undefined) {
+				if ((this.selectedProduct.exp_date == '' || this.selectedProduct.short_date_month == '' || this.selectedProduct.exp_date == undefined || this.selectedProduct.short_date_month == undefined) && this.selectedProduct.is_mrp == 'yes') {
 					alert('Enter expiry and short date');
 					return;
 				}
@@ -660,9 +661,10 @@
 					salesRate: this.selectedProduct.Product_SellingPrice,
 					quantity: this.selectedProduct.quantity,
 					total: this.selectedProduct.total,
-					exp_date: this.selectedProduct.exp_date,
-					short_date_month: this.selectedProduct.short_date_month,
-					isFree: this.isFree
+					exp_date: this.selectedProduct.exp_date ? this.selectedProduct.exp_date : null,
+					short_date_month: this.selectedProduct.short_date_month ? this.selectedProduct.short_date_month : null,
+					isFree: this.isFree,
+					is_mrp: this.selectedProduct.is_mrp
 				}
 
 				this.cart.push(product);
@@ -729,7 +731,7 @@
 					return;
 				}
 
-				if (this.cart.some(product => product.exp_date == '' || product.short_date_month == '')) {
+				if (this.cart.some(product => (product.exp_date == '' || product.short_date_month == '') && product.is_mrp == 'yes')) {
 					alert('Enter expiry and short date for all products in cart');
 					return;
 				}
@@ -818,7 +820,8 @@
 							total: product.PurchaseDetails_TotalAmount,
 							exp_date: product.exp_date,
 							short_date_month: product.short_date_month,
-							isFree: product.isFree
+							isFree: product.isFree,
+							is_mrp: product.is_mrp
 						}
 
 						this.cart.push(cartProduct);

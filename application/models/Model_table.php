@@ -771,7 +771,16 @@ class Model_Table extends CI_Model
 
         if ($productId != null) {
             foreach ($stock as $item) {
-                $item->barcode = $this->db->select('barcode')->where('exp_date', $item->exp_date)->where('Product_IDNo', $productId)->get("tbl_purchasedetails")->row()->barcode;
+                $detail = $this->db
+                    ->select('barcode, PurchaseDetails_Rate, Product_SellingPrice')
+                    ->where('PurchaseDetails_Rate !=', 0)
+                    ->where('exp_date', $item->exp_date)
+                    ->where('Product_IDNo', $productId)
+                    ->get("tbl_purchasedetails")->row();
+
+                $item->barcode = $detail ? $detail->barcode : null;
+                $item->purchase_rate = $detail ? $detail->PurchaseDetails_Rate : 0;
+                $item->sale_rate = $detail ? $detail->Product_SellingPrice : 0;
             }
         }
 

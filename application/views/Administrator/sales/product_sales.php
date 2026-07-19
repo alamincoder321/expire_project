@@ -65,7 +65,6 @@
 	tr td {
 		vertical-align: middle !important;
 	}
-	
 </style>
 
 <div id="sales" class="row">
@@ -438,7 +437,7 @@
 										</td>
 									</tr>
 
-									<tr style="display:none;">
+									<tr>
 										<td>
 											<div class="form-group">
 												<label class="col-xs-12 control-label">Due</label>
@@ -866,16 +865,19 @@
 						return res.data;
 					})
 
-					await axios.post('/get_expire_stock', {
-						productId: this.selectedProduct.Product_SlNo
-					}).then(res => {
-						this.exp_dates = res.data;
-						this.selectedExpStock = null;
-						if (this.barcode) {
+					if (this.is_weight_scale == 'off') {
+						await axios.post('/get_expire_stock', {
+							productId: this.selectedProduct.Product_SlNo
+						}).then(res => {
+							this.exp_dates = res.data;
+							this.selectedExpStock = null;
+
 							let exp_date = this.barcodeVal.slice(0, -5);
 							this.selectedExpStock = this.exp_dates.find(ed => moment(ed.exp_date).format("YYYYMMDD") == exp_date);
-						}
-					});
+							this.selectedProduct.Product_Purchase_Rate = this.selectedExpStock.purchase_rate;
+							this.selectedProduct.Product_SellingPrice = this.selectedExpStock.sale_rate;
+						});
+					}
 
 					this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
 				}

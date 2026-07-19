@@ -39,6 +39,7 @@ class PurchaseOrder extends CI_Controller
                     p.Product_Code,
                     p.ProductCategory_ID,
                     p.Product_SellingPrice,
+                    p.is_mrp,
                     pc.ProductCategory_Name,
                     u.Unit_Name
                 from tbl_purchase_orderdetails pd 

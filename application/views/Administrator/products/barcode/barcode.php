@@ -102,9 +102,10 @@
 						<div class="form-group clearfix">
 							<label class="control-label col-xs-4 col-md-4">Expiry Date:</label>
 							<div class=" col-xs-8 col-md-7">
-								<select name="exp_date" id="exp_date" class="form-control">
+								<select name="exp_date" id="exp_date" class="form-control" onchange="onChangeExpDate(event)">
+									<option value="">select expiry date</option>
 									<?php foreach ($exp_dates as $item) { ?>
-										<option value="<?= $item->barcode; ?>"><?= date('d-m-Y', strtotime($item->exp_date)); ?></option>
+										<option data-rate="<?= $item->sale_rate; ?>" value="<?= $item->barcode; ?>"><?= date('d-m-Y', strtotime($item->exp_date)); ?></option>
 									<?php } ?>
 								</select>
 							</div>
@@ -142,7 +143,7 @@
 							<input type="text" class="form-control" id="name" value="<?= $product->Product_Name; ?>" autocomplete="off">
 						</div>
 					</div>
-					<div class="form-group clearfix">
+					<div class="form-group clearfix" style="display: none;">
 						<label class="control-label col-xs-4 col-md-4">Article:</label>
 						<div class="col-xs-8 col-md-7">
 							<input type="text" class="form-control" id="article" autocomplete="off">
@@ -235,7 +236,7 @@
 				let name = $("#name").val();
 				let article = $("#article").val();
 				let qty = $("#quantity").val();
-				let price = $("#price").val();
+				let price = countExpDate > 0 ? $("#exp_date option:selected").data("rate") : $("#price").val();
 				if (qty == '' || qty == 0) {
 					alert("Quantity is empty")
 					this.onProgress = false;
@@ -309,5 +310,9 @@
 		window.print();
 		document.body.innerHTML = originalContent;
 		location.reload();
+	}
+
+	async function onChangeExpDate() {
+		$("#price").val($("#exp_date option:selected").data("rate"));
 	}
 </script>

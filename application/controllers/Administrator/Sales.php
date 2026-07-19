@@ -134,11 +134,13 @@ class Sales extends CI_Controller
             $salesId = $this->db->insert_id();
 
             foreach ($data->cart as $cartProduct) {
+                $prod = $this->db->select("Product_Purchase_Rate")->where("Product_SlNo", $cartProduct->productId)->get('tbl_product')->row();
                 $saleDetails = array(
                     'SaleMaster_IDNo'           => $salesId,
                     'Product_IDNo'              => $cartProduct->productId,
                     'exp_date'                  => $cartProduct->exp_date ?? NULL,
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
+                    'Purchase_Detail_Rate'      => $prod->Product_Purchase_Rate,
                     'Purchase_Rate'             => $cartProduct->purchaseRate,
                     'SaleDetails_Rate'          => $cartProduct->salesRate,
                     'SaleDetails_Tax'           => $cartProduct->vat,
@@ -844,11 +846,13 @@ class Sales extends CI_Controller
             }
 
             foreach ($data->cart as $cartProduct) {
+                $prod = $this->db->select("Product_Purchase_Rate")->where("Product_SlNo", $cartProduct->productId)->get('tbl_product')->row();
                 $saleDetails = array(
                     'SaleMaster_IDNo'           => $salesId,
                     'Product_IDNo'              => $cartProduct->productId,
                     'exp_date'                  => $cartProduct->exp_date ?? NULL,
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
+                    'Purchase_Detail_Rate'      => $prod->Product_Purchase_Rate,
                     'Purchase_Rate'             => $cartProduct->purchaseRate,
                     'SaleDetails_Rate'          => $cartProduct->salesRate,
                     'SaleDetails_Tax'           => $cartProduct->vat,
