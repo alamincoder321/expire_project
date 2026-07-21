@@ -26,10 +26,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 			</div>
 			<div class="col-md-10 col-md-offset-1" style="border-top: 1px solid gray;padding-top: 10px;">
 				<div class="col-md-3 col-xs-6 section4">
-					<div class="col-md-12 section122" style="background-color:#e1e1ff;" onmouseover="this.style.background = '#d2d2ff'" onmouseout="this.style.background = '#e1e1ff'">
+					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>panel/SalesPanel">
 							<div class="logo">
-								<i class="fa fa-shopping-cart"></i>
+								<i class="ri-store-2-line"></i>
 							</div>
 							<div class="textModule">
 								Manage Sales
@@ -40,13 +40,13 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 
 				<?php if ($this->session->userdata('BRANCHid') == 1 && (isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
 					<div class="col-md-3 col-xs-6 section4">
-						<div class="col-md-12 section122" style="background-color:#dcf5ea;" onmouseover="this.style.background = '#bdecd7'" onmouseout="this.style.background = '#dcf5ea'">
-							<a href="<?php echo base_url(); ?>panel/PurchasePanel">
+						<div class="col-md-12 section122">
+							<a href="<?php echo base_url(); ?>panel/InventoryPanel">
 								<div class="logo">
-									<i class="fa fa-cart-plus"></i>
+									<i class="ri-briefcase-line"></i>
 								</div>
 								<div class="textModule">
-									Manage Purchase
+									Manage Inventory
 								</div>
 							</a>
 						</div>
@@ -55,10 +55,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 
 				<!-- module/AccountsModule -->
 				<div class="col-md-3 col-xs-6 section4">
-					<div class="col-md-12 section122" style="background-color:#A7ECFB;" onmouseover="this.style.background = '#85e6fa'" onmouseout="this.style.background = '#A7ECFB'">
+					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>panel/AccountsPanel">
 							<div class="logo">
-								<i class="fa fa fa-money"></i>
+								<i class="ri-wallet-3-fill"></i>
 							</div>
 							<div class="textModule">
 								Manage Accounts
@@ -69,10 +69,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 
 				<!-- module/HRMPanel -->
 				<div class="col-md-3 col-xs-6 section4">
-					<div class="col-md-12 section122" style="background-color:#ecffd9;" onmouseover="this.style.background = '#cfff9f'" onmouseout="this.style.background = '#ecffd9'">
+					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>panel/HRMPanel">
 							<div class="logo">
-								<i class="fa fa-users"></i>
+								<i class="ri-team-line"></i>
 							</div>
 							<div class="textModule">
 								Manage HRM
@@ -83,10 +83,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 
 				<!-- module/ReportsPanel -->
 				<div class="col-md-3 col-xs-6 section4">
-					<div class="col-md-12 section122" style="background-color:#c6e2ff;" onmouseover="this.style.background = '#91c8ff'" onmouseout="this.style.background = '#c6e2ff'">
+					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>panel/ReportsPanel">
 							<div class="logo">
-								<i class="fa fa-calendar-check-o"></i>
+								<i class="ri-honour-line"></i>
 							</div>
 							<div class="textModule">
 								Manage Reports
@@ -96,10 +96,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 				</div>
 
 				<div class="col-md-3 col-xs-6 section4">
-					<div class="col-md-12 section122" style="background-color:#e6e6ff;" onmouseover="this.style.background = '#b9b9ff'" onmouseout="this.style.background = '#e6e6ff'">
+					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>panel/Administration">
 							<div class="logo">
-								<i class="fa fa-university"></i>
+								<i class="ri-home-gear-line"></i>
 							</div>
 							<div class="textModule">
 								Administration
@@ -109,10 +109,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 				</div>
 
 				<div class="col-md-3 col-xs-6 section4">
-					<div class="col-md-12 section122" style="background-color:#d8ebeb;" onmouseover="this.style.background = '#bddddd'" onmouseout="this.style.background = '#d8ebeb'">
+					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>graph">
 							<div class="logo">
-								<i class="fa fa-bar-chart"></i>
+								<i class="ri-bar-chart-box-ai-fill"></i>
 							</div>
 							<div class="textModule">
 								Business View
@@ -123,10 +123,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 
 
 				<div class="col-md-3 col-xs-6 section4">
-					<div class="col-md-12 section122" style="background-color:#ffe3d7;" onmouseover="this.style.background = '#ffc0a6'" onmouseout="this.style.background = '#ffe3d7'">
+					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>Login/logout">
 							<div class="logo">
-								<i class="fa fa-sign-out"></i>
+								<i class="ri-logout-circle-r-line"></i>
 							</div>
 							<div class="textModule">
 								LogOut
@@ -147,32 +147,17 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 			<div class="col-md-10">
 				<!-- Header Logo -->
 				<div class="col-md-12 header">
-					<h3> Administration Manage </h3>
+					<h3> Manage Administration </h3>
 				</div>
 				<?php if (array_search("product", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>product">
 								<div class="logo">
-									<i class="menu-icon fa fa-product-hunt"></i>
+									<i class="menu-icon ri-product-hunt-line"></i>
 								</div>
 								<div class="textModule">
 									Product Entry
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-
-				<?php if (array_search("product_ledger", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding ">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>product_ledger">
-								<div class="logo">
-									<i class="menu-icon fa fa-list-ul"></i>
-								</div>
-								<div class="textModule">
-									Product Ledger
 								</div>
 							</a>
 						</div>
@@ -184,10 +169,25 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>productlist">
 								<div class="logo">
-									<i class="menu-icon fa fa-list-ul"></i>
+									<i class="ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Product list
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (array_search("product_ledger", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 col-xs-6 custom-padding ">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>product_ledger">
+								<div class="logo">
+									<i class="ri-todo-line"></i>
+								</div>
+								<div class="textModule">
+									Product Ledger
 								</div>
 							</a>
 						</div>
@@ -229,7 +229,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>damageEntry">
 								<div class="logo">
-									<i class="menu-icon fa fa-plus-circle"></i>
+									<i class="ri-file-damage-line"></i>
 								</div>
 								<div class="textModule">
 									Damage Entry
@@ -244,7 +244,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>damageList">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Damage List
@@ -300,7 +300,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>customer">
 								<div class="logo">
-									<i class="menu-icon fa fa-user-plus"></i>
+									<i class="ri-user-2-line"></i>
 								</div>
 								<div class="textModule">
 									Customer Entry
@@ -314,7 +314,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>supplier">
 								<div class="logo">
-									<i class="menu-icon fa fa-user-plus"></i>
+									<i class="ri-user-3-line"></i>
 								</div>
 								<div class="textModule">
 									Supplier Entry
@@ -328,7 +328,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>category">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="ri-apps-2-add-fill"></i>
 								</div>
 								<div class="textModule">
 									Category entry
@@ -342,7 +342,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>unit">
 								<div class="logo">
-									<i class="menu-icon fa fa-sitemap"></i>
+									<i class="ri-layout-grid-fill"></i>
 								</div>
 								<div class="textModule">
 									Unit Entry
@@ -356,7 +356,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>area">
 								<div class="logo">
-									<i class="menu-icon fa fa-globe"></i>
+									<i class="ri-global-line"></i>
 								</div>
 								<div class="textModule">
 									Add Area
@@ -387,7 +387,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>companyProfile">
 								<div class="logo">
-									<i class="menu-icon fa fa-cogs"></i>
+									<i class="menu-icon ri-home-gear-line"></i>
 								</div>
 								<div class="textModule">
 									Company Profile
@@ -402,7 +402,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>user">
 								<div class="logo">
-									<i class="menu-icon fa fa-user-plus"></i>
+									<i class="menu-icon ri-user-settings-line"></i>
 								</div>
 								<div class="textModule">
 									Create User
@@ -431,7 +431,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>sales/product">
 								<div class="logo">
-									<i class="menu-icon fa fa-shopping-bag"></i>
+									<i class="menu-icon ri-luggage-cart-line"></i>
 								</div>
 								<div class="textModule">
 									Sales Add
@@ -446,7 +446,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>salesrecord">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Sales Record
@@ -460,7 +460,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>exchange">
 								<div class="logo">
-									<i class="menu-icon fa fa-exchange"></i>
+									<i class="menu-icon ri-exchange-line"></i>
 								</div>
 								<div class="textModule">
 									Sales Exchange
@@ -490,7 +490,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>exchange_record">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Exchange Record
@@ -504,7 +504,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>salesinvoice">
 								<div class="logo">
-									<i class="menu-icon fa fa-file-text-o"></i>
+									<i class="menu-icon ri-file-list-3-line"></i>
 								</div>
 								<div class="textModule">
 									Sales Invoice
@@ -518,7 +518,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>salesReturn">
 								<div class="logo">
-									<i class="menu-icon fa fa-rotate-left"></i>
+									<i class="menu-icon ri-refund-fill"></i>
 								</div>
 								<div class="textModule">
 									Sale Return
@@ -532,10 +532,25 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>returnList">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="margin: 0;">
 									Sale Return Record
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (array_search("special_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 col-xs-6 custom-padding ">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>special_report">
+								<div class="logo">
+									<i class="menu-icon ri-file-list-fill"></i>
+								</div>
+								<div class="textModule" style="margin: 0;">
+									Special Report
 								</div>
 							</a>
 						</div>
@@ -547,7 +562,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>currentStock">
 								<div class="logo">
-									<i class="menu-icon fa fa-shopping-basket"></i>
+									<i class="menu-icon ri-store-line"></i>
 								</div>
 								<div class="textModule" style="margin: 0;">
 									Stock Report
@@ -605,7 +620,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 		</div>
 	</div>
 
-<?php } elseif ($panel == 'PurchasePanel') { ?>
+<?php } elseif ($panel == 'InventoryPanel') { ?>
 	<div class="row">
 		<div class="col-md-12 col-xs-12">
 			<!-- PAGE CONTENT BEGINS -->
@@ -613,14 +628,14 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 			<div class="col-md-10">
 				<!-- Header Logo -->
 				<div class="col-md-12 header">
-					<h3> Manage Purchase </h3>
+					<h3> Manage Inventory </h3>
 				</div>
 				<?php if (array_search("purchase_order", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>purchase_order">
 								<div class="logo">
-									<i class="menu-icon fa fa-shopping-cart"></i>
+									<i class="menu-icon ri-shopping-cart-line"></i>
 								</div>
 								<div class="textModule">
 									Purchase Order
@@ -635,7 +650,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>purchaseorderRecord">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Order Record
@@ -650,7 +665,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>purchase">
 								<div class="logo">
-									<i class="menu-icon fa fa-shopping-cart"></i>
+									<i class="menu-icon ri-shopping-cart-fill"></i>
 								</div>
 								<div class="textModule">
 									Purchase Add
@@ -664,10 +679,25 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>purchaseRecord">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Purchase Record
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (array_search("purchaseInvoice", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 col-xs-6 custom-padding ">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>purchaseInvoice">
+								<div class="logo">
+									<i class="menu-icon  ri-file-list-3-line"></i>
+								</div>
+								<div class="textModule">
+									Purchase Invoice
 								</div>
 							</a>
 						</div>
@@ -679,10 +709,25 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>purchaseReturns">
 								<div class="logo">
-									<i class="menu-icon fa fa-rotate-right"></i>
+									<i class="menu-icon ri-refund-fill"></i>
 								</div>
 								<div class="textModule">
 									Purchase Return
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (array_search("returnsList", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 col-xs-6 custom-padding">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>returnsList">
+								<div class="logo">
+									<i class="menu-icon ri-list-radio"></i>
+								</div>
+								<div class="textModule" style="margin-top: 0; line-height: 14px;">
+									Purchase Return Record
 								</div>
 							</a>
 						</div>
@@ -694,7 +739,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>AssetsEntry">
 								<div class="logo">
-									<i class="menu-icon fa fa-line-chart"></i>
+									<i class="menu-icon ri-funds-line"></i>
 								</div>
 								<div class="textModule">
 									Asset Entry
@@ -703,26 +748,13 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
-				<?php if (array_search("purchaseInvoice", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding ">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>purchaseInvoice">
-								<div class="logo">
-									<i class="menu-icon fa fa-print"></i>
-								</div>
-								<div class="textModule">
-									Purchase Invoice
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
+
 				<?php if (array_search("supplierDue", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>supplierDue">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="margin-top: 0; line-height: 14px;">
 									Supplier Due
@@ -731,12 +763,13 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
+
 				<?php if (array_search("supplierPaymentReport", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>supplierPaymentReport">
 								<div class="logo">
-									<i class="menu-icon fa fa fa-money"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="margin-top: 0; line-height: 14px;">
 									SupplierPayment Report
@@ -745,12 +778,13 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
+
 				<?php if (array_search("supplierList", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>supplierList" target="_blank">
 								<div class="logo">
-									<i class="menu-icon fa fa-th-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Supplier List
@@ -759,26 +793,13 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
-				<?php if (array_search("returnsList", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>returnsList">
-								<div class="logo">
-									<i class="menu-icon fa fa-list-ul"></i>
-								</div>
-								<div class="textModule" style="margin-top: 0; line-height: 14px;">
-									Purchase Return list
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
+
 				<?php if (array_search("reorder_list", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>reorder_list">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									ReOrder List
@@ -808,7 +829,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>cashTransaction">
 								<div class="logo">
-									<i class="menu-icon fa fa-medkit"></i>
+									<i class="menu-icon ri-briefcase-4-line"></i>
 								</div>
 								<div class="textModule">
 									Cash Transaction
@@ -822,7 +843,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>bank_transactions">
 								<div class="logo">
-									<i class="menu-icon fa fa-bank"></i>
+									<i class="menu-icon ri-bank-line"></i>
 								</div>
 								<div class="textModule">
 									Bank Transactions
@@ -836,9 +857,9 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>customerPaymentPage">
 								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
+									<i class="menu-icon ri-hand-coin-line"></i>
 								</div>
-								<div class="textModule" style="line-height: 13px; margin-top: 0;">
+								<div class="textModule">
 									Payment Received
 								</div>
 							</a>
@@ -850,7 +871,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>supplierPayment">
 								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
+									<i class="menu-icon ri-secure-payment-line"></i>
 								</div>
 								<div class="textModule">
 									Supplier Payment
@@ -859,12 +880,13 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
+
 				<?php if (array_search("cash_view", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>cash_view">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-slideshow-view"></i>
 								</div>
 								<div class="textModule">
 									Cash View
@@ -873,14 +895,15 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
+
 				<?php if (array_search("account", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>account">
 								<div class="logo">
-									<i class="menu-icon fa fa-plus-square-o"></i>
+									<i class="ri-add-box-line"></i>
 								</div>
-								<div class="textModule" style="line-height: 13px; margin-top: 0;">
+								<div class="textModule">
 									Transaction Accounts
 								</div>
 							</a>
@@ -892,7 +915,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>bank_accounts">
 								<div class="logo">
-									<i class="menu-icon fa fa-bank"></i>
+									<i class="ri-home-office-line"></i>
 								</div>
 								<div class="textModule">
 									Bank Accounts
@@ -906,7 +929,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>TransactionReport" target="_blank">
 								<div class="logo">
-									<i class="menu-icon fa fa-th-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Cash Transaction Report
@@ -921,10 +944,25 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>bank_transaction_report">
 								<div class="logo">
-									<i class="menu-icon fa fa-file-text-o"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Bank Transaction Report
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (array_search("cash_ledger", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 col-xs-6 custom-padding ">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>cash_ledger">
+								<div class="logo">
+									<i class="menu-icon ri-list-radio"></i>
+								</div>
+								<div class="textModule">
+									Cash Ledger
 								</div>
 							</a>
 						</div>
@@ -936,39 +974,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>bank_ledger">
 								<div class="logo">
-									<i class="menu-icon fa fa-file-text-o"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
-								<div class="textModule" style="line-height: 13px; margin-top: 0;">
+								<div class="textModule">
 									Bank Ledger
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-
-				<?php if (array_search("cashStatment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding ">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>cashStatment">
-								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
-								</div>
-								<div class="textModule">
-									Cash Statement
-								</div>
-							</a>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if (array_search("BalanceSheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-					<div class="col-md-2 col-xs-6 custom-padding">
-						<div class="col-md-12 section20">
-							<a href="<?php echo base_url(); ?>BalanceSheet">
-								<div class="logo">
-									<i class="menu-icon fa fa fa-money"></i>
-								</div>
-								<div class="textModule">
-									Balance In Out
 								</div>
 							</a>
 						</div>
@@ -995,7 +1004,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>salary_payment">
 								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
+									<i class="menu-icon ri-cash-line"></i>
 								</div>
 								<div class="textModule">
 									Salary Payment
@@ -1010,7 +1019,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>salary_payment_report">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px;">
 									Payment Report
@@ -1025,7 +1034,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>employee">
 								<div class="logo">
-									<i class="menu-icon fa fa-user-plus"></i>
+									<i class="menu-icon ri-user-add-line"></i>
 								</div>
 								<div class="textModule">
 									Employee Entry
@@ -1040,7 +1049,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>emplists/all">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Employee List
@@ -1055,7 +1064,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>designation">
 								<div class="logo">
-									<i class="menu-icon fa fa-plus-circle"></i>
+									<i class="menu-icon ri-add-circle-line"></i>
 								</div>
 								<div class="textModule">
 									Designation Entry
@@ -1070,7 +1079,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>depertment">
 								<div class="logo">
-									<i class="menu-icon fa fa-plus-circle"></i>
+									<i class="menu-icon ri-add-circle-line"></i>
 								</div>
 								<div class="textModule">
 									Department Entry
@@ -1085,7 +1094,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>month">
 								<div class="logo">
-									<i class="menu-icon fa fa-plus-circle"></i>
+									<i class="menu-icon ri-add-circle-line"></i>
 								</div>
 								<div class="textModule">
 									Month Entry
@@ -1116,7 +1125,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>profitLoss">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-bar-chart-box-ai-line"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px;">
 									Profit & Loss Report
@@ -1130,7 +1139,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>cash_view">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-slideshow-view"></i>
 								</div>
 								<div class="textModule">
 									Cash View
@@ -1144,7 +1153,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>supplierDue">
 								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Supplier Due
@@ -1158,7 +1167,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>supplierPaymentReport">
 								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Supplier Ledger
@@ -1172,7 +1181,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>supplierList" target="_blank">
 								<div class="logo">
-									<i class="menu-icon fa fa-th-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Supplier List
@@ -1186,7 +1195,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>customerDue">
 								<div class="logo">
-									<i class="menu-icon fa fa-user-plus"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Customer Due
@@ -1200,7 +1209,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>customerPaymentReport">
 								<div class="logo">
-									<i class="menu-icon fa fa-user-plus"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Customer Ledger
@@ -1214,7 +1223,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>customer_payment_history">
 								<div class="logo">
-									<i class="menu-icon fa fa-user-plus"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Customer Payment History
@@ -1228,7 +1237,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>customerlist">
 								<div class="logo">
-									<i class="menu-icon fa fa-th-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Customer List
@@ -1242,10 +1251,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>currentStock">
 								<div class="logo">
-									<i class="fa fa-shopping-basket" aria-hidden="true"></i>
+									<i class="menu-icon ri-store-line"></i>
 								</div>
 								<div class="textModule">
-									Stock
+									Stock Report
 								</div>
 							</a>
 						</div>
@@ -1256,7 +1265,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>TransactionReport">
 								<div class="logo">
-									<i class="menu-icon fa fa-money"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									CashTransaction Report
@@ -1270,7 +1279,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>bank_transaction_report">
 								<div class="logo">
-									<i class="menu-icon fa fa-file-text-o"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Bank Transaction Report
@@ -1284,7 +1293,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>bank_ledger">
 								<div class="logo">
-									<i class="menu-icon fa fa-file-text-o"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
 									Bank Ledger
@@ -1329,7 +1338,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>emplists/all">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule">
 									Employee List
@@ -1344,10 +1353,10 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>salary_payment_report">
 								<div class="logo">
-									<i class="menu-icon fa fa-list"></i>
+									<i class="menu-icon ri-list-radio"></i>
 								</div>
 								<div class="textModule" style="line-height: 13px; margin-top: 0;">
-									Salary Payment Report
+									Payment Report
 								</div>
 							</a>
 						</div>

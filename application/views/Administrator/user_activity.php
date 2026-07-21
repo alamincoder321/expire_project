@@ -86,7 +86,7 @@
 				<input type="checkbox" v-model="mark_all" style="margin-left: 15px;" @change="markAll"> Mark All
 				<div style="display: inline-block; float: right;">
 					<a class="btn btn-xs btn-info" href="" @click.prevent="print"><i class="fa fa-print"></i> Print</a>
-					<a class="btn btn-xs btn-danger" href="" @click.prevent="markDelete"><i class="fa fa-trash"></i> Delete</a>
+					<a class="btn btn-xs btn-danger" href="" @click.prevent="markDelete"><i class="ri-delete-bin-line"></i> Delete</a>
 				</div>
 			</div>
 		</div>
@@ -117,7 +117,7 @@
 							<td>{{ result.ip_address }}</td>
 							<td>{{ result.Brunch_name }}</td>
 							<td style="text-align:center;">
-								<a href="" title="Delete Record" @click.prevent="deleteRecord(result.id)"><i class="fa fa-trash"></i></a>
+								<a href="" title="Delete Record" @click.prevent="deleteRecord(result.id)"><i class="ri-delete-bin-line"></i></a>
 							</td>
 						</tr>
 					</tbody>

@@ -161,7 +161,7 @@
                             <td>{{ product.purchaseRate }}</td>
                             <td>{{ product.quantity }}</td>
                             <td>{{ product.total }}</td>
-                            <td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
+                            <td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="ri-delete-bin-line"></i></a></td>
                         </tr>
 
                         <tr>

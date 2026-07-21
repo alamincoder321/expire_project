@@ -117,7 +117,7 @@
                                 <td>{{ product.Product_Name }} - {{product.Product_Code}}</td>
                                 <td>{{ product.quantity }}</td>
                                 <td>
-                                    <button class="text-danger" @click="cart.splice(index, 1); calculateTotal();"><i class="fa fa-trash"></i></button>
+                                    <button class="text-danger" @click="cart.splice(index, 1); calculateTotal();"><i class="ri-delete-bin-line"></i></button>
                                 </td>
                             </tr>
                             <tr v-if="cart.length == 0">
@@ -156,10 +156,10 @@
                             <td>
                                 <?php if ($this->session->userdata('accountType') != 'u') { ?>
                                     <button type="button" class="button edit" @click="editCampaignProduct(row)">
-                                        <i class="fa fa-pencil"></i>
+                                        <i class="ri-edit-2-line"></i>
                                     </button>
                                     <button type="button" class="button" @click="deleteCampaignProduct(row.id)">
-                                        <i class="fa fa-trash"></i>
+                                        <i class="ri-delete-bin-line"></i>
                                     </button>
                                 <?php } ?>
                             </td>

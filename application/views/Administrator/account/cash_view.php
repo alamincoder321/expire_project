@@ -49,7 +49,7 @@
     <div class="row">
         <div class="col-md-4">
             <div class="balance-section">
-                <i class="fa fa-suitcase fa-3x"></i>
+                <i class="ri-suitcase-fill fa-3x"></i>
                 <h3>Cash Balance</h3>
                 <h1><?php echo $this->session->userdata('Currency_Name'); ?> <?php echo number_format($transaction_summary->cash_balance, 2); ?></h1>
             </div>
@@ -57,7 +57,7 @@
 
         <div class="col-md-4">
             <div class="balance-section">
-                <i class="fa fa-bank fa-3x"></i>
+                <i class="ri-home-office-line fa-3x"></i>
                 <h3>Bank Balance</h3>
                 <?php $bank_balance = array_reduce($bank_account_summary, function ($prev, $curr) {
                     return $prev + $curr->balance;
@@ -68,7 +68,7 @@
 
         <div class="col-md-4">
             <div class="balance-section">
-                <i class="fa fa-money fa-3x"></i>
+                <i class="ri-red-packet-line fa-3x"></i>
                 <h3>Total Balance</h3>
                 <h1><?php echo $this->session->userdata('Currency_Name'); ?> <?php echo number_format($transaction_summary->cash_balance + $bank_balance, 2); ?></h1>
             </div>

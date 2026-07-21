@@ -169,7 +169,7 @@
                             <td>{{ product.name }}</td>
                             <td><input type="number" v-model="product.quantity" v-on:input="onChangeCartQuantity(product.product_id)"></td>
                             <td>{{ product.total }}</td>
-                            <td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
+                            <td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="ri-delete-bin-line"></i></a></td>
                         </tr>
                     </tbody>
                 </table>

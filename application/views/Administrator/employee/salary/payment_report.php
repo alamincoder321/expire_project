@@ -164,7 +164,7 @@
                             <td style="text-align:right;">{{ payment.total_payment_amount }}</td>
 							<td style="text-align:center;">
                                 <?php if($this->session->userdata('accountType') != 'u'){?>
-                                <a href="" title="Delete Payment" @click.prevent="deletePayment(payment.id)"><i class="fa fa-trash"></i></a>
+                                <a href="" title="Delete Payment" @click.prevent="deletePayment(payment.id)"><i class="ri-delete-bin-line"></i></a>
                                 <?php }?>
                             </td>
 						</tr>

@@ -2290,12 +2290,21 @@ pre.prettyprint {
 }
 
 .nav-list>li>a {
-    display: block;
+    /* display: block; */
     height: 39px;
     line-height: 17px;
     padding-left: 7px;
     text-shadow: none !important;
     font-size: 13px
+}
+
+.nav-list>li>a {
+    display: flex;
+    align-items: center;
+}
+
+.nav-list>li>a>i {
+    font-size: 22px !important;
 }
 
 .nav-list>li>a>.menu-icon {

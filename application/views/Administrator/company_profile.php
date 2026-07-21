@@ -219,8 +219,8 @@
 									<td><span v-bind:class="branch.active_status">{{ branch.active_status }}</span></td>
 									<td>
 										<?php if ($this->session->userdata('accountType') != 'u') { ?>
-										<a href="" title="Edit Branch" @click.prevent="editBranch(branch)"><i class="fa fa-pencil"></i></a>&nbsp;
-										<a href="" title="Deactive Branch" v-if="branch.status == 'a'" @click.prevent="changeStatus(branch.brunch_id)"><i class="fa fa-trash"></i></a>
+										<a href="" title="Edit Branch" @click.prevent="editBranch(branch)"><i class="ri-edit-2-line"></i></a>&nbsp;
+										<a href="" title="Deactive Branch" v-if="branch.status == 'a'" @click.prevent="changeStatus(branch.brunch_id)"><i class="ri-delete-bin-line"></i></a>
 										<a href="" title="Active Branch" v-else><i class="fa fa-check" @click.prevent="changeStatus(branch.brunch_id)"></i></a>
 										<?php } ?>
 									</td>

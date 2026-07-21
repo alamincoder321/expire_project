@@ -7,7 +7,21 @@ body {
     /* line-height: 0; */
 }
 
-input[type=email], input[type=url], input[type=search], input[type=tel], input[type=color], input[type=text], input[type=password], input[type=datetime], input[type=datetime-local], input[type=date], input[type=month], input[type=time], input[type=week], input[type=number], textarea {
+input[type=email],
+input[type=url],
+input[type=search],
+input[type=tel],
+input[type=color],
+input[type=text],
+input[type=password],
+input[type=datetime],
+input[type=datetime-local],
+input[type=date],
+input[type=month],
+input[type=time],
+input[type=week],
+input[type=number],
+textarea {
     border-radius: 4px !important;
     color: #858585;
     background-color: #FFF;
@@ -15,8 +29,8 @@ input[type=email], input[type=url], input[type=search], input[type=tel], input[t
     padding: 3px 5px 4px;
     font-size: 14px;
     font-family: inherit;
-    -webkit-box-shadow: none!important;
-    box-shadow: none!important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
     -webkit-transition-duration: .1s;
     transition-duration: .1s;
 }
@@ -39,10 +53,11 @@ input[type=radio].ace+.lbl::before {
     margin-top: 2px;
     padding: 19px 20px 20px;
 }
+
 textarea {
     height: 50px;
-	line-height:14px;
-	font-size: 15px;
+    line-height: 14px;
+    font-size: 15px;
 }
 
 .input-group-addon {
@@ -56,47 +71,60 @@ textarea {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-.input-group-addon, .input-group-btn {
+
+.input-group-addon,
+.input-group-btn {
     width: 0%;
     white-space: nowrap;
     vertical-align: middle;
 }
+
 .dataTables_wrapper .row:first-child {
-     padding-top: 6px; 
-     padding-bottom: 5px; 
+    padding-top: 6px;
+    padding-bottom: 5px;
     background-color: #EFF3F8;
 }
+
 .dataTables_wrapper .row:last-child {
     border-bottom: 1px solid #e0e0e0;
     padding-top: 6px;
     padding-bottom: 5px;
     background-color: #EFF3F8;
 }
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
     padding: 5px;
     line-height: 1.42857143;
     vertical-align: top;
     border-top: 1px solid #ddd;
-	text-align:center;
+    text-align: center;
 }
 
 .form-control {
     width: 100%;
     height: 25px;
-	margin-bottom:4px;
+    margin-bottom: 4px;
 }
+
 .form-group {
     margin-bottom: 0px;
 }
 
-.chosen-container>.chosen-single, [class*=chosen-container]>.chosen-single {
-	border-radius: 4px;
+.chosen-container>.chosen-single,
+[class*=chosen-container]>.chosen-single {
+    border-radius: 4px;
     line-height: 23px;
     height: 26px;
     box-shadow: none;
     background: #FAFAFA;
     margin-bottom: 4px;
 }
+
 .chosen-container-single .chosen-search {
     position: relative;
     z-index: 1010;
@@ -105,7 +133,8 @@ textarea {
     white-space: nowrap;
 }
 
-.btn-group-sm>.btn, .btn-sm {
+.btn-group-sm>.btn,
+.btn-sm {
     border-width: 4px;
     font-size: 13px;
     padding: 6px 30px;
@@ -120,29 +149,36 @@ textarea {
     padding-left: 12px;
     margin-bottom: 1px;
 }
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
     padding: 3px;
     line-height: 1.42857143;
     vertical-align: top;
     border-top: 1px solid #ddd;
     text-align: center;
 }
-.doctor-info-bangla{
-	height:100px;
-	background:#ccc;
+
+.doctor-info-bangla {
+    height: 100px;
+    background: #ccc;
 }
 
-.doctor-info-english{
-	height:100px;
-	background:#000;
+.doctor-info-english {
+    height: 100px;
+    background: #000;
 }
 
-@media (min-width: 768px){
-.form-horizontal .control-label {
-    text-align: right;
-    margin-bottom: 0;
-    padding-top: 0px;
-}
+@media (min-width: 768px) {
+    .form-horizontal .control-label {
+        text-align: right;
+        margin-bottom: 0;
+        padding-top: 0px;
+    }
 }
 
 .chosen-container-single .chosen-search:after {
@@ -156,13 +192,13 @@ textarea {
     right: 12px;
 }
 
- .page-content {
+.page-content {
     background-color: #FFF;
     position: relative;
     margin: 0;
-	padding: 5px 20px 24px;
-} 
+    padding: 5px 20px 24px;
+}
 
-select{
+select {
     padding: 0 !important;
 }

@@ -153,7 +153,7 @@
 				</div>
 			</div>
 			<div class="col-md-2 text-center;">
-				<div class="form-group clearfix">
+				<div class="form-group clearfix" style="display: flex;flex-direction: column;align-items: center;">
 					<div style="width: 100px;height:100px;border: 1px solid #ccc;overflow:hidden;">
 						<img id="customerImage" v-if="imageUrl == '' || imageUrl == null" src="/assets/no_image.gif">
 						<img id="customerImage" v-if="imageUrl != '' && imageUrl != null" v-bind:src="imageUrl">
@@ -195,10 +195,10 @@
 							<td>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
 									<button type="button" class="button edit" @click="editCustomer(row)">
-										<i class="fa fa-pencil"></i>
+										<i class="ri-edit-2-line"></i>
 									</button>
 									<button type="button" class="button" @click="deleteCustomer(row.Customer_SlNo)">
-										<i class="fa fa-trash"></i>
+										<i class="ri-delete-bin-line"></i>
 									</button>
 								<?php } ?>
 							</td>

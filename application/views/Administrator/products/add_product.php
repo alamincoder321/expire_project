@@ -245,15 +245,15 @@
 										<i class="fa fa-info-circle"></i>
 									</button> -->
 									<button type="button" class="button edit" @click="editProduct(row)">
-										<i class="fa fa-pencil"></i>
+										<i class="ri-edit-2-line"></i>
 									</button>
 									<button type="button" class="button" @click="deleteProduct(row.Product_SlNo)">
-										<i class="fa fa-trash"></i>
+										<i class="ri-delete-bin-line"></i>
 									</button>
 								<?php } ?>
 								<button type="button" class="button"
 									@click="window.location = `/barcode/${row.Product_SlNo}`">
-									<i class="fa fa-barcode"></i>
+									<i class="ri-barcode-fill"></i>
 								</button>
 							</td>
 						</tr>

@@ -18,7 +18,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<li class="active">
 			<!-- panel/dashboard -->
 			<a href="<?php echo base_url(); ?>">
-				<i class="menu-icon fa fa-th"></i>
+				<i class="menu-icon ri-home-9-line"></i>
 				<span class="menu-text"> Dashboard </span>
 			</a>
 			<b class="arrow"></b>
@@ -26,7 +26,7 @@ if ($panel == 'dashboard' or $panel == '') {
 
 		<li class="">
 			<a href="<?php echo base_url(); ?>panel/SalesPanel">
-				<i class="menu-icon fa fa-shopping-cart" style="font-size:23px;"></i>
+				<i class="menu-icon ri-store-2-line"></i>
 				<span class="menu-text"> Manage Sales </span>
 			</a>
 			<b class="arrow"></b>
@@ -34,9 +34,9 @@ if ($panel == 'dashboard' or $panel == '') {
 
 		<?php if ($this->session->userdata('BRANCHid') == 1 && (isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
 			<li class="">
-				<a href="<?php echo base_url(); ?>panel/PurchasePanel">
-					<i class="menu-icon fa fa-cart-plus" style="font-size:23px;"></i>
-					<span class="menu-text"> Manage Purchase </span>
+				<a href="<?php echo base_url(); ?>panel/InventoryPanel">
+					<i class="menu-icon ri-briefcase-line"></i>
+					<span class="menu-text"> Manage Inventory </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
@@ -45,7 +45,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<li class="">
 			<!--  -->
 			<a href="<?php echo base_url(); ?>panel/AccountsPanel">
-				<i class="menu-icon fa fa fa-money" style="font-size: 16px;"></i>
+				<i class="menu-icon ri-wallet-3-fill"></i>
 				<span class="menu-text"> Manage Accounts </span>
 			</a>
 			<b class="arrow"></b>
@@ -54,7 +54,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<li class="">
 			<!-- panel/HRMPanel -->
 			<a href="<?php echo base_url(); ?>panel/HRMPanel">
-				<i class="menu-icon fa fa-users"></i>
+				<i class="menu-icon ri-team-line"></i>
 				<span class="menu-text"> Manage HRM </span>
 			</a>
 			<b class="arrow"></b>
@@ -63,7 +63,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<li class="">
 			<!-- panel/ReportsPanel -->
 			<a href="<?php echo base_url(); ?>panel/ReportsPanel">
-				<i class="menu-icon fa fa-calendar-check-o"></i>
+				<i class="menu-icon ri-honour-line"></i>
 				<span class="menu-text"> Manage Reports </span>
 			</a>
 			<b class="arrow"></b>
@@ -71,7 +71,7 @@ if ($panel == 'dashboard' or $panel == '') {
 
 		<li class="">
 			<a href="<?php echo base_url(); ?>panel/Administration">
-				<i class="menu-icon fa fa-university"></i>
+				<i class="menu-icon ri-home-gear-line"></i>
 				<span class="menu-text"> Administration </span>
 			</a>
 			<b class="arrow"></b>
@@ -79,7 +79,7 @@ if ($panel == 'dashboard' or $panel == '') {
 
 		<li class="">
 			<a href="<?php echo base_url(); ?>graph">
-				<i class="menu-icon fa fa-bar-chart"></i>
+				<i class="menu-icon ri-bar-chart-box-ai-fill"></i>
 				<span class="menu-text"> Business View </span>
 			</a>
 			<b class="arrow"></b>
@@ -89,13 +89,13 @@ if ($panel == 'dashboard' or $panel == '') {
 	<ul class="nav nav-list">
 		<li class="active">
 			<a href="<?php echo base_url(); ?>panel/dashboard">
-				<i class="menu-icon fa fa-th"></i>
+				<i class="menu-icon ri-home-9-line"></i>
 				<span class="menu-text"> Dashboard </span>
 			</a>
 			<b class="arrow"></b>
 		</li>
 		<li>
-			<a href="<?php echo base_url(); ?>panel/Administration" style="background:gray !important;" class="panel_title">
+			<a href="<?php echo base_url(); ?>panel/Administration" style="background:gray !important; justify-content: center;" class="panel_title">
 				<span>Administration</span>
 			</a>
 		</li>
@@ -103,7 +103,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("sms", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>sms">
-					<i class="menu-icon fa fa-mobile"></i>
+					<i class="menu-icon ri-mail-open-fill"></i>
 					<span class="menu-text"> Send SMS </span>
 				</a>
 				<b class="arrow"></b>
@@ -133,7 +133,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
-					<i class="menu-icon fa fa-product-hunt"></i>
+					<i class="menu-icon ri-product-hunt-line"></i>
 					<span class="menu-text"> Product Info </span>
 
 					<b class="arrow fa fa-angle-down"></b>
@@ -204,7 +204,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-file-damage-fill"></i>
 					<span class="menu-text"> Damage Info </span>
 					<b class="arrow fa fa-angle-down"></b>
 				</a>
@@ -298,7 +298,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
-					<i class="menu-icon fa fa-cog"></i>
+					<i class="menu-icon ri-list-settings-fill"></i>
 					<span class="menu-text"> Settings </span>
 
 					<b class="arrow fa fa-angle-down"></b>
@@ -373,7 +373,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if ($this->session->userdata('BRANCHid') == 1 && (isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>companyProfile">
-					<i class="menu-icon fa fa-cogs"></i>
+					<i class="menu-icon ri-home-gear-line"></i>
 					<span class="menu-text"> Company Profile </span>
 				</a>
 				<b class="arrow"></b>
@@ -383,7 +383,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>user">
-					<i class="menu-icon fa fa-user"></i>
+					<i class="menu-icon ri-user-settings-line"></i>
 					<span class="menu-text"> User Entry </span>
 				</a>
 			</li>
@@ -392,8 +392,8 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("database_backup", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>database_backup">
-					<i class="menu-icon fa fa-database"></i>
-					<span class="menu-text"> Database Backup </span>
+					<i class="menu-icon ri-database-line"></i>
+					<span class="menu-text"> Take Backup </span>
 				</a>
 			</li>
 		<?php endif; ?>
@@ -402,17 +402,16 @@ if ($panel == 'dashboard' or $panel == '') {
 
 <?php } elseif ($panel == 'SalesPanel') { ?>
 	<ul class="nav nav-list">
-
 		<li class="active">
 			<a href="<?php echo base_url(); ?>panel/dashboard">
-				<i class="menu-icon fa fa-th"></i>
+				<i class="menu-icon ri-home-9-line"></i>
 				<span class="menu-text"> Dashboard </span>
 			</a>
-
 			<b class="arrow"></b>
 		</li>
+
 		<li>
-			<a href="<?php echo base_url(); ?>panel/SalesPanel" style="background:gray !important;" class="panel_title">
+			<a href="<?php echo base_url(); ?>panel/SalesPanel" style="background:gray !important;justify-content:center;" class="panel_title">
 				<span> Manage Sales </span>
 			</a>
 		</li>
@@ -420,7 +419,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("sales/product", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>sales/product">
-					<i class="menu-icon fa fa-shopping-bag"></i>
+					<i class="menu-icon ri-luggage-cart-line"></i>
 					<span class="menu-text"> Sales Add </span>
 				</a>
 				<b class="arrow"></b>
@@ -441,7 +440,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("salesrecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>salesrecord">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-list-radio"></i>
 					<span class="menu-text"> Sales Record </span>
 				</a>
 				<b class="arrow"></b>
@@ -451,7 +450,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("exchange", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>exchange">
-					<i class="menu-icon fa fa-exchange"></i>
+					<i class="menu-icon ri-exchange-line"></i>
 					<span class="menu-text"> Sales Exchange </span>
 				</a>
 				<b class="arrow"></b>
@@ -461,7 +460,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("exchange_record", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>exchange_record">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-list-radio"></i>
 					<span class="menu-text"> Exchange Record </span>
 				</a>
 				<b class="arrow"></b>
@@ -471,7 +470,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("salesinvoice", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>salesinvoice">
-					<i class="menu-icon fa fa-file-text"></i>
+					<i class="menu-icon ri-file-list-3-line"></i>
 					<span class="menu-text"> Sales Invoice </span>
 				</a>
 				<b class="arrow"></b>
@@ -481,7 +480,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("salesReturn", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>salesReturn">
-					<i class="menu-icon fa fa-rotate-left"></i>
+					<i class="menu-icon ri-refund-fill"></i>
 					<span class="menu-text"> Sale Return </span>
 				</a>
 				<b class="arrow"></b>
@@ -491,7 +490,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("returnList", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>returnList">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-list-radio"></i>
 					<span class="menu-text"> Sale Return Record </span>
 				</a>
 				<b class="arrow"></b>
@@ -500,7 +499,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("special_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>special_report">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-file-list-fill"></i>
 					<span class="menu-text"> Special Report </span>
 				</a>
 				<b class="arrow"></b>
@@ -540,7 +539,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("currentStock", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>currentStock">
-					<i class="menu-icon fa fa-shopping-basket"></i>
+					<i class="menu-icon ri-store-line"></i>
 					<span class="menu-text"> Stock Report </span>
 				</a>
 				<b class="arrow"></b>
@@ -549,26 +548,26 @@ if ($panel == 'dashboard' or $panel == '') {
 
 	</ul>
 
-<?php } elseif ($panel == 'PurchasePanel') { ?>
+<?php } elseif ($panel == 'InventoryPanel') { ?>
 	<ul class="nav nav-list">
 		<li class="active">
 			<a href="<?php echo base_url(); ?>panel/dashboard">
-				<i class="menu-icon fa fa-th"></i>
+				<i class="menu-icon ri-home-9-line"></i>
 				<span class="menu-text"> Dashboard </span>
 			</a>
-
 			<b class="arrow"></b>
 		</li>
+
 		<li>
-			<a href="<?php echo base_url(); ?>panel/PurchasePanel" style="background:gray !important;" class="panel_title">
-				<span>Manage Purchase</span>
+			<a href="<?php echo base_url(); ?>panel/InventoryPanel" style="background:gray !important;justify-content: center;" class="panel_title">
+				<span>Manage Inventory</span>
 			</a>
 		</li>
 
 		<?php if (array_search("purchase_order", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>purchase_order">
-					<i class="menu-icon fa fa-cart-plus"></i>
+					<i class="menu-icon ri-shopping-cart-line"></i>
 					<span class="menu-text"> Purchase Order </span>
 				</a>
 				<b class="arrow"></b>
@@ -578,7 +577,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("purchaseorderRecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>purchaseorderRecord">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-list-radio"></i>
 					<span class="menu-text">Order Record</span>
 				</a>
 				<b class="arrow"></b>
@@ -588,7 +587,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("purchase", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>purchase">
-					<i class="menu-icon fa fa-cart-plus"></i>
+					<i class="menu-icon ri-shopping-cart-fill"></i>
 					<span class="menu-text"> Purchase Add </span>
 				</a>
 				<b class="arrow"></b>
@@ -598,7 +597,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("purchaseRecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>purchaseRecord">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon  ri-list-radio"></i>
 					<span class="menu-text">Purchase Record</span>
 				</a>
 				<b class="arrow"></b>
@@ -608,7 +607,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("purchaseInvoice", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>purchaseInvoice">
-					<i class="menu-icon fa fa-file-text"></i>
+					<i class="menu-icon  ri-file-list-3-line"></i>
 					<span class="menu-text">Purchase Invoice</span>
 				</a>
 				<b class="arrow"></b>
@@ -618,7 +617,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("purchaseReturns", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>purchaseReturns">
-					<i class="menu-icon fa fa-rotate-right"></i>
+					<i class="menu-icon ri-refund-fill"></i>
 					<span class="menu-text"> Purchase Return </span>
 				</a>
 				<b class="arrow"></b>
@@ -628,8 +627,8 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("returnsList", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>returnsList">
-					<i class="menu-icon fa fa-list"></i>
-					Pur. Return Record
+					<i class="menu-icon ri-list-radio"></i>
+					<span class="menu-text"> Pur. Return Record </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
@@ -638,7 +637,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("AssetsEntry", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>AssetsEntry">
-					<i class="menu-icon fa fa-shopping-cart"></i>
+					<i class="menu-icon ri-funds-line"></i>
 					<span class="menu-text"> Assets Entry </span>
 				</a>
 				<b class="arrow"></b>
@@ -648,7 +647,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("assets_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>assets_report">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-list-radio"></i>
 					<span class="menu-text"> Assets Report </span>
 				</a>
 				<b class="arrow"></b>
@@ -660,22 +659,21 @@ if ($panel == 'dashboard' or $panel == '') {
 	<ul class="nav nav-list">
 		<li class="active">
 			<a href="<?php echo base_url(); ?>panel/dashboard">
-				<i class="menu-icon fa fa-th"></i>
+				<i class="menu-icon ri-home-9-line"></i>
 				<span class="menu-text"> Dashboard </span>
 			</a>
-
 			<b class="arrow"></b>
 		</li>
 		<li>
-			<a href="<?php echo base_url(); ?>panel/AccountsPanel" style="background:gray !important;" class="panel_title">
-				<span> Manage Account </span>
+			<a href="<?php echo base_url(); ?>panel/AccountsPanel" style="background:gray !important;justify-content:center;" class="panel_title">
+				<span> Manage Accounts </span>
 			</a>
 		</li>
 
 		<?php if (array_search("cashTransaction", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>cashTransaction">
-					<i class="menu-icon fa fa-medkit"></i>
+					<i class="menu-icon ri-briefcase-4-line"></i>
 					<span class="menu-text"> Cash Transaction </span>
 				</a>
 				<b class="arrow"></b>
@@ -685,7 +683,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("bank_transactions", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li>
 				<a href="<?php echo base_url(); ?>bank_transactions">
-					<i class="menu-icon fa fa-dollar"></i>
+					<i class="menu-icon ri-bank-line"></i>
 					<span class="menu-text"> Bank Transactions </span>
 				</a>
 				<b class="arrow"></b>
@@ -695,7 +693,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("customerPaymentPage", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>customerPaymentPage">
-					<i class="menu-icon fa fa-money"></i>
+					<i class="menu-icon ri-hand-coin-line"></i>
 					<span class="menu-text"> Payment Received</span>
 				</a>
 				<b class="arrow"></b>
@@ -705,7 +703,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("supplierPayment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>supplierPayment">
-					<i class="menu-icon fa fa-money"></i>
+					<i class="menu-icon ri-secure-payment-line"></i>
 					<span class="menu-text"> Supplier Payment </span>
 				</a>
 				<b class="arrow"></b>
@@ -715,7 +713,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("cash_view", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>cash_view">
-					<i class="menu-icon fa fa-money"></i>
+					<i class="menu-icon ri-slideshow-view"></i>
 					<span class="menu-text">Cash View</span>
 				</a>
 				<b class="arrow"></b>
@@ -733,7 +731,7 @@ if ($panel == 'dashboard' or $panel == '') {
 
 			<li class="">
 				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
-					<i class="menu-icon fa fa-file"></i>
+					<i class="menu-icon ri-cash-fill"></i>
 					<span class="menu-text"> Investment </span>
 
 					<b class="arrow fa fa-angle-down"></b>
@@ -803,9 +801,8 @@ if ($panel == 'dashboard' or $panel == '') {
 
 			<li>
 				<a href="" class="dropdown-toggle">
-					<i class="menu-icon fa fa-bank"></i>
+					<i class="menu-icon ri-profile-line"></i>
 					<span class="menu-text"> Account Head </span>
-
 					<b class="arrow fa fa-angle-down"></b>
 				</a>
 
@@ -847,12 +844,11 @@ if ($panel == 'dashboard' or $panel == '') {
 		) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
-					<i class="menu-icon fa fa-file"></i>
+					<i class="menu-icon ri-file-chart-line"></i>
 					<span class="menu-text"> Reports </span>
 
 					<b class="arrow fa fa-angle-down"></b>
 				</a>
-
 				<b class="arrow"></b>
 
 				<ul class="submenu">
@@ -896,37 +892,7 @@ if ($panel == 'dashboard' or $panel == '') {
 						</li>
 					<?php endif; ?>
 
-					<?php if (array_search("cashStatment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>cashStatment">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Cash Statement
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("balance_sheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>balance_sheet">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Balance Sheet
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("BalanceSheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>BalanceSheet">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Balance In Out
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("day_book", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<!-- <?php if (array_search("day_book", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
 							<a href="<?php echo base_url(); ?>day_book">
 								<i class="menu-icon fa fa-caret-right"></i>
@@ -934,7 +900,7 @@ if ($panel == 'dashboard' or $panel == '') {
 							</a>
 							<b class="arrow"></b>
 						</li>
-					<?php endif; ?>
+					<?php endif; ?> -->
 
 				</ul>
 			</li>
@@ -946,14 +912,13 @@ if ($panel == 'dashboard' or $panel == '') {
 	<ul class="nav nav-list">
 		<li class="active">
 			<a href="<?php echo base_url(); ?>panel/dashboard">
-				<i class="menu-icon fa fa-th"></i>
+				<i class="menu-icon ri-home-9-line"></i>
 				<span class="menu-text"> Dashboard </span>
 			</a>
-
 			<b class="arrow"></b>
 		</li>
 		<li>
-			<a href="<?php echo base_url(); ?>panel/HRMPanel" style="background:gray !important;" class="panel_title">
+			<a href="<?php echo base_url(); ?>panel/HRMPanel" style="background:gray !important;justify-content:center;" class="panel_title">
 				<span>Manage HRM</span>
 			</a>
 		</li>
@@ -961,7 +926,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("salary_payment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>salary_payment">
-					<i class="menu-icon fa fa-money"></i>
+					<i class="menu-icon ri-cash-line"></i>
 					<span class="menu-text"> Salary Payment </span>
 				</a>
 				<b class="arrow"></b>
@@ -971,7 +936,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("salary_payment_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>salary_payment_report">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-list-radio"></i>
 					<span class="menu-text"> Payment Report </span>
 				</a>
 				<b class="arrow"></b>
@@ -981,17 +946,17 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("employee", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>employee">
-					<i class="menu-icon fa fa-user-plus"></i>
+					<i class="menu-icon ri-user-add-line"></i>
 					<span class="menu-text"> Employee Entry </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
 		<?php endif; ?>
-		
+
 		<?php if (array_search("emplists/all", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>emplists/all">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-list-radio"></i>
 					<span class="menu-text"> Employee List </span>
 				</a>
 				<b class="arrow"></b>
@@ -1001,7 +966,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("designation", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>designation">
-					<i class="menu-icon fa fa-plus-circle"></i>
+					<i class="menu-icon ri-add-circle-line"></i>
 					<span class="menu-text"> Designation Entry </span>
 				</a>
 				<b class="arrow"></b>
@@ -1011,7 +976,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("depertment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>depertment">
-					<i class="menu-icon fa fa-plus-circle"></i>
+					<i class="menu-icon ri-add-circle-line"></i>
 					<span class="menu-text"> Department Entry </span>
 				</a>
 				<b class="arrow"></b>
@@ -1021,7 +986,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("month", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>month">
-					<i class="menu-icon fa fa-plus-circle"></i>
+					<i class="menu-icon ri-add-circle-line"></i>
 					<span class="menu-text"> Month Entry </span>
 				</a>
 				<b class="arrow"></b>
@@ -1032,14 +997,13 @@ if ($panel == 'dashboard' or $panel == '') {
 	<ul class="nav nav-list">
 		<li class="active">
 			<a href="<?php echo base_url(); ?>panel/dashboard">
-				<i class="menu-icon fa fa-th"></i>
+				<i class="menu-icon ri-home-9-line"></i>
 				<span class="menu-text"> Dashboard </span>
 			</a>
-
 			<b class="arrow"></b>
 		</li>
 		<li>
-			<a href="<?php echo base_url(); ?>panel/ReportsPanel" style="background:gray !important;" class="panel_title">
+			<a href="<?php echo base_url(); ?>panel/ReportsPanel" style="background:gray !important;justify-content:center;" class="panel_title">
 				<span>Reports Manage</span>
 			</a>
 		</li>
@@ -1047,7 +1011,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("profitLoss", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>profitLoss">
-					<i class="menu-icon fa fa-list"></i>
+					<i class="menu-icon ri-bar-chart-box-ai-line"></i>
 					<span class="menu-text"> Profit & Loss Report </span>
 				</a>
 				<b class="arrow"></b>
@@ -1057,7 +1021,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("cash_view", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>cash_view">
-					<i class="menu-icon fa fa-money"></i>
+					<i class="menu-icon ri-slideshow-view"></i>
 					<span class="menu-text">Cash View</span>
 				</a>
 				<b class="arrow"></b>
@@ -1068,8 +1032,8 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (array_search("currentStock", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>currentStock">
-					<i class="menu-icon fa fa-th-list"></i>
-					<span class="menu-text"> Stock </span>
+					<i class="menu-icon ri-store-line"></i>
+					<span class="menu-text"> Stock Report </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
@@ -1086,10 +1050,9 @@ if ($panel == 'dashboard' or $panel == '') {
 			|| isset($CheckSuperAdmin) || isset($CheckAdmin)
 		) : ?>
 			<li class="">
-				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">
-					<i class="menu-icon fa fa-file"></i>
+				<a href="<?php echo base_url(); ?>" class="dropdown-toggle">					
+					<i class="menu-icon ri-file-chart-line"></i>
 					<span class="menu-text"> Reports </span>
-
 					<b class="arrow fa fa-angle-down"></b>
 				</a>
 
@@ -1136,17 +1099,7 @@ if ($panel == 'dashboard' or $panel == '') {
 						</li>
 					<?php endif; ?>
 
-					<!-- <?php if (array_search("cashStatment", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>cashStatment">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Cash Statement
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
-					<?php if (array_search("BalanceSheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<!-- <?php if (array_search("BalanceSheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
 							<a href="<?php echo base_url(); ?>BalanceSheet">
 								<i class="menu-icon fa fa-caret-right"></i>
@@ -1156,7 +1109,7 @@ if ($panel == 'dashboard' or $panel == '') {
 						</li>
 					<?php endif; ?> -->
 
-					<?php if (array_search("day_book", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<!-- <?php if (array_search("day_book", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
 							<a href="<?php echo base_url(); ?>day_book">
 								<i class="menu-icon fa fa-caret-right"></i>
@@ -1164,7 +1117,7 @@ if ($panel == 'dashboard' or $panel == '') {
 							</a>
 							<b class="arrow"></b>
 						</li>
-					<?php endif; ?>
+					<?php endif; ?> -->
 
 				</ul>
 			</li>

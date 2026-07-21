@@ -89,7 +89,7 @@
                             <td>
                                 <a href="" v-bind:href="`/transfer_invoice/${transfer.transfer_id}`" target="_blank" title="View invoice"><i class="fa fa-file"></i></a>
                                 <a href="" v-if="transfer.status != 'a'" v-bind:href="`/product_transfer/${transfer.transfer_id}`" target="_blank" title="Edit"><i class="fa fa-edit"></i></a>
-                                <a href="" v-if="transfer.status != 'a'" @click.prevent="deleteTransfer(transfer)" title="Delete"><i class="fa fa-trash"></i></a>
+                                <a href="" v-if="transfer.status != 'a'" @click.prevent="deleteTransfer(transfer)" title="Delete"><i class="ri-delete-bin-line"></i></a>
                             </td>
                         </tr>
                     </tbody>

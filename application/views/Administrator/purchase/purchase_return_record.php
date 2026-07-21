@@ -107,7 +107,7 @@
 								<a href="" title="Return Invoice" v-bind:href="`/purchase_return_invoice/${pr.PurchaseReturn_SlNo}`" target="_blank"><i class="fa fa-file"></i></a>
 								<?php if($this->session->userdata('accountType') != 'u'){?>
 								<a href="" title="Edit" v-bind:href="`purchaseReturns/${pr.PurchaseReturn_SlNo}`"><i class="fa fa-edit"></i></a>
-								<a href="" title="Delete Return" @click.prevent="deletePurchaseReturn(pr.PurchaseReturn_SlNo)"><i class="fa fa-trash"></i></a>
+								<a href="" title="Delete Return" @click.prevent="deletePurchaseReturn(pr.PurchaseReturn_SlNo)"><i class="ri-delete-bin-line"></i></a>
 								<?php }?>
 							</td>
 						</tr>

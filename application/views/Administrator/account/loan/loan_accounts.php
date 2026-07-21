@@ -159,10 +159,10 @@
                                         <td>
                                             <?php if($this->session->userdata('accountType') != 'u'){?>
                                             <button class="button edit" @click="editAccount(row)">
-                                                <i class="fa fa-pencil"></i>
+                                                <i class="ri-edit-2-line"></i>
                                             </button>
                                             <button class="button" v-bind:class="{active: row.status == 1}" @click="changeStatus(row)">
-                                                <i class="fa fa-trash"></i>
+                                                <i class="ri-delete-bin-line"></i>
                                             </button>
                                             <?php }?>
                                         </td>

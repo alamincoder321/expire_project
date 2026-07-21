@@ -1,5 +1,4 @@
 <style type="text/css">
-
 	.header {
 		box-shadow: 0px 0px 0px 2px #007ebb;
 		padding: 4px 0;
@@ -59,7 +58,7 @@
 		width: 100%;
 		margin-top: 5px;
 		border-radius: 5px;
-		background-color: #A7ECFB;
+		background-color: #e1dcdc;
 		border: 1px solid #ccc;
 	}
 
@@ -145,10 +144,8 @@
 
 	.section12,
 	.section20 {
-		/* background: #a8ff78;
-		background: -webkit-linear-gradient(to right, #78ffd6, #a8ff78);
-		background: linear-gradient(to right, #78ffd6, #a8ff78); */
-		background: #007ebb;
+		/* background: #007ebb; */
+		background: #69808b;
 		border: 1px solid gray;
 	}
 </style>

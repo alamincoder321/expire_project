@@ -17,6 +17,7 @@ $companyInfo = $this->db->query("select * from tbl_company c order by c.Company_
 	<!-- bootstrap & fontawesome -->
 	<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="<?php echo base_url(); ?>assets/font-awesome/4.5.0/css/font-awesome.min.css" />
+	<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 
 	<!-- page specific plugin styles -->
 	<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/bootstrap-duallistbox.min.css" />

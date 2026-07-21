@@ -183,10 +183,10 @@
                                         <td>{{ row.saved_by }}</td>
                                         <td>
                                             <button v-if="row.canEditDelete" class="button btn-info" @click="editTransaction(row)">
-                                               <i class="fa fa-pencil"></i>
+                                               <i class="ri-edit-2-line"></i>
                                             </button>
                                             <button v-if="row.canEditDelete" class="button active-button" @click="removeTransaction(row)">
-                                                <i class="fa fa-trash"></i>
+                                                <i class="ri-delete-bin-line"></i>
                                             </button>
                                         </td>
                                     </tr>

@@ -309,7 +309,7 @@
 								<a href="" title="Chalan" v-bind:href="`/chalan/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file-o"></i></a>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
 									<!-- <a href="javascript:" title="Edit Sale" @click="checkReturnAndEdit(sale)"><i class="fa fa-edit"></i></a>
-									<a href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="fa fa-trash"></i></a>
+									<a href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="ri-delete-bin-line"></i></a>
 									&nbsp;
 									<div v-if="sale.web_order == 1">
 										<a href="" v-if="sale.Status == 'p'" title="Confirm Order" @click.prevent="OrderStatus(sale.SaleMaster_SlNo, 'a')">Confirm</a>
@@ -317,7 +317,7 @@
 
 
 								<a v-if="sale.Status != 'c' && sale.Status != 'd' && sale.web_order != 1" href="javascript:" title="Edit Sale" @click="checkReturnAndEdit(sale)"><i class="fa fa-edit"></i></a>
-								<a v-if="sale.Status != 'c' && sale.Status != 'd' && sale.web_order != 1" href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="fa fa-trash"></i></a>
+								<a v-if="sale.Status != 'c' && sale.Status != 'd' && sale.web_order != 1" href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="ri-delete-bin-line"></i></a>
 									&nbsp;
 									<span  v-if="sale.web_order == 1" class="label" :class="statusData(sale.Status).class">
 										{{ statusData(sale.Status).text }}

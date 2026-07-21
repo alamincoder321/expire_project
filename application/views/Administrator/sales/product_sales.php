@@ -286,7 +286,7 @@
 								</td>
 								<td>{{ product.salesRate }}</td>
 								<td>{{ product.total }}</td>
-								<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
+								<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="ri-delete-bin-line"></i></a></td>
 							</tr>
 							<tr v-if="product.is_offer == 'yes' && product.campaignProducts.length > 0">
 								<td colspan="8" style="padding: 0; border: none;">

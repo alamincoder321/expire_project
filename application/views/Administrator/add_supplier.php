@@ -181,10 +181,10 @@
 							<td>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
 									<button type="button" class="button edit" @click="editSupplier(row)">
-										<i class="fa fa-pencil"></i>
+										<i class="ri-edit-2-line"></i>
 									</button>
 									<button type="button" class="button" @click="deleteSupplier(row.Supplier_SlNo)">
-										<i class="fa fa-trash"></i>
+										<i class="ri-delete-bin-line"></i>
 									</button>
 								<?php } ?>
 							</td>
