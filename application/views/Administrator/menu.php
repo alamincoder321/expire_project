@@ -653,6 +653,16 @@ if ($panel == 'dashboard' or $panel == '') {
 				<b class="arrow"></b>
 			</li>
 		<?php endif; ?>
+
+		<?php if (array_search("currentStock", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+			<li class="">
+				<a href="<?php echo base_url(); ?>currentStock">
+					<i class="menu-icon ri-store-line"></i>
+					<span class="menu-text"> Stock Report </span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		<?php endif; ?>
 	</ul>
 
 <?php } elseif ($panel == 'AccountsPanel') { ?>

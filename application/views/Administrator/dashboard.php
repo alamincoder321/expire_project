@@ -24,7 +24,8 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 			<div class="col-md-12 header" style="height: 130px;box-shadow:none;">
 				<img src="<?php echo base_url(); ?>assets/images/headerbg.jpg" style="border-radius: 20px;border: 1px solid #007ebb;box-shadow: 0px 5px 0px 0px #007ebb;" class="img img-responsive center-block">
 			</div>
-			<div class="col-md-10 col-md-offset-1" style="border-top: 1px solid gray;padding-top: 10px;">
+
+			<div class="col-md-10 col-md-offset-1" style="padding-top: 10px;">
 				<div class="col-md-3 col-xs-6 section4">
 					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>panel/SalesPanel">
@@ -803,6 +804,21 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 								</div>
 								<div class="textModule">
 									ReOrder List
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (array_search("currentStock", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 col-xs-6 custom-padding ">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>currentStock">
+								<div class="logo">
+									<i class="menu-icon ri-store-line"></i>
+								</div>
+								<div class="textModule" style="margin: 0;">
+									Stock Report
 								</div>
 							</a>
 						</div>
