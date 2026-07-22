@@ -663,6 +663,16 @@ if ($panel == 'dashboard' or $panel == '') {
 				<b class="arrow"></b>
 			</li>
 		<?php endif; ?>
+		
+		<?php if (array_search("expiry_product_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+			<li class="">
+				<a href="<?php echo base_url(); ?>expiry_product_report">
+					<i class="menu-icon ri-list-radio"></i>
+					<span class="menu-text"> Expiry Product </span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		<?php endif; ?>
 	</ul>
 
 <?php } elseif ($panel == 'AccountsPanel') { ?>

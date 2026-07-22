@@ -412,9 +412,37 @@ class Products extends CI_Controller
     {
         $data = json_decode($this->input->raw_input_stream);
 
-        $stock = $this->mt->expStock($data->productId, false);
+        $stock = $this->mt->expStock($data->productId ?? null, false);
 
-        echo json_encode($stock);
+        if (empty($data->productId)) {
+            foreach ($stock as $key => $item) {
+                $product = $this->db->select('Product_SlNo, Product_Code, Product_Name')->where('Product_SlNo', $item->product_id)->get('tbl_product')->row();
+                $item->Product_Code = $product->Product_Code;
+                $item->Product_Name = $product->Product_Name;
+
+                $date1 = new DateTime($data->date);
+                $date2 = new DateTime($item->exp_date);
+
+                $diff = $date1->diff($date2);
+                $totalMonths = ($diff->y * 12) + $diff->m;
+                if ($totalMonths > $item->short_date_month && $diff->invert == 0) {
+                    unset($stock[$key]);
+                }
+            }
+        }
+
+        echo json_encode(array_values($stock));
+    }
+
+    public function expiryProductReport()
+    {
+        $access = $this->mt->userAccess();
+        if (!$access) {
+            redirect(base_url());
+        }
+        $data['title']  = 'Expiry Product List';
+        $data['content'] = $this->load->view('Administrator/products/expire_product_report', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
     }
 
     public function getTotalStock()

@@ -667,7 +667,7 @@ class Model_Table extends CI_Model
         return $stock;
     }
 
-    public function expStock($productId, $withoutZero = false, $branchId = null)
+    public function expStock($productId = null, $withoutZero = false, $branchId = null)
     {
         if ($branchId == null) {
             $branchId = $this->session->userdata("BRANCHid");
@@ -675,113 +675,118 @@ class Model_Table extends CI_Model
 
         $stock = $this->db
             ->query("
-                select
-                ifnull(exp_date, 'N/A') as exp_date,
+                select product_id, exp_date,
                 ifnull(sum(in_quantity), 0) as in_quantity, 
                 ifnull(sum(out_quantity), 0) as out_quantity,
                 ifnull(sum(in_quantity), 0) - ifnull(sum(out_quantity), 0) as stock
                 from(
                     select
                     'purchase' as sequence,
+                    pd.Product_IDNo as product_id,
                     pd.exp_date,
                     ifnull(sum(pd.PurchaseDetails_TotalQuantity), 0) as in_quantity,
                     0 as out_quantity
                     from tbl_purchasedetails pd
-                    where pd.Product_IDNo = '$productId'
-                    and pd.Status = 'a'
+                    where pd.Status = 'a'
                     and pd.PurchaseDetails_branchID = '$branchId'
-                    group by pd.exp_date
+                    " . ($productId == null ? "" : "and pd.Product_IDNo = '$productId'") . "
+                    " . ($productId == null ? "group by pd.Product_IDNo, pd.exp_date" : "group by pd.exp_date") . "                    
                     
                     UNION
                     select
                     'purchase_return' as sequence,
+                    prd.PurchaseReturnDetailsProduct_SlNo as product_id,
                     prd.exp_date,
                     0 in_quantity,
                     ifnull(sum(prd.PurchaseReturnDetails_ReturnQuantity), 0) as out_quantity
                     from tbl_purchasereturndetails prd
-                    where prd.PurchaseReturnDetailsProduct_SlNo = '$productId'
-                    and prd.Status = 'a'
-                    and prd.PurchaseReturnDetails_brachid = '$branchId'
-                    group by prd.exp_date
+                    where prd.Status = 'a'
+                    and prd.PurchaseReturnDetails_brachid = '$branchId'                    
+                    " . ($productId == null ? "" : "and prd.PurchaseReturnDetailsProduct_SlNo = '$productId'") . "                    
+                    " . ($productId == null ? "group by prd.PurchaseReturnDetailsProduct_SlNo, prd.exp_date" : "group by prd.exp_date") . "
 
                     UNION
                     select
                     'sale' as sequence,
+                    sd.Product_IDNo as product_id,
                     sd.exp_date,
                     0 as in_quantity,
                     ifnull(sum(sd.SaleDetails_TotalQuantity), 0) as out_quantity
                     from tbl_saledetails sd
-                    where sd.Product_IDNo = '$productId'
-                    and sd.Status = 'a'
+                    where sd.Status = 'a'
                     and sd.SaleDetails_BranchId = '$branchId'
-                    group by sd.exp_date
+                    " . ($productId == null ? "" : "and sd.Product_IDNo = '$productId'") . "                    
+                    " . ($productId == null ? "group by sd.Product_IDNo, sd.exp_date" : "group by sd.exp_date") . "
                     
                     UNION
                     select
                     'sale_return' as sequence,
+                    srd.SaleReturnDetailsProduct_SlNo as product_id,
                     srd.exp_date,
                     ifnull(sum(srd.SaleReturnDetails_ReturnQuantity), 0) as in_quantity,
                     0 as out_quantity
                     from tbl_salereturndetails srd
-                    where srd.SaleReturnDetailsProduct_SlNo = '$productId'
-                    and srd.Status = 'a'
+                    where srd.Status = 'a'
                     and srd.SaleReturnDetails_brunchID = '$branchId'
-                    group by srd.exp_date
+                    " . ($productId == null ? "" : "and srd.SaleReturnDetailsProduct_SlNo = '$productId'") . "                    
+                    " . ($productId == null ? "group by srd.SaleReturnDetailsProduct_SlNo, srd.exp_date" : "group by srd.exp_date") . "
                     
                     UNION
                     select
                     'damage' as sequence,
+                    dd.Product_SlNo as product_id,
                     dd.exp_date,
                     0 as in_quantity,
                     ifnull(sum(dd.DamageDetails_DamageQuantity), 0) as out_quantity
                     from tbl_damagedetails dd
                     join tbl_damage dm on dm.Damage_SlNo = dd.Damage_SlNo
-                    where dd.Product_SlNo = '$productId'
-                    and dd.status = 'a'
+                    where dd.status = 'a'
                     and dm.Damage_brunchid = '$branchId'
-                    group by dd.exp_date
+                    " . ($productId == null ? "" : "and dd.Product_SlNo = '$productId'") . "                    
+                    " . ($productId == null ? "group by dd.Product_SlNo, dd.exp_date" : "group by dd.exp_date") . "
                     
                     UNION
                     select
                     'transfer_in' as sequence,
+                    trd.product_id,
                     trd.exp_date,
                     ifnull(sum(trd.quantity), 0) as in_quantity,
                     0 as out_quantity
                     from tbl_transferdetails trd
                     join tbl_transfermaster tm on tm.transfer_id = trd.transfer_id
-                    where trd.product_id = '$productId'
-                    and tm.transfer_to = '$branchId'
-                    group by trd.exp_date
+                    where tm.transfer_to = '$branchId'
+                    " . ($productId == null ? "" : "and trd.product_id = '$productId'") . "                    
+                    " . ($productId == null ? "group by trd.product_id, trd.exp_date" : "group by trd.exp_date") . "
                     
                     UNION
                     select
                     'transfer_out' as sequence,
+                    trd.product_id,
                     trd.exp_date,
                     0 as in_quantity,
                     ifnull(sum(trd.quantity), 0) as out_quantity
                     from tbl_transferdetails trd
                     join tbl_transfermaster tm on tm.transfer_id = trd.transfer_id
-                    where trd.product_id = '$productId'
-                    and tm.transfer_from = '$branchId'
-                    group by trd.exp_date
+                    where tm.transfer_from = '$branchId'
+                    " . ($productId == null ? "" : "and trd.product_id = '$productId'") . "                    
+                    " . ($productId == null ? "group by trd.product_id, trd.exp_date" : "group by trd.exp_date") . "
                     ) as tbl
-                    group by exp_date
+                    " . ($productId == null ? "group by product_id, exp_date" : "group by exp_date") . "
                     " . ($withoutZero == true ? "" : "having stock > 0") . "
                     order by exp_date, sequence asc")->result();
 
-        if ($productId != null) {
-            foreach ($stock as $item) {
-                $detail = $this->db
-                    ->select('barcode, PurchaseDetails_Rate, Product_SellingPrice')
-                    ->where('PurchaseDetails_Rate !=', 0)
-                    ->where('exp_date', $item->exp_date)
-                    ->where('Product_IDNo', $productId)
-                    ->get("tbl_purchasedetails")->row();
+        foreach ($stock as $item) {
+            $detail = $this->db
+                ->select('barcode, short_date_month, PurchaseDetails_Rate, Product_SellingPrice')
+                ->where('PurchaseDetails_Rate !=', 0)
+                ->where('exp_date', $item->exp_date)
+                ->where('Product_IDNo', $item->product_id)
+                ->get("tbl_purchasedetails")->row();
 
-                $item->barcode = $detail ? $detail->barcode : null;
-                $item->purchase_rate = $detail ? $detail->PurchaseDetails_Rate : 0;
-                $item->sale_rate = $detail ? $detail->Product_SellingPrice : 0;
-            }
+            $item->barcode = !empty($detail) ? $detail->barcode : null;
+            $item->purchase_rate = !empty($detail) ? $detail->PurchaseDetails_Rate : 0;
+            $item->sale_rate = !empty($detail) ? $detail->Product_SellingPrice : 0;
+            $item->short_date_month = !empty($detail) ? $detail->short_date_month : null;
         }
 
         return $stock;
