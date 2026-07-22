@@ -37,7 +37,7 @@ $companyInfo = $this->db->query("select * from tbl_company c order by c.Company_
 
 <body class="skin-2">
 
-	<div id="navbar" class="navbar navbar-default ace-save-state navbar-fixed-top" style="background:#007ebb;">
+	<div id="navbar" class="navbar navbar-default ace-save-state navbar-fixed-top" style="background: #525252;">
 		<div class="navbar-container ace-save-state" id="navbar-container">
 			<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
 				<span class="sr-only">Toggle sidebar</span>

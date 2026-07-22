@@ -855,7 +855,8 @@
 }
 
 .skin-2 .sidebar {
-    background-color: #007ebb;
+    /* background-color: #007ebb; */
+    background-color: #525252;
     border-right-width: 0
 }
 
@@ -1822,7 +1823,8 @@
 }
 
 .skin-2 .sidebar-toggle {
-    background-color: #007ebb;
+    background-color: #525252;
+    /* background-color: #007ebb; */
     border-color: #fff
 }
 

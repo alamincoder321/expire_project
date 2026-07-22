@@ -239,6 +239,10 @@
 							<td>{{ row.Product_ReOrederLevel }}</td>
 							<td>{{ row.Unit_Name }}</td>
 							<td>
+								<span v-if="row.is_mrp == 'yes'" class="badge">MRP</span>
+								<span v-if="row.is_mrp == 'no'" class="badge">Non MRP</span>
+							</td>
+							<td>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
 									<!-- <button type="button" class="button" @click="editProduct(row)" data-toggle="modal"
 										data-target="#staticBackdrop">
@@ -442,6 +446,11 @@
 					{
 						label: 'Unit',
 						field: 'Unit_Name',
+						align: 'center'
+					},
+					{
+						label: 'Type',
+						field: 'is_mrp',
 						align: 'center'
 					},
 					{
