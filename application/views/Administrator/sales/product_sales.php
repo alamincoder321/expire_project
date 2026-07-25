@@ -908,12 +908,13 @@
 						isService: this.sales.isService,
 						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
 						name: this.barcodeVal,
+						fromBarcode: this.is_weight_scale == 'on' ? 'yes' : null,
 						barcode: this.is_weight_scale == 'on' ? null : 'yes'
 					}).then(async res => {
 						if (res.data.length > 0) {
 							this.selectedProduct = res.data.length > 0 ? res.data[0] : this.selectedProduct;
 							await this.productOnChange();
-							this.selectedProduct.quantity = 1;
+							this.selectedProduct.quantity = this.is_weight_scale == 'on' ? this.selectedProduct.quantity : 1;
 							await this.productTotal();
 							this.barcodeVal = '';
 						} else {
