@@ -269,6 +269,14 @@ class Products extends CI_Controller
             $codeCheck = substr($data->name, 0, 2);
             if ($codeCheck == 21) {
                 $search = substr($data->name, 2, 5);
+                $prod = $this->db->where('Product_Code', $search)->get('tbl_product')->row();
+                if ($prod) {
+                    $search = $prod->Product_Code;
+                } else {
+                    echo json_encode([]);
+                    exit;
+                }
+                $clauses .= " and p.Product_Code = '$search'";
             }
 
             if (!empty($data->barcode)) {
@@ -280,9 +288,8 @@ class Products extends CI_Controller
                     echo json_encode([]);
                     exit;
                 }
+                $clauses .= " and (p.Product_Code like '%$search%' or p.Product_Name like '%$search%')";
             }
-
-            $clauses .= " and (p.Product_Code like '%$search%' or p.Product_Name like '%$search%')";
         }
 
         $products = $this->db->query("
