@@ -39,20 +39,18 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 					</div>
 				</div>
 
-				<?php if ($this->session->userdata('BRANCHid') == 1 && (isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
-					<div class="col-md-3 col-xs-6 section4">
-						<div class="col-md-12 section122">
-							<a href="<?php echo base_url(); ?>panel/InventoryPanel">
-								<div class="logo">
-									<i class="ri-briefcase-line"></i>
-								</div>
-								<div class="textModule">
-									Manage Inventory
-								</div>
-							</a>
-						</div>
+				<div class="col-md-3 col-xs-6 section4">
+					<div class="col-md-12 section122">
+						<a href="<?php echo base_url(); ?>panel/InventoryPanel">
+							<div class="logo">
+								<i class="ri-briefcase-line"></i>
+							</div>
+							<div class="textModule">
+								Manage Inventory
+							</div>
+						</a>
 					</div>
-				<?php endif; ?>
+				</div>
 
 				<!-- module/AccountsModule -->
 				<div class="col-md-3 col-xs-6 section4">
@@ -824,7 +822,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
-				
+
 				<?php if (array_search("expiry_product_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">
 						<div class="col-md-12 section20">

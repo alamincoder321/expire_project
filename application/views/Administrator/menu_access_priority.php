@@ -57,12 +57,6 @@
                     <li><input type="checkbox" class="access" value="cash_view" v-model="access"> Cash View</li>
                     <li><input type="checkbox" class="access" value="account" v-model="access"> Transaction Accounts</li>
                     <li><input type="checkbox" class="access" value="bank_accounts" v-model="access"> Bank Accounts</li>
-                    <li><input type="checkbox" class="access" value="check/entry" v-model="access"> New Cheque Entry</li>
-                    <li><input type="checkbox" class="access" value="check/list" v-model="access"> Cheque List</li>
-                    <li><input type="checkbox" class="access" value="check/reminder/list" v-model="access"> Reminder Cheque List</li>
-                    <li><input type="checkbox" class="access" value="check/pending/list" v-model="access"> Pending Cheque List</li>
-                    <li><input type="checkbox" class="access" value="check/dis/list" v-model="access"> Dishonered Cheque List</li>
-                    <li><input type="checkbox" class="access" value="check/paid/list" v-model="access"> Paid Cheque List</li>
                 </ul>
             </div>
         </div>
@@ -100,19 +94,17 @@
             </div>
         </div>
         <div class="col-md-3">
-            <?php if ($this->session->userdata('BRANCHid') == 1 && (isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
-                <div class="group">
-                    <input type="checkbox" id="purchase" class="group-head" @click="onClickGroupHeads"> <strong>Purchase</strong>
-                    <ul ref="purchase">
-                        <li><input type="checkbox" class="access" value="purchase" v-model="access"> Purchase Add</li>
-                        <li><input type="checkbox" class="access" value="purchaseReturns" v-model="access"> Purchase Return</li>
-                        <li><input type="checkbox" class="access" value="purchaseRecord" v-model="access"> Purchase Record</li>
-                        <li><input type="checkbox" class="access" value="AssetsEntry" v-model="access"> Assets Entry</li>
-                    </ul>
-                </div>
-            <?php endif; ?>
             <div class="group">
-                <input type="checkbox" id="hrPayroll" class="group-head" @click="onClickGroupHeads"> <strong>HR & Payroll</strong>
+                <input type="checkbox" id="purchase" class="group-head" @click="onClickGroupHeads"> <strong>Purchase</strong>
+                <ul ref="purchase">
+                    <li><input type="checkbox" class="access" value="purchase" v-model="access"> Purchase Add</li>
+                    <li><input type="checkbox" class="access" value="purchaseReturns" v-model="access"> Purchase Return</li>
+                    <li><input type="checkbox" class="access" value="purchaseRecord" v-model="access"> Purchase Record</li>
+                    <li><input type="checkbox" class="access" value="AssetsEntry" v-model="access"> Assets Entry</li>
+                </ul>
+            </div>
+            <div class="group">
+                <input type="checkbox" id="hrPayroll" class="group-head" @click="onClickGroupHeads"> <strong>Manage HRM</strong>
                 <ul ref="hrPayroll">
                     <li><input type="checkbox" class="access" value="salary_payment" v-model="access"> Salary Payment</li>
                     <li><input type="checkbox" class="access" value="employee" v-model="access"> Add Employee</li>
@@ -149,21 +141,19 @@
             </div>
         </div>
         <div class="col-md-3">
-            <?php if ($this->session->userdata('BRANCHid') == 1 && (isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
-                <div class="group">
-                    <input type="checkbox" id="purchaseReports" class="group-head" @click="onClickGroupHeads"> <strong>Purchase Reports</strong>
-                    <ul ref="purchaseReports">
-                        <li><input type="checkbox" class="access" value="assets_report" v-model="access"> Assets Report</li>
-                        <li><input type="checkbox" class="access" value="purchaseInvoice" v-model="access"> Purchase Invoice</li>
-                        <li><input type="checkbox" class="access" value="supplierDue" v-model="access"> Supplier Due</li>
-                        <li><input type="checkbox" class="access" value="supplierPaymentReport" v-model="access"> Supplier Payment Report</li>
-                        <li><input type="checkbox" class="access" value="supplierList" v-model="access"> Supplier List</li>
-                        <li><input type="checkbox" class="access" value="returnsList" v-model="access"> Purchase Return List</li>
-                        <li><input type="checkbox" class="access" value="purchase_return_details" v-model="access"> Purchase Return Details</li>
-                        <li><input type="checkbox" class="access" value="reorder_list" v-model="access"> Re-Order List</li>
-                    </ul>
-                </div>
-            <?php endif; ?>
+            <div class="group">
+                <input type="checkbox" id="purchaseReports" class="group-head" @click="onClickGroupHeads"> <strong>Purchase Reports</strong>
+                <ul ref="purchaseReports">
+                    <li><input type="checkbox" class="access" value="assets_report" v-model="access"> Assets Report</li>
+                    <li><input type="checkbox" class="access" value="purchaseInvoice" v-model="access"> Purchase Invoice</li>
+                    <li><input type="checkbox" class="access" value="supplierDue" v-model="access"> Supplier Due</li>
+                    <li><input type="checkbox" class="access" value="supplierPaymentReport" v-model="access"> Supplier Payment Report</li>
+                    <li><input type="checkbox" class="access" value="supplierList" v-model="access"> Supplier List</li>
+                    <li><input type="checkbox" class="access" value="returnsList" v-model="access"> Purchase Return List</li>
+                    <li><input type="checkbox" class="access" value="expiry_product_report" v-model="access"> Expiry Product</li>
+                    <li><input type="checkbox" class="access" value="reorder_list" v-model="access"> Re-Order List</li>
+                </ul>
+            </div>
             <div class="group">
                 <input type="checkbox" id="admin" class="group-head" @click="onClickGroupHeads"> <strong>Administrator</strong>
                 <ul ref="admin">
@@ -173,17 +163,17 @@
                     <li><input type="checkbox" class="access" value="product_ledger" v-model="access"> Product Ledger</li>
                     <li><input type="checkbox" class="access" value="damageEntry" v-model="access"> Damage Entry</li>
                     <li><input type="checkbox" class="access" value="damageList" v-model="access"> Damage List</li>
-                    <li><input type="checkbox" class="access" value="product_transfer" v-model="access"> Product Transfer</li>
+                    <!-- <li><input type="checkbox" class="access" value="product_transfer" v-model="access"> Product Transfer</li>
                     <li><input type="checkbox" class="access" value="transfer_list" v-model="access"> Transfer List</li>
-                    <li><input type="checkbox" class="access" value="received_list" v-model="access"> Received List</li>
+                    <li><input type="checkbox" class="access" value="received_list" v-model="access"> Received List</li> -->
                     <li><input type="checkbox" class="access" value="customer" v-model="access"> Customer Entry</li>
                     <li><input type="checkbox" class="access" value="supplier" v-model="access"> Supplier Entry</li>
                     <li><input type="checkbox" class="access" value="category" v-model="access"> Category Entry</li>
                     <li><input type="checkbox" class="access" value="unit" v-model="access"> Unit Entry</li>
                     <li><input type="checkbox" class="access" value="area" v-model="access"> Add Area</li>
                     <li><input type="checkbox" class="access" value="companyProfile" v-model="access"> Company Profile</li>
-                    <li><input type="checkbox" class="access" value="user" v-model="access"> Create User</li>
-                    <li><input type="checkbox" class="access" value="database_backup" v-model="access"> Database Backup</li>
+                    <li><input type="checkbox" class="access" value="user" v-model="access"> User Entry</li>
+                    <li><input type="checkbox" class="access" value="database_backup" v-model="access"> Take Database</li>
                     <li><input type="checkbox" class="access" value="graph" v-model="access"> Business View</li>
                 </ul>
             </div>

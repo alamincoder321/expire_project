@@ -32,15 +32,14 @@ if ($panel == 'dashboard' or $panel == '') {
 			<b class="arrow"></b>
 		</li>
 
-		<?php if ($this->session->userdata('BRANCHid') == 1 && (isset($CheckSuperAdmin) || isset($CheckAdmin))) : ?>
-			<li class="">
-				<a href="<?php echo base_url(); ?>panel/InventoryPanel">
-					<i class="menu-icon ri-briefcase-line"></i>
-					<span class="menu-text"> Manage Inventory </span>
-				</a>
-				<b class="arrow"></b>
-			</li>
-		<?php endif; ?>
+		
+		<li class="">
+			<a href="<?php echo base_url(); ?>panel/InventoryPanel">
+				<i class="menu-icon ri-briefcase-line"></i>
+				<span class="menu-text"> Manage Inventory </span>
+			</a>
+			<b class="arrow"></b>
+		</li>
 
 		<li class="">
 			<!--  -->
