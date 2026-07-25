@@ -89,9 +89,9 @@ const quotationInvoice = Vue.component('quotation-invoice', {
         </div>
     `,
     props: ['quotation_id'],
-    data(){
+    data() {
         return {
-            quotation:{
+            quotation: {
                 SaleMaster_InvoiceNo: null,
                 SaleMaster_customer_name: null,
                 SaleMaster_customer_mobile: null,
@@ -109,15 +109,15 @@ const quotationInvoice = Vue.component('quotation-invoice', {
             currentBranch: null
         }
     },
-    created(){
+    created() {
         this.setStyle();
         this.getQuotations();
         this.getCompanyProfile();
         this.getCurrentBranch();
     },
-    methods:{
-        getQuotations(){
-            axios.post('/get_quotations', {quotationId: this.quotation_id}).then(res=>{
+    methods: {
+        getQuotations() {
+            axios.post('/get_quotations', { quotationId: this.quotation_id }).then(res => {
                 this.quotation = res.data.quotations[0];
                 this.cart = res.data.quotationDetails.map(item => {
                     item.imageSrc = `/uploads/products/${item.image_name}`;
@@ -125,17 +125,17 @@ const quotationInvoice = Vue.component('quotation-invoice', {
                 });
             })
         },
-        getCompanyProfile(){
+        getCompanyProfile() {
             axios.get('/get_company_profile').then(res => {
                 this.companyProfile = res.data;
             })
         },
-        getCurrentBranch(){
+        getCurrentBranch() {
             axios.get('/get_current_branch').then(res => {
                 this.currentBranch = res.data;
             })
         },
-        setStyle(){
+        setStyle() {
             this.style = document.createElement('style');
             this.style.innerHTML = `
                 div[_h098asdh]{
@@ -170,7 +170,7 @@ const quotationInvoice = Vue.component('quotation-invoice', {
             `;
             document.head.appendChild(this.style);
         },
-        async print(){
+        async print() {
             let invoiceContent = document.querySelector('#invoiceContent').innerHTML;
             let printWindow = window.open('', 'PRINT', `width=${screen.width}, height=${screen.height}, left=0, top=0`);
             printWindow.document.write(`
@@ -235,8 +235,8 @@ const quotationInvoice = Vue.component('quotation-invoice', {
             invoiceStyle.innerHTML = this.style.innerHTML;
             printWindow.document.head.appendChild(invoiceStyle);
             printWindow.moveTo(0, 0);
-            
-printWindow.focus();
+
+            printWindow.focus();
             await new Promise(resolve => setTimeout(resolve, 1000));
             printWindow.print();
             printWindow.close();
