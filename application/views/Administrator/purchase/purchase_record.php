@@ -1,59 +1,74 @@
 <style>
-    .v-select{
-		margin-top:-2.5px;
-        float: right;
-        min-width: 180px;
-        margin-left: 5px;
+	.v-select {
+		margin-top: -2.5px;
+		float: right;
+		min-width: 180px;
+		margin-left: 5px;
 	}
-	.v-select .dropdown-toggle{
+
+	.v-select .dropdown-toggle {
 		padding: 0px;
-        height: 25px;
+		height: 25px;
 	}
-	.v-select input[type=search], .v-select input[type=search]:focus{
+
+	.v-select input[type=search],
+	.v-select input[type=search]:focus {
 		margin: 0px;
 	}
-	.v-select .vs__selected-options{
+
+	.v-select .vs__selected-options {
 		overflow: hidden;
-		flex-wrap:nowrap;
+		flex-wrap: nowrap;
 	}
-	.v-select .selected-tag{
+
+	.v-select .selected-tag {
 		margin: 2px 0px;
 		white-space: nowrap;
-		position:absolute;
+		position: absolute;
 		left: 0px;
 	}
-	.v-select .vs__actions{
-		margin-top:-5px;
+
+	.v-select .vs__actions {
+		margin-top: -5px;
 	}
-	.v-select .dropdown-menu{
+
+	.v-select .dropdown-menu {
 		width: auto;
-		overflow-y:auto;
+		overflow-y: auto;
 	}
-	#searchForm select{
-		padding:0;
+
+	#searchForm select {
+		padding: 0;
 		border-radius: 4px;
 	}
-	#searchForm .form-group{
+
+	#searchForm .form-group {
 		margin-right: 5px;
 	}
-	#searchForm *{
+
+	#searchForm * {
 		font-size: 13px;
 	}
-	.record-table{
+
+	.record-table {
 		width: 100%;
 		border-collapse: collapse;
 	}
-	.record-table thead{
+
+	.record-table thead {
 		background-color: #0097df;
-		color:white;
+		color: white;
 	}
-	.record-table th, .record-table td{
+
+	.record-table th,
+	.record-table td {
 		padding: 3px;
 		border: 1px solid #454545;
 	}
-    .record-table th{
-        text-align: center;
-    }
+
+	.record-table th {
+		text-align: center;
+	}
 </style>
 <div id="purchaseRecord">
 	<div class="row" style="border-bottom: 1px solid #ccc;padding: 3px 0;">
@@ -119,12 +134,11 @@
 		</div>
 		<div class="col-md-12">
 			<div class="table-responsive" id="reportContent">
-				<table 
-					class="record-table" 
-					v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'with_details'" 
-					style="display:none" 
-					v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'with_details' ? '' : 'none'}"
-					>
+				<table
+					class="record-table"
+					v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'with_details'"
+					style="display:none"
+					v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'with_details' ? '' : 'none'}">
 					<thead>
 						<tr>
 							<th>Invoice No.</th>
@@ -149,10 +163,10 @@
 								<td style="text-align:right;">{{ purchase.purchaseDetails[0].PurchaseDetails_TotalAmount }}</td>
 								<td style="text-align:center;">
 									<a href="" title="Purchase Invoice" v-bind:href="`/purchase_invoice_print/${purchase.PurchaseMaster_SlNo}`" target="_blank"><i class="fa fa-file-text"></i></a>
-									<?php if($this->session->userdata('accountType') != 'u'){?>
-									<a href="javascript:" title="Edit Purchase" @click="checkReturnAndEdit(purchase)"><i class="fa fa-edit"></i></a>
-									<a href="" title="Delete Purchase" @click.prevent="deletePurchase(purchase.PurchaseMaster_SlNo)"><i class="ri-delete-bin-line"></i></a>
-									<?php }?>
+									<?php if ($this->session->userdata('accountType') != 'u') { ?>
+										<a href="javascript:" title="Edit Purchase" @click="checkReturnAndEdit(purchase)"><i class="fa fa-edit"></i></a>
+										<a href="" title="Delete Purchase" @click.prevent="deletePurchase(purchase.PurchaseMaster_SlNo)"><i class="ri-delete-bin-line"></i></a>
+									<?php } ?>
 								</td>
 							</tr>
 							<tr v-for="(product, sl) in purchase.purchaseDetails.slice(1)">
@@ -167,9 +181,9 @@
 								<td colspan="5" style="font-weight:normal;"><strong>Note: </strong>{{ purchase.PurchaseMaster_Description }}</td>
 								<td style="text-align:center;">Total Quantity<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.PurchaseDetails_TotalQuantity)}, 0) }}</td>
 								<td style="text-align:right;">
-									Total: {{ purchase.PurchaseMaster_TotalAmount }}<br>
-									Paid: {{ purchase.PurchaseMaster_PaidAmount }}<br>
-									Due: {{ purchase.PurchaseMaster_DueAmount }}
+									Total: {{ parseFloat(purchase.PurchaseMaster_TotalAmount).toFixed(2) }}<br>
+									Paid: {{ parseFloat(purchase.PurchaseMaster_PaidAmount).toFixed(2) }}<br>
+									Due: {{ parseFloat(purchase.PurchaseMaster_DueAmount).toFixed(2) }}
 								</td>
 								<td></td>
 							</tr>
@@ -177,12 +191,11 @@
 					</tbody>
 				</table>
 
-				<table 
-					class="record-table" 
-					v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'without_details'" 
-					style="display:none" 
-					v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'without_details' ? '' : 'none'}"
-					>
+				<table
+					class="record-table"
+					v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'without_details'"
+					style="display:none"
+					v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'without_details' ? '' : 'none'}">
 					<thead>
 						<tr>
 							<th>Invoice No.</th>
@@ -214,35 +227,34 @@
 							<td style="text-align:left;">{{ purchase.PurchaseMaster_Description }}</td>
 							<td style="text-align:center;">
 								<a href="" title="Purchase Invoice" v-bind:href="`/purchase_invoice_print/${purchase.PurchaseMaster_SlNo}`" target="_blank"><i class="fa fa-file-text"></i></a>
-								<?php if($this->session->userdata('accountType') != 'u'){?>
-								<a href="javascript:" title="Edit Purchase" @click="checkReturnAndEdit(purchase)"><i class="fa fa-edit"></i></a>
-								<a href="" title="Delete Purchase" @click.prevent="deletePurchase(purchase.PurchaseMaster_SlNo)"><i class="ri-delete-bin-line"></i></a>
-								<?php }?>
+								<?php if ($this->session->userdata('accountType') != 'u') { ?>
+									<a href="javascript:" title="Edit Purchase" @click="checkReturnAndEdit(purchase)"><i class="fa fa-edit"></i></a>
+									<a href="" title="Delete Purchase" @click.prevent="deletePurchase(purchase.PurchaseMaster_SlNo)"><i class="ri-delete-bin-line"></i></a>
+								<?php } ?>
 							</td>
 						</tr>
 					</tbody>
 					<tfoot>
 						<tr style="font-weight:bold;">
 							<td colspan="3" style="text-align:right;">Total</td>
-							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_SubTotalAmount)}, 0) }}</td>
-							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_Tax)}, 0) }}</td>
-							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_DiscountAmount)}, 0) }}</td>
-							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_Freight)}, 0) }}</td>
-							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_TotalAmount)}, 0) }}</td>
-							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_PaidAmount)}, 0) }}</td>
-							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_DueAmount)}, 0) }}</td>
+							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_SubTotalAmount)}, 0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_Tax)}, 0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_DiscountAmount)}, 0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_Freight)}, 0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_TotalAmount)}, 0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_PaidAmount)}, 0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_DueAmount)}, 0).toFixed(2) }}</td>
 							<td></td>
 							<td></td>
 						</tr>
 					</tfoot>
 				</table>
 
-				<table 
-					class="record-table" 
-					v-if="searchTypesForDetails.includes(searchType)"  
-					style="display:none;" 
-					v-bind:style="{display: searchTypesForDetails.includes(searchType) ? '' : 'none'}"
-					>
+				<table
+					class="record-table"
+					v-if="searchTypesForDetails.includes(searchType)"
+					style="display:none;"
+					v-bind:style="{display: searchTypesForDetails.includes(searchType) ? '' : 'none'}">
 					<thead>
 						<tr>
 							<th>Invoice No.</th>
@@ -275,16 +287,16 @@
 	</div>
 </div>
 
-<script src="<?php echo base_url();?>assets/js/vue/vue.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/vue/axios.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/vue/vue-select.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/moment.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/vue.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
 	new Vue({
 		el: '#purchaseRecord',
-		data(){
+		data() {
 			return {
 				searchType: '',
 				recordType: 'without_details',
@@ -304,74 +316,71 @@
 			}
 		},
 		methods: {
-			checkReturnAndEdit(purchase){
-				axios.get('/check_purchase_return/' + purchase.PurchaseMaster_InvoiceNo).then(res=>{
-					if(res.data.found){
+			checkReturnAndEdit(purchase) {
+				axios.get('/check_purchase_return/' + purchase.PurchaseMaster_InvoiceNo).then(res => {
+					if (res.data.found) {
 						alert('Unable to edit. Purchase return found!');
-					}else{
-						location.replace('/purchase/'+purchase.PurchaseMaster_SlNo);
+					} else {
+						location.replace('/purchase/' + purchase.PurchaseMaster_SlNo);
 					}
 				})
 			},
-			onChangeSearchType(){
+			onChangeSearchType() {
 				this.purchases = [];
-				if(this.searchType == 'quantity'){
+				if (this.searchType == 'quantity') {
 					this.getProducts();
-				} 
-				else if(this.searchType == 'user'){
+				} else if (this.searchType == 'user') {
 					this.getUsers();
-				}
-				else if(this.searchType == 'category'){
+				} else if (this.searchType == 'category') {
 					this.getCategories();
-				}
-				else if(this.searchType == 'supplier'){
+				} else if (this.searchType == 'supplier') {
 					this.getSuppliers();
 				}
 			},
-			getProducts(){
+			getProducts() {
 				axios.get('/get_products').then(res => {
 					this.products = res.data;
 				})
 			},
-			getSuppliers(){
+			getSuppliers() {
 				axios.get('/get_suppliers').then(res => {
 					this.suppliers = res.data;
 				})
 			},
-			getUsers(){
+			getUsers() {
 				axios.get('/get_users').then(res => {
 					this.users = res.data;
 				})
 			},
-			getCategories(){
+			getCategories() {
 				axios.get('/get_categories').then(res => {
 					this.categories = res.data;
 				})
 			},
-			getSearchResult(){
-				if(this.searchType != 'user'){
+			getSearchResult() {
+				if (this.searchType != 'user') {
 					this.selectedUser = null;
 				}
 
-				if(this.searchType != 'quantity'){
+				if (this.searchType != 'quantity') {
 					this.selectedProduct = null;
 				}
 
-				if(this.searchType != 'category'){
+				if (this.searchType != 'category') {
 					this.selectedCategory = null;
 				}
 
-				if(this.searchType != 'supplier'){
+				if (this.searchType != 'supplier') {
 					this.selectedSupplier = null;
 				}
 
-				if(this.searchTypesForRecord.includes(this.searchType)) {
+				if (this.searchTypesForRecord.includes(this.searchType)) {
 					this.getPurchaseRecord();
 				} else {
 					this.getPurchaseDetails();
 				}
 			},
-			getPurchaseRecord(){
+			getPurchaseRecord() {
 				let filter = {
 					userFullName: this.selectedUser == null || this.selectedUser.FullName == '' ? '' : this.selectedUser.FullName,
 					supplierId: this.selectedSupplier == null ? '' : this.selectedSupplier.Supplier_SlNo,
@@ -380,25 +389,25 @@
 				}
 
 				let url = '/get_purchases';
-				if(this.recordType == 'with_details'){
+				if (this.recordType == 'with_details') {
 					url = '/get_purchase_record';
 				}
 
 				axios.post(url, filter)
-				.then(res => {
-					if(this.recordType == 'with_details'){
-						this.purchases = res.data;
-					} else {
-						this.purchases = res.data.purchases;
-					}
-				})
-				.catch(error => {
-					if(error.response){
-						alert(`${error.response.status}, ${error.response.statusText}`);
-					}
-				})
+					.then(res => {
+						if (this.recordType == 'with_details') {
+							this.purchases = res.data;
+						} else {
+							this.purchases = res.data.purchases;
+						}
+					})
+					.catch(error => {
+						if (error.response) {
+							alert(`${error.response.status}, ${error.response.statusText}`);
+						}
+					})
 			},
-			getPurchaseDetails(){
+			getPurchaseDetails() {
 				let filter = {
 					categoryId: this.selectedCategory == null || this.selectedCategory.ProductCategory_SlNo == '' ? '' : this.selectedCategory.ProductCategory_SlNo,
 					productId: this.selectedProduct == null || this.selectedProduct.Product_SlNo == '' ? '' : this.selectedProduct.Product_SlNo,
@@ -407,57 +416,59 @@
 				}
 
 				axios.post('/get_purchasedetails', filter)
-				.then(res => {
-					this.purchases = res.data;
-				})
-				.catch(error => {
-					if(error.response){
-						alert(`${error.response.status}, ${error.response.statusText}`);
-					}
-				})
+					.then(res => {
+						this.purchases = res.data;
+					})
+					.catch(error => {
+						if (error.response) {
+							alert(`${error.response.status}, ${error.response.statusText}`);
+						}
+					})
 			},
-			deletePurchase(purchaseId){
+			deletePurchase(purchaseId) {
 				let deleteConf = confirm('Are you sure?');
-				if(deleteConf == false){
+				if (deleteConf == false) {
 					return;
 				}
-				axios.post('/delete_purchase', {purchaseId: purchaseId})
-				.then(res => {
-					let r = res.data;
-					alert(r.message);
-					if(r.success){
-						this.getPurchaseRecord();
-					}
-				})
-				.catch(error => {
-					if(error.response){
-						alert(`${error.response.status}, ${error.response.statusText}`);
-					}
-				})
+				axios.post('/delete_purchase', {
+						purchaseId: purchaseId
+					})
+					.then(res => {
+						let r = res.data;
+						alert(r.message);
+						if (r.success) {
+							this.getPurchaseRecord();
+						}
+					})
+					.catch(error => {
+						if (error.response) {
+							alert(`${error.response.status}, ${error.response.statusText}`);
+						}
+					})
 			},
-			async print(){
+			async print() {
 				let dateText = '';
-				if(this.dateFrom != '' && this.dateTo != ''){
+				if (this.dateFrom != '' && this.dateTo != '') {
 					dateText = `Statement from <strong>${this.dateFrom}</strong> to <strong>${this.dateTo}</strong>`;
 				}
 
 				let userText = '';
-				if(this.selectedUser != null && this.selectedUser.FullName != '' && this.searchType == 'user'){
+				if (this.selectedUser != null && this.selectedUser.FullName != '' && this.searchType == 'user') {
 					userText = `<strong>Sold by: </strong> ${this.selectedUser.FullName}`;
 				}
 
 				let supplierText = '';
-				if(this.selectedSupplier != null && this.selectedSupplier.Supplier_SlNo != '' && this.searchType == 'quantity'){
+				if (this.selectedSupplier != null && this.selectedSupplier.Supplier_SlNo != '' && this.searchType == 'quantity') {
 					supplierText = `<strong>Supplier: </strong> ${this.selectedSupplier.Supplier_Name}<br>`;
 				}
 
 				let productText = '';
-				if(this.selectedProduct != null && this.selectedProduct.Product_SlNo != '' && this.searchType == 'quantity'){
+				if (this.selectedProduct != null && this.selectedProduct.Product_SlNo != '' && this.searchType == 'quantity') {
 					productText = `<strong>Product: </strong> ${this.selectedProduct.Product_Name}`;
 				}
 
 				let categoryText = '';
-				if(this.selectedCategory != null && this.selectedCategory.ProductCategory_SlNo != '' && this.searchType == 'category'){
+				if (this.selectedCategory != null && this.selectedCategory.ProductCategory_SlNo != '' && this.searchType == 'category') {
 					categoryText = `<strong>Category: </strong> ${this.selectedCategory.ProductCategory_Name}`;
 				}
 
@@ -487,7 +498,7 @@
 
 				var reportWindow = window.open('', 'PRINT', `height=${screen.height}, width=${screen.width}`);
 				reportWindow.document.write(`
-					<?php $this->load->view('Administrator/reports/reportHeader.php');?>
+					<?php $this->load->view('Administrator/reports/reportHeader.php'); ?>
 				`);
 
 				reportWindow.document.head.innerHTML += `
@@ -511,7 +522,7 @@
 				`;
 				reportWindow.document.body.innerHTML += reportContent;
 
-				if(this.searchType == '' || this.searchType == 'user'){
+				if (this.searchType == '' || this.searchType == 'user') {
 					let rows = reportWindow.document.querySelectorAll('.record-table tr');
 					rows.forEach(row => {
 						row.lastChild.remove();

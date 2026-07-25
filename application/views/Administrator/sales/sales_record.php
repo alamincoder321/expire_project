@@ -120,10 +120,10 @@
 				</div>
 
 
-				<?php if(isset($_GET['type']) && $_GET['type'] == 'online') { ?>
-					<div class="form-group" >
+				<?php if (isset($_GET['type']) && $_GET['type'] == 'online') { ?>
+					<div class="form-group">
 						<div class="d-flex flex-column">
-							<label >Show Record Type</label>
+							<label>Show Record Type</label>
 							<select class="form-control" v-model="status" @change="getSearchResult()">
 								<option value="">All Order</option>
 								<option value="p">Pending order</option>
@@ -188,7 +188,7 @@
 					</thead>
 					<tbody>
 						<template v-for="sale in sales">
-							<tr  :style="{
+							<tr :style="{
 									background: (sale.Status == 'p' && sale.web_order == '1')
 										? 'rgb(252 179 179)'
 										: (sale.Status == 'a' && sale.web_order == '1' && sale.delivery_status == 0)
@@ -200,7 +200,7 @@
 								<td>{{ sale.Customer_Name }}</td>
 								<td>{{ sale.Employee_Name }}</td>
 								<td>{{ sale.AddBy }}</td>
-						
+
 								<td>{{ sale.saleDetails[0]?.Product_Name ?? '' }}</td>
 								<td style="text-align:right;">{{ sale.saleDetails[0]?.SaleDetails_Rate ?? '' }}</td>
 								<td style="text-align:center;">{{ sale.saleDetails[0]?.SaleDetails_TotalQuantity ?? '' }}</td>
@@ -209,7 +209,7 @@
 									<a href="" title="Sale Invoice" v-bind:href="`/sale_invoice_print/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file"></i></a>
 									<a href="" title="Chalan" v-bind:href="`/chalan/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file-o"></i></a>
 									<?php if ($this->session->userdata('accountType') != 'u') { ?>
-										
+
 										<a v-if="sale.Status != 'c' && sale.Status != 'd' && sale.web_order != 1" href="javascript:"
 											title="Edit Sale" @click="checkReturnAndEdit(sale)"><i
 												class="fa fa-edit"></i></a>
@@ -232,7 +232,7 @@
 											<a href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i
 												class="fa fa-trash"></i></a> -->
 
-												
+
 									<?php } ?>
 								</td>
 							</tr>
@@ -282,8 +282,8 @@
 						</tr>
 					</thead>
 					<tbody>
-					<tr v-for="sale in sales"
-						:style="{
+						<tr v-for="sale in sales"
+							:style="{
 							background: (sale.Status == 'p' && sale.web_order == '1')
 								? 'rgb(252 179 179)'
 								: (sale.Status == 'a' && sale.web_order == '1' && sale.delivery_status == 0)
@@ -316,10 +316,10 @@
 									</div> -->
 
 
-								<a v-if="sale.Status != 'c' && sale.Status != 'd' && sale.web_order != 1" href="javascript:" title="Edit Sale" @click="checkReturnAndEdit(sale)"><i class="fa fa-edit"></i></a>
-								<a v-if="sale.Status != 'c' && sale.Status != 'd' && sale.web_order != 1" href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="ri-delete-bin-line"></i></a>
+									<a v-if="sale.Status != 'c' && sale.Status != 'd' && sale.web_order != 1" href="javascript:" title="Edit Sale" @click="checkReturnAndEdit(sale)"><i class="fa fa-edit"></i></a>
+									<a v-if="sale.Status != 'c' && sale.Status != 'd' && sale.web_order != 1" href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="ri-delete-bin-line"></i></a>
 									&nbsp;
-									<span  v-if="sale.web_order == 1" class="label" :class="statusData(sale.Status).class">
+									<span v-if="sale.web_order == 1" class="label" :class="statusData(sale.Status).class">
 										{{ statusData(sale.Status).text }}
 									</span>
 									<div v-if="sale.web_order == 1">
@@ -374,7 +374,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="sale in sales"  :style="{background: (sale.Status == 'p' && sale.web_order == '1') ? 'rgb(252 179 179)' : ''}">
+							<tr v-for="sale in sales" :style="{background: (sale.Status == 'p' && sale.web_order == '1') ? 'rgb(252 179 179)' : ''}">
 								<td>{{ sale.SaleMaster_InvoiceNo }}</td>
 								<td>{{ sale.SaleMaster_SaleDate }}</td>
 								<td>{{ sale.Customer_Name }}</td>
@@ -400,7 +400,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<template v-for="sale in sales" >
+							<template v-for="sale in sales">
 								<tr>
 									<td colspan="3" style="text-align:center;background: #ccc;">{{ sale.category_name }}</td>
 								</tr>
@@ -452,14 +452,14 @@
 			}
 		},
 
-		created(){
-			<?php if(isset($_GET['type']) && $_GET['type'] == 'online') { ?>
+		created() {
+			<?php if (isset($_GET['type']) && $_GET['type'] == 'online') { ?>
 				this.dateFrom = '';
 				this.dateTo = '';
 				this.status = 'p';
 
 			<?php } ?>
-		   this.getSearchResult();   
+			this.getSearchResult();
 		},
 		methods: {
 			checkReturnAndEdit(sale) {
@@ -477,15 +477,30 @@
 			},
 			statusData(status) {
 				if (status === 'p') {
-					return { class: 'label-warning', text: 'Pending' };
+					return {
+						class: 'label-warning',
+						text: 'Pending'
+					};
 				} else if (status === 'a') {
-					return { class: 'label-success', text: 'Confirm' };
+					return {
+						class: 'label-success',
+						text: 'Confirm'
+					};
 				} else if (status === 'c') {
-					return { class: 'label-danger', text: 'Cancel' };
-				}else if (status === 'r') {
-					return { class: 'label-danger', text: 'Return' };
-				}else if (status === 'd') {
-					return { class: 'label-danger', text: 'Delete' };
+					return {
+						class: 'label-danger',
+						text: 'Cancel'
+					};
+				} else if (status === 'r') {
+					return {
+						class: 'label-danger',
+						text: 'Return'
+					};
+				} else if (status === 'd') {
+					return {
+						class: 'label-danger',
+						text: 'Delete'
+					};
 				}
 			},
 			onChangeSearchType() {
@@ -659,7 +674,7 @@
 					}
 				})
 			},
-			
+
 
 			OrderDelivery(saleId, status) {
 				axios.post('/order_delivery_status', {

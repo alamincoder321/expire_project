@@ -112,7 +112,7 @@
 								<td>{{product.expire_stocks[0]?.exp_date}}</td>
 								<td>{{product.expire_stocks[0]?.stock}}</td>
 								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">
-									{{ product.current_quantity }} {{ product.Unit_Name }}
+									{{ product.current_quantity | decimal }} {{ product.Unit_Name }}
 								</td>
 								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">{{ product.Product_Purchase_Rate | decimal }}</td>
 								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">{{ product.stock_value | decimal }}</td>
@@ -155,14 +155,14 @@
 							<td>{{ product.Product_Code }}</td>
 							<td>{{ product.Product_Name }}</td>
 							<td>{{ product.ProductCategory_Name }}</td>
-							<td>{{ product.purchased_quantity }}</td>
-							<td>{{ product.purchase_returned_quantity }}</td>
-							<td>{{ product.damaged_quantity }}</td>
-							<td>{{ product.sold_quantity }}</td>
-							<td>{{ product.sales_returned_quantity }}</td>
-							<td>{{ product.exchange_in_quantity }}</td>
-							<td>{{ product.exchange_out_quantity }}</td>
-							<td>{{ product.current_quantity }} {{ product.Unit_Name }}</td>
+							<td>{{ product.purchased_quantity | decimal }}</td>
+							<td>{{ product.purchase_returned_quantity | decimal }}</td>
+							<td>{{ product.damaged_quantity | decimal }}</td>
+							<td>{{ product.sold_quantity | decimal }}</td>
+							<td>{{ product.sales_returned_quantity | decimal }}</td>
+							<td>{{ product.exchange_in_quantity | decimal }}</td>
+							<td>{{ product.exchange_out_quantity | decimal }}</td>
+							<td>{{ product.current_quantity | decimal }} {{ product.Unit_Name }}</td>
 							<td>{{ product.Product_Purchase_Rate | decimal }}</td>
 							<td>{{ product.stock_value | decimal }}</td>
 						</tr>
@@ -331,7 +331,6 @@
 				reportWindow.focus();
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				reportWindow.print();
-				await new Promise(resolve => setTimeout(resolve, 1000));
 				reportWindow.close();
 			}
 		}

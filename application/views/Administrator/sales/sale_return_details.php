@@ -250,7 +250,6 @@
 				reportWindow.focus();
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				reportWindow.print();
-				await new Promise(resolve => setTimeout(resolve, 1000));
 				reportWindow.close();
 			}
 		}
