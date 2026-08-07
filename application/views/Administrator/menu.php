@@ -911,6 +911,16 @@ if ($panel == 'dashboard' or $panel == '') {
 						</li>
 					<?php endif; ?>
 
+					<?php if (array_search("balance_sheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+						<li class="">
+							<a href="<?php echo base_url(); ?>balance_sheet">
+								<i class="menu-icon fa fa-caret-right"></i>
+								Balance Sheet
+							</a>
+							<b class="arrow"></b>
+						</li>
+					<?php endif; ?>
+
 					<!-- <?php if (array_search("day_book", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
 							<a href="<?php echo base_url(); ?>day_book">

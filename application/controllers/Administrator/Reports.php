@@ -415,7 +415,8 @@ class Reports extends CI_Controller {
                     select
                         sd.*,
                         (sd.Purchase_Rate * sd.SaleDetails_TotalQuantity) as purchased_amount,
-                        (select sd.SaleDetails_TotalAmount - purchased_amount) as profit_loss
+                        (sd.SaleDetails_Rate * sd.SaleDetails_TotalQuantity) as SaleDetails_TotalAmount,
+                        (select SaleDetails_TotalAmount - purchased_amount) as profit_loss
                     from tbl_saledetails sd
                     where sd.SaleMaster_IDNo = ?
                 ", $sale->SaleMaster_SlNo)->result();
@@ -494,6 +495,30 @@ class Reports extends CI_Controller {
                 ) as employee_payment,
 
                 (
+                    select ifnull(sum(pm.PurchaseMaster_DiscountAmount), 0)
+                    from tbl_purchasemaster pm
+                    where pm.PurchaseMaster_BranchID = '" . $this->session->userdata('BRANCHid') . "'
+                    and pm.status = 'a'
+                    " . ($date == null ? "" : " and pm.PurchaseMaster_OrderDate < '$date'") . "
+                ) as purchase_discount,
+
+                (
+                    select ifnull(sum(pm.PurchaseMaster_Tax), 0) 
+                    from tbl_purchasemaster pm
+                    where pm.PurchaseMaster_BranchID = '" . $this->session->userdata('BRANCHid') . "'
+                    and pm.status = 'a'
+                    " . ($date == null ? "" : " and pm.PurchaseMaster_OrderDate < '$date'") . "
+                ) as purchase_vat,
+
+                (
+                    select ifnull(sum(pm.PurchaseMaster_Freight), 0) 
+                    from tbl_purchasemaster pm
+                    where pm.PurchaseMaster_BranchID = '" . $this->session->userdata('BRANCHid') . "'
+                    and pm.status = 'a'
+                    " . ($date == null ? "" : " and pm.PurchaseMaster_OrderDate < '$date'") . "
+                ) as purchase_transport_cost,
+
+                (
                     select ifnull(sum(dd.damage_amount), 0) 
                     from tbl_damagedetails dd
                     join tbl_damage d on d.Damage_SlNo = dd.Damage_SlNo
@@ -514,7 +539,7 @@ class Reports extends CI_Controller {
                 ) as returned_amount
             ")->row();
 
-            $net_profit = ($profits + $total_transport_cost + $other_income_expense->income + $total_vat) - ($total_discount + $other_income_expense->returned_amount + $other_income_expense->damaged_amount + $other_income_expense->expense + $other_income_expense->employee_payment + $other_income_expense->profit_distribute + $other_income_expense->loan_interest + $other_income_expense->assets_sales_profit_loss );
+            $net_profit = ($profits + $total_transport_cost + $other_income_expense->income + $other_income_expense->purchase_discount + $total_vat) - ($total_discount + $other_income_expense->returned_amount + $other_income_expense->purchase_transport_cost + $other_income_expense->purchase_vat + $other_income_expense->damaged_amount + $other_income_expense->expense + $other_income_expense->employee_payment + $other_income_expense->profit_distribute + $other_income_expense->loan_interest + $other_income_expense->assets_sales_profit_loss );
 
             $statements = [
                 'assets'            => $assets,

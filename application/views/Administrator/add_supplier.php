@@ -179,10 +179,10 @@
 							<td>{{ row.Supplier_Address }}</td>
 							<td>{{ row.Supplier_Mobile }}</td>
 							<td>
+								<button type="button" class="button edit" @click="editSupplier(row)">
+									<i class="ri-edit-2-line"></i>
+								</button>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
-									<button type="button" class="button edit" @click="editSupplier(row)">
-										<i class="ri-edit-2-line"></i>
-									</button>
 									<button type="button" class="button" @click="deleteSupplier(row.Supplier_SlNo)">
 										<i class="ri-delete-bin-line"></i>
 									</button>

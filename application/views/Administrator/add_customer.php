@@ -193,10 +193,10 @@
 							<td>{{row.amount}}</td>
 							<td>{{row.point}}</td>
 							<td>
+								<button type="button" class="button edit" @click="editCustomer(row)">
+									<i class="ri-edit-2-line"></i>
+								</button>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
-									<button type="button" class="button edit" @click="editCustomer(row)">
-										<i class="ri-edit-2-line"></i>
-									</button>
 									<button type="button" class="button" @click="deleteCustomer(row.Customer_SlNo)">
 										<i class="ri-delete-bin-line"></i>
 									</button>

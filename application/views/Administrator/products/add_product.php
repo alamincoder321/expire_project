@@ -243,13 +243,13 @@
 								<span v-if="row.is_mrp == 'no'" class="badge">Non MRP</span>
 							</td>
 							<td>
+								<!-- <button type="button" class="button" @click="editProduct(row)" data-toggle="modal"
+								data-target="#staticBackdrop">
+								<i class="fa fa-info-circle"></i>
+							</button> -->
+							<button type="button" class="button edit" @click="editProduct(row)">
+								<i class="ri-edit-2-line"></i>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
-									<!-- <button type="button" class="button" @click="editProduct(row)" data-toggle="modal"
-										data-target="#staticBackdrop">
-										<i class="fa fa-info-circle"></i>
-									</button> -->
-									<button type="button" class="button edit" @click="editProduct(row)">
-										<i class="ri-edit-2-line"></i>
 									</button>
 									<button type="button" class="button" @click="deleteProduct(row.Product_SlNo)">
 										<i class="ri-delete-bin-line"></i>

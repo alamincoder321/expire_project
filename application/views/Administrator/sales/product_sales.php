@@ -188,16 +188,6 @@
 								</div> -->
 
 								<div class="form-group">
-									<label for="" class="col-xs-3"></label>
-									<div class="col-xs-9">
-										<label for="is_weight_scale" style="display: flex;align-items:center;gap:5px;cursor:pointer;">
-											<input type="checkbox" v-model="is_weight_scale" :true-value="`on`" :false-value="`off`" id="is_weight_scale" style="margin: 0;width:18px;height:18px;">
-											<span>Weight Scale</span>
-										</label>
-									</div>
-								</div>
-
-								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Product </label>
 									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
 										<div style="width: 86%;">
@@ -546,7 +536,6 @@
 			return {
 				barcode: true,
 				barcodeVal: "",
-				is_weight_scale: "off",
 				sales: {
 					salesId: parseInt('<?php echo $salesId; ?>'),
 					invoiceNo: '<?php echo $invoice; ?>',
@@ -865,7 +854,8 @@
 						return res.data;
 					})
 
-					if (this.is_weight_scale == 'off') {
+					let checkProdCode = this.barcodeVal.slice(0, 2);
+					if (checkProdCode != '21') {
 						await axios.post('/get_expire_stock', {
 							productId: this.selectedProduct.Product_SlNo
 						}).then(res => {
@@ -904,17 +894,19 @@
 
 			async addToCart() {
 				if (this.barcode && this.barcodeVal != '') {
+					let checkCode = this.barcodeVal.slice(0, 2);
+
 					await axios.post('/get_products', {
 						isService: this.sales.isService,
 						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
 						name: this.barcodeVal,
-						fromBarcode: this.is_weight_scale == 'on' ? 'yes' : null,
-						barcode: this.is_weight_scale == 'on' ? null : 'yes'
+						fromBarcode: checkCode == '21' ? 'yes' : null,
+						barcode: checkCode == '21' ? null : 'yes'
 					}).then(async res => {
 						if (res.data.length > 0) {
 							this.selectedProduct = res.data.length > 0 ? res.data[0] : this.selectedProduct;
 							await this.productOnChange();
-							this.selectedProduct.quantity = this.is_weight_scale == 'on' ? this.selectedProduct.quantity : 1;
+							this.selectedProduct.quantity = checkCode == '21' ? this.selectedProduct.quantity : 1;
 							await this.productTotal();
 							this.barcodeVal = '';
 						} else {
@@ -1086,7 +1078,7 @@
 				this.sales.subTotal = this.cart.reduce((prev, curr) => {
 					return prev + parseFloat(curr.salesRate * curr.quantity)
 				}, 0).toFixed(2);
-				if (event.target.id != 'transportCost') {
+				if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid') {
 					this.sales.vat = this.cart.reduce((prev, curr) => {
 						return +prev + +(curr.total * (curr.vat / 100))
 					}, 0);
@@ -1096,9 +1088,9 @@
 					this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent)) / 100).toFixed(2);
 				} else if (event.target.id == 'discount') {
 					this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
-				} else {
+				} else if(event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid') {
 					this.sales.discount = this.cart.reduce((prev, curr) => {
-						return +prev + +(curr.discountAmount)
+						return prev + parseFloat(curr.quantity * curr.discountAmount)
 					}, 0);
 
 					this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
