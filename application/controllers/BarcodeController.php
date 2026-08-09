@@ -17,10 +17,6 @@ class BarcodeController extends CI_Controller
 
 	public function barcode_create($id)
 	{
-		$access = $this->mt->userAccess();
-		if (!$access) {
-			redirect(base_url());
-		}
 		$data['title'] = "Product Barcode";
 		$data['product'] = $this->db->where('Product_SlNo', $id)->get('tbl_product')->row();		
         $data['exp_dates'] = $this->mt->expStock($id);
