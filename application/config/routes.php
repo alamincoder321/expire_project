@@ -169,6 +169,13 @@ $route['get_damages'] = 'Administrator/Purchase/getDamages';
 $route['damageList'] = 'Administrator/Purchase/damage_product_list';
 $route['SelectDamageProduct'] = 'Administrator/Purchase/damage_select_product';
 
+// hold sale
+$route['hold_sale/(:any)'] = 'Administrator/Sales/holdSale/$1';
+$route['add_hold_sale'] = 'Administrator/Sales/addHoldSale';
+$route['get_hold_sale'] = 'Administrator/Sales/getHoldSale';
+$route['delete_hold_sale'] = 'Administrator/Sales/deleteHoldSale';
+$route['hold_sale_list'] = 'Administrator/Sales/hold_sale_list';
+
 $route['sales/(:any)'] = 'Administrator/Sales/index/$1';
 $route['sales/(:any)/(:any)'] = 'Administrator/Sales/salesEdit/$1/$2';
 $route['salesinvoice'] = 'Administrator/Sales/sales_invoice';

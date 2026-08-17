@@ -445,6 +445,16 @@ if ($panel == 'dashboard' or $panel == '') {
 				<b class="arrow"></b>
 			</li>
 		<?php endif; ?>
+		
+		<?php if (array_search("hold_sale_list", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+			<li class="">
+				<a href="<?php echo base_url(); ?>hold_sale_list">
+					<i class="menu-icon ri-list-radio"></i>
+					<span class="menu-text"> Hold Sale List </span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		<?php endif; ?>
 
 		<?php if (array_search("exchange", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">

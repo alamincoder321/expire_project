@@ -449,7 +449,7 @@
 
 													<input type="button" class="btn btn-default btn-sm" value="Sale & Print" v-on:click="saveSales(1)" v-bind:disabled="saleOnProgress ? true : false" style="background: rgb(0, 126, 187) !important; outline: none; border: 0px !important; color: rgb(255, 255, 255) !important; margin-top: 0px; width: 100%; padding: 7px 5px; font-weight: bold; border-radius: 5px;">
 
-													<a href="" @click.prevent="holdSale" class="btn btn-info btn-sm" style="outline:none; background: rgb(209, 91, 71) !important; border: 0px !important; margin-top: 0px; width: 100%; padding: 7px 5px; font-weight: bold; outline: none; border-radius: 5px;"><i style="font-size: 17px;" class="fa fa-hand-paper-o"></i> Hold On</a>
+													<a href="/sales/product" class="btn btn-info btn-sm" style="outline:none; background: rgb(209, 91, 71) !important; border: 0px !important; margin-top: 0px; width: 100%; padding: 7px 5px; font-weight: bold; outline: none; border-radius: 5px;">New Sale</a>
 												</div>
 											</div>
 
@@ -536,7 +536,8 @@
 				barcodeVal: "",
 				sales: {
 					salesId: parseInt('<?php echo $salesId; ?>'),
-					invoiceNo: '<?php echo $invoice; ?>',
+					invoiceNo: '<?php echo $invoice; ?>',					
+					referenceNo: '<?php echo $referenceNo; ?>',
 					salesBy: '<?php echo $this->session->userdata("FullName"); ?>',
 					salesType: 'retail',
 					salesFrom: '',
@@ -624,7 +625,7 @@
 			await this.getCustomers();
 			this.getProducts();
 
-			if (this.sales.salesId != 0) {
+			if (this.sales.referenceNo != "") {
 				await this.getSales();
 			}
 		},
@@ -1224,22 +1225,12 @@
 					let r = res.data;
 					if (r.success) {
 						if (print == 1) {
-							// window.open('/sale_invoice_print/' + r.salesId+'?print=1', '');
 							location.href = "/sale_invoice_print/" + r.salesId + "?print=1";
 							await new Promise(r => setTimeout(r, 1000));
 							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
 						} else {
 							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
 						}
-
-						// let conf = confirm('Sale success, Do you want to view invoice?');
-						// if (conf) {
-						// 	window.open('/sale_invoice_print/' + r.salesId, '_blank');
-						// 	await new Promise(r => setTimeout(r, 1000));
-						// 	window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
-						// } else {
-						// 	window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
-						// }
 					} else {
 						alert(r.message);
 						this.saleOnProgress = false;
@@ -1247,50 +1238,9 @@
 				})
 			},
 
-			holdSale() {
-				if (this.cart.length == 0) {
-					alert('Cart is empty');
-					return;
-				}
-				let conf = prompt('Do you want to hold this sale? Enter reference invoice no');
-
-				if (conf == null) {
-					return;
-				}
-				if (conf == '') {
-					alert('Invoice no can not be empty');
-					return;
-				}
-
-				this.sales.referenceNo = conf;
-				if (this.selectedEmployee != null && this.selectedEmployee.Employee_SlNo != null) {
-					this.sales.employeeId = this.selectedEmployee.Employee_SlNo;
-				} else {
-					this.sales.employeeId = null;
-				}
-
-				this.sales.customerId = this.selectedCustomer.Customer_SlNo;
-				this.sales.salesFrom = this.selectedBranch.brunch_id;
-				let data = {
-					sales: this.sales,
-					cart: this.cart,
-					customer: this.selectedCustomer,
-					banks: this.bankCart
-				}
-				axios.post('/add_hold_sale', data).then(res => {
-					let r = res.data;
-					if (r.success) {
-						alert(r.message);
-						window.location = '/sales/product';
-					} else {
-						alert(r.message);
-					}
-				})
-			},
-
 			async getSales() {
-				await axios.post('/get_sales', {
-					salesId: this.sales.salesId
+				await axios.post('/get_hold_sale', {
+					referenceNo: this.sales.referenceNo
 				}).then(res => {
 					let r = res.data;
 					let sales = r.sales[0];
@@ -1350,6 +1300,7 @@
 						let cartProduct = {
 							productCode: product.Product_Code,
 							productId: product.Product_IDNo,
+							exp_date: product.exp_date,
 							categoryName: product.ProductCategory_Name,
 							name: product.Product_Name,
 							salesRate: product.SaleDetails_Rate,

@@ -213,6 +213,15 @@ class Sales extends CI_Controller
                 }
             }
 
+            if (!empty($data->sales->referenceNo)) {
+                $holdSaleId = $this->db->query("select * from tbl_hold_sale where SaleMaster_InvoiceNo = ?", $data->sales->referenceNo)->row()->SaleMaster_SlNo;
+                $this->db->where('SaleMaster_InvoiceNo', $data->sales->referenceNo);
+                $this->db->delete('tbl_hold_sale');
+
+                $this->db->where('SaleMaster_IDNo', $holdSaleId);
+                $this->db->delete('tbl_hold_sale_detail');
+            }
+
             //Send sms
             $currentDue = $data->sales->previousDue + ($data->sales->total - $data->sales->paid);
             if ($customerId == '' || $customerId == null) {
@@ -2257,6 +2266,295 @@ class Sales extends CI_Controller
         if ($returnCount != 0) {
             $res = ['found' => true];
         }
+
+        echo json_encode($res);
+    }
+
+
+    // ===================================== hold sale =========================================
+    public function holdSale($referenceNo)
+    {
+        $access = $this->mt->userAccess();
+        if (!$access) {
+            redirect(base_url());
+        }
+        $data['title'] = "Product Sales";
+
+        $data['isService'] = 'false';
+        $data['referenceNo'] = $referenceNo;
+        $data['salesId'] = 0;
+        $data['invoice'] = $this->mt->generateSalesInvoice();
+        $data['content'] = $this->load->view('Administrator/sales/hold_sales', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
+    }
+
+    public function addHoldSale()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $this->db->trans_begin();
+            $data = json_decode($this->input->raw_input_stream);
+
+            $checkInvoice = $this->db->query("select * from tbl_hold_sale where SaleMaster_InvoiceNo = ?", $data->sales->referenceNo)->row();
+            if ($checkInvoice) {
+                echo json_encode(['success' => false, 'message' => 'This invoice already hold. Please change invoice number']);
+                exit;
+            }
+
+            $customerId = $data->sales->customerId;
+            if (isset($data->customer)) {
+                $customer = (array)$data->customer;
+                unset($customer['Customer_SlNo']);
+                unset($customer['display_name']);
+                unset($customer['Customer_Type']);
+                $mobile_count = $this->db->query("select * from tbl_customer where Customer_Mobile = ? and Customer_brunchid = ?", [$data->customer->Customer_Mobile, $this->session->userdata("BRANCHid")])->row();
+
+                if ($data->customer->Customer_Type == 'N' && empty($mobile_count)) {
+                    $customer['Customer_Code'] = $this->mt->generateCustomerCode();
+                    $customer['Customer_Type'] = $data->sales->salesType;
+                    $customer['Customer_Credit_Limit'] = $data->sales->total;
+                    $customer['status'] = 'a';
+                    $customer['AddBy'] = $this->session->userdata("FullName");
+                    $customer['AddTime'] = date("Y-m-d H:i:s");
+                    $customer['Customer_brunchid'] = $this->session->userdata("BRANCHid");
+                    $this->db->insert('tbl_customer', $customer);
+                    $customerId = $this->db->insert_id();
+                }
+            }
+
+            $sales = array(
+                'SaleMaster_InvoiceNo'           => $data->sales->referenceNo,
+                'employee_id'                    => $data->sales->employeeId,
+                'SaleMaster_SaleDate'            => $data->sales->salesDate,
+                'SaleMaster_SaleType'            => $data->sales->salesType,
+                'SaleMaster_SubTotalAmount'      => $data->sales->subTotal,
+                'SaleMaster_TotalDiscountAmount' => $data->sales->discount,
+                'pointAmount'                    => $data->sales->pointAmount,
+                'SaleMaster_TaxAmount'           => $data->sales->vat,
+                'SaleMaster_Freight'             => $data->sales->transportCost,
+                'SaleMaster_TotalSaleAmount'     => $data->sales->total,
+                'SaleMaster_cashPaid'            => $data->sales->cashPaid,
+                'SaleMaster_bankPaid'            => $data->sales->bankPaid,
+                'bank_id'                        => $data->sales->bankPaid > 0 ? $data->sales->bank_id : NULL,
+                'SaleMaster_PaidAmount'          => $data->sales->paid,
+                'returnAmount'                   => $data->sales->returnAmount,
+                'SaleMaster_DueAmount'           => $data->sales->due,
+                'SaleMaster_Previous_Due'        => $data->sales->previousDue,
+                'SaleMaster_Description'         => $data->sales->note,
+                'Status'                         => 'a',
+                'is_service'                     => $data->sales->isService,
+                "AddBy"                          => $this->session->userdata("FullName"),
+                'AddTime'                        => date("Y-m-d H:i:s"),
+                'SaleMaster_branchid'            => $this->session->userdata("BRANCHid")
+            );
+
+            if ($data->customer->Customer_Type == 'G') {
+                $sales['SalseCustomer_IDNo']    = Null;
+                $sales['customerType']    = "G";
+                $sales['customerName']    = $data->customer->Customer_Name;
+                $sales['customerMobile']  = $data->customer->Customer_Mobile;
+                $sales['customerAddress'] = $data->customer->Customer_Address;
+            } else {
+                $sales['customerType']       = $data->sales->salesType;
+                $sales['SalseCustomer_IDNo'] = $customerId;
+            }
+
+            $this->db->insert('tbl_hold_sale', $sales);
+            $salesId = $this->db->insert_id();
+
+            foreach ($data->cart as $cartProduct) {
+                $prod = $this->db->select("Product_Purchase_Rate")->where("Product_SlNo", $cartProduct->productId)->get('tbl_product')->row();
+                $saleDetails = array(
+                    'SaleMaster_IDNo'           => $salesId,
+                    'Product_IDNo'              => $cartProduct->productId,
+                    'exp_date'                  => $cartProduct->exp_date ?? NULL,
+                    'SaleDetails_TotalQuantity' => $cartProduct->quantity,
+                    'Purchase_Detail_Rate'      => $prod->Product_Purchase_Rate,
+                    'Purchase_Rate'             => $cartProduct->purchaseRate,
+                    'SaleDetails_Rate'          => $cartProduct->salesRate,
+                    'SaleDetails_Tax'           => $cartProduct->vat,
+                    'SaleDetails_Discount'      => $cartProduct->discount,
+                    'Discount_amount'           => $cartProduct->discountAmount,
+                    'SaleDetails_TotalAmount'   => $cartProduct->total,
+                    'is_offer'                  => $cartProduct->is_offer,
+                    'range_quantity'            => $cartProduct->range_quantity,
+                    'Status'                    => 'a',
+                    'AddBy'                     => $this->session->userdata("FullName"),
+                    'AddTime'                   => date('Y-m-d H:i:s'),
+                    'SaleDetails_BranchId'      => $this->session->userdata('BRANCHid')
+                );
+
+                $this->db->insert('tbl_hold_sale_detail', $saleDetails);
+                $detailId = $this->db->insert_id();
+
+                if ($cartProduct->is_offer == 'yes' && count($cartProduct->campaignProducts) > 0) {
+                    foreach ($cartProduct->campaignProducts as $offerProduct) {
+                        $offer_product = $this->db->where('Product_SlNo', $offerProduct->product_id)->get('tbl_product')->row();
+                        $campaignDetails = array(
+                            'SaleMaster_IDNo'           => $salesId,
+                            'detail_id'                 => $detailId,
+                            'Product_IDNo'              => $offerProduct->product_id,
+                            'exp_date'                  => NULL,
+                            'SaleDetails_TotalQuantity' => $offerProduct->offer_quantity,
+                            'Purchase_Rate'             => $offer_product->Product_Purchase_Rate ?? 0,
+                            'SaleDetails_Rate'          => 0,
+                            'SaleDetails_Tax'           => 0,
+                            'Discount_amount'           => 0,
+                            'SaleDetails_TotalAmount'   => 0,
+                            'is_offer'                  => 'yes',
+                            'offer_quantity'            => floor(($cartProduct->range_quantity * $offerProduct->offer_quantity) / $cartProduct->quantity),
+                            'Status'                    => 'a',
+                            'AddBy'                     => $this->session->userdata("FullName"),
+                            'AddTime'                   => date('Y-m-d H:i:s'),
+                            'SaleDetails_BranchId'      => $this->session->userdata("BRANCHid")
+                        );
+
+                        $this->db->insert('tbl_hold_sale_detail', $campaignDetails);
+                    }
+                }
+            }
+
+            $this->db->trans_commit();
+
+            $res = ['success' => true, 'message' => 'Sales Hold On Successfully inserted'];
+        } catch (Exception $ex) {
+            $this->db->trans_rollback();
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+    function hold_sale_list()
+    {
+        $access = $this->mt->userAccess();
+        if (!$access) {
+            redirect(base_url());
+        }
+        $data['title'] = "Hold Sale Record";
+        $data['content'] = $this->load->view('Administrator/sales/hold_sale_list', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
+    }
+
+    public function deleteHoldSale()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+        $this->db->where('SaleMaster_SlNo', $data->holdSaleId);
+        $this->db->delete('tbl_hold_sale');
+
+        $this->db->where('SaleMaster_IDNo', $data->holdSaleId);
+        $this->db->delete('tbl_hold_sale_detail');
+        echo json_encode(['success' => true, 'message' => 'Hold sale deleted successfully']);
+    }
+
+    public function getHoldSale()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+        $branchId = $this->session->userdata("BRANCHid");
+
+        $limit = "";
+        $clauses = "";
+        if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
+            $clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
+        }
+
+        if (isset($data->userFullName) && $data->userFullName != '') {
+            $clauses .= " and sm.AddBy = '$data->userFullName'";
+        }
+
+        if (isset($data->customerId) && $data->customerId != '') {
+            $clauses .= " and sm.SalseCustomer_IDNo = '$data->customerId'";
+        }
+
+        if (isset($data->employeeId) && $data->employeeId != '') {
+            $clauses .= " and sm.employee_id = '$data->employeeId'";
+        }
+
+        if (isset($data->customerType) && $data->customerType != '') {
+            $clauses .= " and sm.customerType = '$data->customerType'";
+        }
+
+        if (isset($data->forSearch) && $data->forSearch != '') {
+            $limit .= "limit 20";
+        }
+        if (isset($data->name) && $data->name != '') {
+            $clauses .= " and c.Customer_Code like '%$data->name%'";
+        }
+
+        if (isset($data->referenceNo) && $data->referenceNo != 0 && $data->referenceNo != '') {
+            $clauses .= " and SaleMaster_InvoiceNo = '$data->referenceNo'";
+            $saleDetails = $this->db->query("
+                select 
+                    sd.*,
+                    p.Product_Code,
+                    p.Product_Name,
+                    pc.ProductCategory_Name,
+                    u.Unit_Name,
+                    ifnull(ed.exchange_id, 'false') as is_exchange
+                from tbl_hold_sale_detail sd
+                join tbl_product p on p.Product_SlNo = sd.Product_IDNo
+                join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
+                join tbl_unit u on u.Unit_SlNo = p.Unit_ID
+                left join tbl_exchange_detail ed on ed.sale_detail_id = sd.SaleDetails_SlNo
+                join tbl_hold_sale sm on sm.SaleMaster_SlNo = sd.SaleMaster_IDNo
+                where sm.SaleMaster_InvoiceNo = ?
+                order by sd.SaleDetails_SlNo desc
+            ", $data->referenceNo)->result();
+
+            $res['saleDetails'] = $saleDetails;
+        }
+
+
+
+        // Modify if online
+        $status_clause = '';
+        if (isset($data->type) && $data->type == 'online') {
+            $status_clause = " and sm.web_order = 1";
+        } else {
+            if (isset($data->referenceNo) && $data->referenceNo != '0') {
+            } else {
+                $status_clause = " and sm.web_order = 0";
+            }
+        }
+
+        if (isset($data->status) && $data->status != '') {
+            $status_clause .= " and sm.Status = '$data->status'";
+        } elseif (isset($_GET['status'])) {
+            $status = $_GET['status'];
+            $status_clause .= " and sm.Status = '$status'";
+        }
+
+
+        $sales = $this->db->query("
+            select 
+            concat(sm.SaleMaster_InvoiceNo, ' - ', ifnull(c.Customer_Name, sm.customerName)) as invoice_text,
+            sm.*,
+            ifnull(c.Customer_Code, 'General Customer') as Customer_Code,
+            ifnull(c.Customer_Name, sm.customerName) as Customer_Name,
+            ifnull(c.Customer_Mobile, sm.customerMobile) as Customer_Mobile,
+            ifnull(c.Customer_Address, sm.customerAddress) as Customer_Address,
+            ifnull(c.Customer_Type, sm.customerType) as Customer_Type,
+            ifnull(c.is_member, 'no') as is_member,
+            ifnull(c.amount, 0) as amount,
+            ifnull(c.point, 0) as customerPoint,
+            e.Employee_Name,
+            br.Brunch_name,
+            ba.account_name,
+            ba.account_number,
+            ba.bank_name
+            from tbl_hold_sale sm
+            left join tbl_customer c on c.Customer_SlNo = sm.SalseCustomer_IDNo
+            left join tbl_employee e on e.Employee_SlNo = sm.employee_id
+            left join tbl_brunch br on br.brunch_id = sm.SaleMaster_branchid
+            left join tbl_bank_accounts ba on ba.account_id = sm.bank_id
+            where sm.SaleMaster_branchid = '$branchId'
+            $status_clause
+            $clauses
+            order by sm.SaleMaster_SlNo desc
+            $limit
+        ")->result();
+
+        $res['sales'] = $sales;
 
         echo json_encode($res);
     }
