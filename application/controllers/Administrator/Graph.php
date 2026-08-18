@@ -240,6 +240,10 @@
                 return $prev + $curr->SaleMaster_Freight;
             });
             
+            $bank_charge = array_reduce($sales, function($prev, $curr){ 
+                return $prev + $curr->bankCharge;
+            });
+            
             $total_discount = array_reduce($sales, function($prev, $curr){ 
                 return $prev + $curr->SaleMaster_TotalDiscountAmount;
             });
@@ -367,6 +371,7 @@
             ) - (
                 $total_discount +
                 $total_point + 
+                $bank_charge + 
                 $other_income_expense->purchase_transport_cost + 
                 $other_income_expense->purchase_vat + 
                 $other_income_expense->returned_amount + 

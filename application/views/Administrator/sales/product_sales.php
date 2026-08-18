@@ -1083,7 +1083,7 @@
 					return prev + parseFloat(curr.salesRate * curr.quantity)
 				}, 0).toFixed(2);
 
-				this.sales.bankCharge = this.bankCart.reduce((pr, cu) => {
+				this.sales.bankCharge = this.bankCart.filter(b => b.per_amount > 0).reduce((pr, cu) => {
 					return pr + parseFloat((cu.amount / cu.per_amount) * cu.charge);
 				}, 0).toFixed(2);
 
