@@ -95,6 +95,7 @@ class Sales extends CI_Controller
                 'bank_id'                        => $data->sales->bankPaid > 0 ? $data->sales->bank_id : NULL,
                 'SaleMaster_PaidAmount'          => $data->sales->paid,
                 'returnAmount'                   => $data->sales->returnAmount,
+                'bankCharge'                     => $data->sales->bankCharge,
                 'SaleMaster_DueAmount'           => $data->sales->due,
                 'SaleMaster_Previous_Due'        => $data->sales->previousDue,
                 'SaleMaster_Description'         => $data->sales->note,
@@ -420,7 +421,7 @@ class Sales extends CI_Controller
             $limit .= "limit 20";
         }
         if (isset($data->name) && $data->name != '') {
-            $clauses .= " and c.Customer_Code like '%$data->name%'";
+            $clauses .= " and (c.Customer_Code like '%$data->name%' or sm.SaleMaster_InvoiceNo like '%$data->name%')";
         }
 
         if (isset($data->salesId) && $data->salesId != 0 && $data->salesId != '') {
@@ -796,6 +797,7 @@ class Sales extends CI_Controller
                 'bank_id'                        => $data->sales->bankPaid > 0 ? $data->sales->bank_id : NULL,
                 'SaleMaster_PaidAmount'          => $data->sales->paid,
                 'returnAmount'                   => $data->sales->returnAmount,
+                'bankCharge'                     => $data->sales->bankCharge,
                 'SaleMaster_DueAmount'           => $data->sales->due,
                 'SaleMaster_Previous_Due'        => $data->sales->previousDue,
                 'SaleMaster_Description'         => $data->sales->note,

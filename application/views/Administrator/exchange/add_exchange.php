@@ -358,7 +358,7 @@
                         })
                         .then(res => {
                             let r = res.data;
-                            this.invoices = r.filter(item => item.status == 'a')
+                            this.invoices = r.sales;
                             loading(false)
                         })
                 } else {

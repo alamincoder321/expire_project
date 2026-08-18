@@ -513,6 +513,11 @@
 									<span style="cursor: pointer;color: red;" @click="removeBankCart(index)">X</span>
 								</td>
 							</tr>
+							<tr style="font-weight: 700;">
+								<td colspan="4">ChargeTotal</td>
+								<td v-text="sales.bankCharge"></td>
+								<td></td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
@@ -556,6 +561,7 @@
 					previousDue: 0,
 					due: 0,
 					returnAmount: 0,
+					bankCharge: 0,
 					isService: '<?php echo $isService; ?>',
 					note: ''
 				},
@@ -1076,6 +1082,11 @@
 				this.sales.subTotal = this.cart.reduce((prev, curr) => {
 					return prev + parseFloat(curr.salesRate * curr.quantity)
 				}, 0).toFixed(2);
+
+				this.sales.bankCharge = this.bankCart.reduce((pr, cu) => {
+					return pr + parseFloat((cu.amount / cu.per_amount) * cu.charge);
+				}, 0).toFixed(2);
+
 				if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid') {
 					this.sales.vat = this.cart.reduce((prev, curr) => {
 						return +prev + +(curr.total * (curr.vat / 100))
@@ -1150,6 +1161,8 @@
 					bank_name: this.selectedBank.bank_name,
 					account_number: this.selectedBank.account_number,
 					last_digit: this.selectedBank.last_digit,
+					per_amount: this.selectedBank.per_amount,
+					charge: this.selectedBank.charge,
 					amount: this.selectedBank.amount
 				}
 				let findInd = this.bankCart.findIndex(item => item.bank_id == bank.bank_id);
@@ -1166,7 +1179,7 @@
 					account_id: '',
 					display_name: 'select bank',
 					last_digit: '',
-					amount: ''
+					amount: '',
 				}
 			},
 			removeBankCart(sl) {
@@ -1313,6 +1326,8 @@
 					this.sales.due = sales.SaleMaster_DueAmount;
 					this.sales.previousDue = sales.SaleMaster_Previous_Due;
 					this.sales.note = sales.SaleMaster_Description;
+					this.sales.returnAmount = sales.returnAmount;
+					this.sales.bankCharge = sales.bankCharge;
 
 					this.oldCustomerId = sales.SalseCustomer_IDNo;
 					this.oldPreviousDue = sales.SaleMaster_Previous_Due;

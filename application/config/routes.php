@@ -80,7 +80,6 @@ $route['delete_campaign_product'] = 'Administrator/Products/deleteCampaignProduc
 // $route['GenerateBarcode/(:any)'] = 'BarcodeController/barcode_create/$1';
 $route['barcode/(:any)'] = 'BarcodeController/barcode_create/$1';
 
-
 $route['supplier'] = 'Administrator/Supplier';
 $route['add_supplier'] = 'Administrator/Supplier/addSupplier';
 $route['update_supplier'] = 'Administrator/Supplier/updateSupplier';
@@ -206,6 +205,14 @@ $route['salesrecord'] = 'Administrator/Sales/sales_record';
 $route['sales_record_print/(:any)'] = 'Administrator/Reports/sales_record_print/$1';
 $route['customerPaymentReport'] = 'Administrator/Customer/customer_payment_report';
 $route['chalan/(:any)'] = 'Administrator/Sales/chalan/$1';
+
+
+// day close
+$route['dayclose'] = 'Administrator/DayClose';
+$route['get_daycloses'] = 'Administrator/DayClose/getDayCloses';
+$route['add_dayclose'] = 'Administrator/DayClose/addDayClose';
+$route['update_dayclose'] = 'Administrator/DayClose/updateDayClose';
+$route['delete_dayclose'] = 'Administrator/DayClose/deleteDayClose';
 
 
 

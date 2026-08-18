@@ -181,6 +181,12 @@
 							<td colspan="2"></td>
 							<td style="text-align:right;">{{ totalTransportCost | decimal }}</td>
 						</tr>
+						
+						<tr>
+							<td colspan="4" style="text-align:right;">Bank Charge (-)</td>
+							<td colspan="2"></td>
+							<td style="text-align:right;">{{ totalBankCharge | decimal }}</td>
+						</tr>
 
 						<tr>
 							<td colspan="4" style="text-align:right;">Sales VAT (+)</td>
@@ -247,7 +253,7 @@
 							<td colspan="2"></td>
 							<td style="text-align:right;">
 								{{ ((parseFloat(totalProfit) + parseFloat(totalVat) + parseFloat(otherIncome)) - 
-									(parseFloat(totalDiscount) + parseFloat(totalPoint) + parseFloat(otherIncomeExpense.returned_amount) + parseFloat(otherIncomeExpense.damaged_amount) + parseFloat(otherIncomeExpense.expense) + parseFloat(otherIncomeExpense.employee_payment) + parseFloat(otherIncomeExpense.profit_distribute) + parseFloat(otherIncomeExpense.loan_interest) + parseFloat(otherIncomeExpense.assets_sales_profit_loss))).toFixed(2) }}
+									(parseFloat(totalDiscount) + parseFloat(totalBankCharge) + parseFloat(totalPoint) + parseFloat(otherIncomeExpense.returned_amount) + parseFloat(otherIncomeExpense.damaged_amount) + parseFloat(otherIncomeExpense.expense) + parseFloat(otherIncomeExpense.employee_payment) + parseFloat(otherIncomeExpense.profit_distribute) + parseFloat(otherIncomeExpense.loan_interest) + parseFloat(otherIncomeExpense.assets_sales_profit_loss))).toFixed(2) }}
 							</td>
 						</tr>
 					</tfoot>
@@ -304,6 +310,11 @@
 			totalTransportCost() {
 				return this.reportData.reduce((prev, cur) => {
 					return prev + parseFloat(cur.SaleMaster_Freight)
+				}, 0).toFixed(2);
+			},
+			totalBankCharge() {
+				return this.reportData.reduce((prev, cur) => {
+					return prev + parseFloat(cur.bankCharge)
 				}, 0).toFixed(2);
 			},
 			otherIncome() {

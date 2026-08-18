@@ -1,28 +1,32 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Reports extends CI_Controller {
-    public function __construct() {
+class Reports extends CI_Controller
+{
+    public function __construct()
+    {
         parent::__construct();
         $this->brunch = $this->session->userdata('BRANCHid');
         $access = $this->session->userdata('userId');
-         if($access == '' ){
+        if ($access == '') {
             redirect("Login");
         }
-        $this->load->model('Billing_model'); 
+        $this->load->model('Billing_model');
         $this->load->library('cart');
         $this->load->model('Model_table', "mt", TRUE);
         $this->load->helper('form');
-		$vars['branch_info'] = $this->Billing_model->company_branch_profile($this->brunch);
-		$this->load->vars($vars);
+        $vars['branch_info'] = $this->Billing_model->company_branch_profile($this->brunch);
+        $this->load->vars($vars);
     }
-    public function index(){
+    public function index()
+    {
         $data['title'] = "Product Sales";
         $data['content'] = $this->load->view('Administrator/sales/product_sales', $data, TRUE);
         $this->load->view('Administrator/index', $data);
     }
-    public function supplierList(){
+    public function supplierList()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
         $data['title'] = "Supplier List";
@@ -30,233 +34,411 @@ class Reports extends CI_Controller {
         $this->load->view("Administrator/index", $data);
     }
 
-    public function price_listprint()  {
+    public function price_listprint()
+    {
         $data['title'] = "Customer List";
-		$select_one = $this->session->userdata('select_one');
-		$category = $category = $this->session->userdata('category');
-		$product = $product = $this->session->userdata('product');
+        $select_one = $this->session->userdata('select_one');
+        $category = $category = $this->session->userdata('category');
+        $product = $product = $this->session->userdata('product');
 
-		
-		if($select_one =='All'){
-			$data['products'] = $this->Product_model->get_all_product_price_list();
-		}elseif($select_one == 'Category'){
-			$data['category'] = $this->Other_model->get_single_category_info($category);
-		}elseif($select_one == 'Product'){
-			$data['products'] = $this->Product_model->get_singel_product_pice_list($product);
-		}
+
+        if ($select_one == 'All') {
+            $data['products'] = $this->Product_model->get_all_product_price_list();
+        } elseif ($select_one == 'Category') {
+            $data['category'] = $this->Other_model->get_single_category_info($category);
+        } elseif ($select_one == 'Product') {
+            $data['products'] = $this->Product_model->get_singel_product_pice_list($product);
+        }
         $this->load->view('Administrator/reports/price_listprint', $data);
     }
-    public function employeelist()  {
+    public function employeelist()
+    {
         $data['title'] = "Employee List";
         $this->load->view('Administrator/reports/employeelist', $data);
     }
-    public function price_list()  {
+    public function price_list()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
         $data['title'] = "Price List";
         $data['content'] = $this->load->view('Administrator/reports/price_list', $data, TRUE);
         $this->load->view('Administrator/index', $data);
     }
-	
-	public function productlist()
-	{
-		$data['title']  = 'Product List';
+
+    public function productlist()
+    {
+        $data['title']  = 'Product List';
         $data['content'] = $this->load->view('Administrator/reports/productList', $data, true);
         $this->load->view('Administrator/index', $data);
-	}
-	
+    }
+
     public function campaignlist()
-	{
-		$data['title']  = 'Campaign Product List';
+    {
+        $data['title']  = 'Campaign Product List';
         $data['content'] = $this->load->view('Administrator/reports/campaignList', $data, true);
         $this->load->view('Administrator/index', $data);
-	}
-	
-	public function cashStatment() {
+    }
+
+    public function cashStatment()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
-        $datas['title'] = "Cash Statement"; 
+        $datas['title'] = "Cash Statement";
         $data['content'] = $this->load->view('Administrator/reports/cashStatement', $datas, TRUE);
         $this->load->view('Administrator/index', $data);
     }
-	
-    public function specialReport() {
+
+    public function specialReport()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
-        $datas['title'] = "Cash Statement"; 
+        $datas['title'] = "Cash Statement";
         $data['content'] = $this->load->view('Administrator/reports/special', $datas, TRUE);
         $this->load->view('Administrator/index', $data);
     }
+
+    // public function special_report_all_data()
+    // {
+    //     $data = json_decode($this->input->raw_input_stream);
+    //     $brunch = $this->session->userdata('BRANCHid');
+
+    //     $dateFrom = $data->fromDate;
+    //     $dateTo   = $data->toDate;
+
+    //     $query = "
+    //         select
+    //         u.User_SlNo,
+    //         u.FullName,
+    //         u.FullName as AddBy,
+
+    //         (select ifnull(sum(sm.SaleMaster_TotalSaleAmount), 0) from tbl_salesmaster sm
+    //         where sm.Status = 'a' and sm.AddBy = u.FullName
+    //         and sm.AddTime between '$dateFrom' and '$dateTo') as totalsales,
+
+    //         (select ifnull(sum(sm.SaleMaster_cashPaid), 0) from tbl_salesmaster sm
+    //         where sm.Status = 'a' and sm.AddBy = u.FullName
+    //         and sm.AddTime between '$dateFrom' and '$dateTo') as cashamount,
+
+    //         (select ifnull(sum(sm.SaleMaster_bankPaid), 0) from tbl_salesmaster sm
+    //         where sm.Status = 'a' and sm.AddBy = u.FullName
+    //         and sm.AddTime between '$dateFrom' and '$dateTo') as bankamount,
+
+    //         (select ifnull(sum(sm.returnAmount), 0) from tbl_salesmaster sm
+    //         where sm.Status = 'a' and sm.AddBy = u.FullName
+    //         and sm.AddTime between '$dateFrom' and '$dateTo') as changeamount,
+
+    //         (select ifnull(sum(sr.SaleReturn_ReturnAmount), 0) from tbl_salereturn sr
+    //         where sr.Status = 'a' and sr.AddBy = u.FullName 
+    //         and sr.AddTime between '$dateFrom' and '$dateTo') as returnamount,
+
+    //         (select ifnull(sum(ex.total), 0) from tbl_exchange ex
+    //         where ex.Status = 'a' and ex.AddBy = u.FullName 
+    //         and ex.AddTime between '$dateFrom' and '$dateTo') as exchangeamount
+
+    //         from tbl_user u
+    //         where u.status = 'a'
+    //         and u.Brunch_ID = '$brunch'
+    //         ".(!empty($data->userFullName) ? " and u.FullName = '$data->userFullName'" : "")."
+    //         ";
+
+    //     $totals = $this->db->query($query)->result();
+
+    //     echo json_encode($totals);
+
+    // }
 
     public function special_report_all_data()
     {
         $data = json_decode($this->input->raw_input_stream);
         $brunch = $this->session->userdata('BRANCHid');
-        
+
         $dateFrom = $data->fromDate;
         $dateTo   = $data->toDate;
 
+        /*
+    |--------------------------------------------------------------------------
+    | Previous Day Close
+    |--------------------------------------------------------------------------
+    | fromDate-এর আগের সর্বশেষ Day Close
+    */
+        $previousDayClose = $this->db
+            ->where('branch_id', $brunch)
+            ->where('close_date_time <', $dateFrom . ' 00:00:00')
+            ->order_by('close_date_time', 'DESC')
+            ->limit(1)
+            ->get('tbl_dayclose')
+            ->row();
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Current Day Close
+    |--------------------------------------------------------------------------
+    | dateTo-এর দিনের সর্বশেষ Day Close
+    */
+        $currentDayClose = $this->db
+            ->where('branch_id', $brunch)
+            ->where('close_date_time >=', $dateTo . ' 00:00:00')
+            ->where('close_date_time <=', $dateTo . ' 23:59:59')
+            ->order_by('close_date_time', 'DESC')
+            ->limit(1)
+            ->get('tbl_dayclose')
+            ->row();
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Report Start Time
+    |--------------------------------------------------------------------------
+    */
+
+        if ($previousDayClose) {
+            $reportFrom = $previousDayClose->close_date_time;
+        } else {
+            $reportFrom = $dateFrom . ' 00:00:00';
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Report End Time
+    |--------------------------------------------------------------------------
+    */
+
+        if ($currentDayClose) {
+            $reportTo = $currentDayClose->close_date_time;
+        } else {
+            $reportTo = $dateTo . ' 23:59:59';
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | User Condition
+    |--------------------------------------------------------------------------
+    */
+
+        $userCondition = '';
+
+        if (!empty($data->userFullName)) {
+            $userCondition = " AND u.FullName = " . $this->db->escape($data->userFullName);
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Main Query
+    |--------------------------------------------------------------------------
+    */
+
         $query = "
-            select
+        SELECT
             u.User_SlNo,
             u.FullName,
-            u.FullName as AddBy,
-            
-            (select ifnull(sum(sm.SaleMaster_TotalSaleAmount), 0) from tbl_salesmaster sm
-            where sm.Status = 'a' and sm.AddBy = u.FullName
-            and sm.SaleMaster_SaleDate between '$dateFrom' and '$dateTo') as totalsales,
-            
-            (select ifnull(sum(sm.SaleMaster_cashPaid), 0) from tbl_salesmaster sm
-            where sm.Status = 'a' and sm.AddBy = u.FullName
-            and sm.SaleMaster_SaleDate between '$dateFrom' and '$dateTo') as cashamount,
-            
-            (select ifnull(sum(sm.SaleMaster_bankPaid), 0) from tbl_salesmaster sm
-            where sm.Status = 'a' and sm.AddBy = u.FullName
-            and sm.SaleMaster_SaleDate between '$dateFrom' and '$dateTo') as bankamount,
-            
-            (select ifnull(sum(sm.returnAmount), 0) from tbl_salesmaster sm
-            where sm.Status = 'a' and sm.AddBy = u.FullName
-            and sm.SaleMaster_SaleDate between '$dateFrom' and '$dateTo') as changeamount,
-            
-            (select ifnull(sum(sr.SaleReturn_ReturnAmount), 0) from tbl_salereturn sr
-            where sr.Status = 'a' and sr.AddBy = u.FullName 
-            and sr.SaleReturn_ReturnDate between '$dateFrom' and '$dateTo') as returnamount,
-            
-            (select ifnull(sum(ex.total), 0) from tbl_exchange ex
-            where ex.Status = 'a' and ex.AddBy = u.FullName 
-            and ex.date between '$dateFrom' and '$dateTo') as exchangeamount
-            
-            from tbl_user u
-            where u.status = 'a'
-            and u.Brunch_ID = '$brunch'
-            ".(!empty($data->userFullName) ? " and u.FullName = '$data->userFullName'" : "")."
-            ";
+            u.FullName AS AddBy,
+
+            /* Total Sale */
+            (
+                SELECT IFNULL(SUM(sm.SaleMaster_TotalSaleAmount), 0)
+                FROM tbl_salesmaster sm
+                WHERE sm.Status = 'a'
+                AND sm.AddBy = u.FullName
+                AND sm.AddTime > '$reportFrom'
+                AND sm.AddTime <= '$reportTo'
+            ) AS totalsales,
+
+
+            /* Cash */
+            (
+                SELECT IFNULL(SUM(sm.SaleMaster_cashPaid), 0)
+                FROM tbl_salesmaster sm
+                WHERE sm.Status = 'a'
+                AND sm.AddBy = u.FullName
+                AND sm.AddTime > '$reportFrom'
+                AND sm.AddTime <= '$reportTo'
+            ) AS cashamount,
+
+
+            /* Bank */
+            (
+                SELECT IFNULL(SUM(sm.SaleMaster_bankPaid), 0)
+                FROM tbl_salesmaster sm
+                WHERE sm.Status = 'a'
+                AND sm.AddBy = u.FullName
+                AND sm.AddTime > '$reportFrom'
+                AND sm.AddTime <= '$reportTo'
+            ) AS bankamount,
+
+
+            /* Change */
+            (
+                SELECT IFNULL(SUM(sm.returnAmount), 0)
+                FROM tbl_salesmaster sm
+                WHERE sm.Status = 'a'
+                AND sm.AddBy = u.FullName
+                AND sm.AddTime > '$reportFrom'
+                AND sm.AddTime <= '$reportTo'
+            ) AS changeamount,
+
+
+            /* Return */
+            (
+                SELECT IFNULL(SUM(sr.SaleReturn_ReturnAmount), 0)
+                FROM tbl_salereturn sr
+                WHERE sr.Status = 'a'
+                AND sr.AddBy = u.FullName
+                AND sr.AddTime > '$reportFrom'
+                AND sr.AddTime <= '$reportTo'
+            ) AS returnamount,
+
+
+            /* Exchange */
+            (
+                SELECT IFNULL(SUM(ex.total), 0)
+                FROM tbl_exchange ex
+                WHERE ex.Status = 'a'
+                AND ex.AddBy = u.FullName
+                AND ex.AddTime > '$reportFrom'
+                AND ex.AddTime <= '$reportTo'
+            ) AS exchangeamount
+
+
+        FROM tbl_user u
+
+        WHERE u.status = 'a'
+        AND u.Brunch_ID = '$brunch'
+
+        $userCondition
+    ";
+
 
         $totals = $this->db->query($query)->result();
 
         echo json_encode($totals);
-
     }
 
 
-    public function balanceSheet() {
+    public function balanceSheet()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
         $datas['title'] = "Balance In Out";
         $data['content'] = $this->load->view('Administrator/reports/balanceSheet', $datas, TRUE);
         $this->load->view('Administrator/index', $data);
     }
-		
-    public function branch_stock_print(){
-		$data['Branch_ID'] = $BranchID = $this->session->userdata('Branch_ID');
+
+    public function branch_stock_print()
+    {
+        $data['Branch_ID'] = $BranchID = $this->session->userdata('Branch_ID');
         $data['Branch_category'] = $category = $this->session->userdata('Branch_category');
         $this->session->set_userdata($data);
-		if($category != 'All'){
-			$this->db->SELECT("tbl_product.*, tbl_productcategory.*,tbl_unit.*,tbl_color.*,tbl_brand.* FROM tbl_product left join tbl_productcategory on tbl_productcategory.ProductCategory_SlNo= tbl_product.ProductCategory_ID left join tbl_unit on tbl_unit.Unit_SlNo=tbl_product.Unit_ID  LEFT JOIN tbl_color ON tbl_color.color_SiNo=tbl_product.color LEFT JOIN tbl_brand ON tbl_brand.brand_SiNo=tbl_product.brand LEFT JOIN tbl_country ON tbl_country.Country_SlNo=tbl_product.country where tbl_product.ProductCategory_ID = '$category' AND tbl_product.Product_branchid = '$BranchID'");
-			$query = $this->db->get();
-			$result = $query->result();
-			$data['product'] = $result;
-			$data['show'] = 1;
-		}else{
-			$this->db->SELECT('*');
-			$this->db->from('tbl_productcategory');
-			$this->db->where('category_branchid',$BranchID);
-			$query = $this->db->get();
-			$category = $query->result();
-			
-			foreach($category as $vcategory)
-			{
-				$categoryid = $vcategory->ProductCategory_SlNo;
-				$this->db->SELECT("tbl_product.*, tbl_productcategory.*,tbl_unit.*,tbl_color.*,tbl_brand.* FROM tbl_product left join tbl_productcategory on tbl_productcategory.ProductCategory_SlNo= tbl_product.ProductCategory_ID left join tbl_unit on tbl_unit.Unit_SlNo=tbl_product.Unit_ID  LEFT JOIN tbl_color ON tbl_color.color_SiNo=tbl_product.color LEFT JOIN tbl_brand ON tbl_brand.brand_SiNo=tbl_product.brand LEFT JOIN tbl_country ON tbl_country.Country_SlNo=tbl_product.country where tbl_product.ProductCategory_ID = '$categoryid' AND tbl_product.Product_branchid = '$BranchID'");
-				$query = $this->db->get();
-				$productCat[] = $query->result();
-			}
-			
-			$data['category'] = $category;
-			$data['productCat'] = @$productCat;
-			$data['show'] = 0;
-		}
+        if ($category != 'All') {
+            $this->db->SELECT("tbl_product.*, tbl_productcategory.*,tbl_unit.*,tbl_color.*,tbl_brand.* FROM tbl_product left join tbl_productcategory on tbl_productcategory.ProductCategory_SlNo= tbl_product.ProductCategory_ID left join tbl_unit on tbl_unit.Unit_SlNo=tbl_product.Unit_ID  LEFT JOIN tbl_color ON tbl_color.color_SiNo=tbl_product.color LEFT JOIN tbl_brand ON tbl_brand.brand_SiNo=tbl_product.brand LEFT JOIN tbl_country ON tbl_country.Country_SlNo=tbl_product.country where tbl_product.ProductCategory_ID = '$category' AND tbl_product.Product_branchid = '$BranchID'");
+            $query = $this->db->get();
+            $result = $query->result();
+            $data['product'] = $result;
+            $data['show'] = 1;
+        } else {
+            $this->db->SELECT('*');
+            $this->db->from('tbl_productcategory');
+            $this->db->where('category_branchid', $BranchID);
+            $query = $this->db->get();
+            $category = $query->result();
+
+            foreach ($category as $vcategory) {
+                $categoryid = $vcategory->ProductCategory_SlNo;
+                $this->db->SELECT("tbl_product.*, tbl_productcategory.*,tbl_unit.*,tbl_color.*,tbl_brand.* FROM tbl_product left join tbl_productcategory on tbl_productcategory.ProductCategory_SlNo= tbl_product.ProductCategory_ID left join tbl_unit on tbl_unit.Unit_SlNo=tbl_product.Unit_ID  LEFT JOIN tbl_color ON tbl_color.color_SiNo=tbl_product.color LEFT JOIN tbl_brand ON tbl_brand.brand_SiNo=tbl_product.brand LEFT JOIN tbl_country ON tbl_country.Country_SlNo=tbl_product.country where tbl_product.ProductCategory_ID = '$categoryid' AND tbl_product.Product_branchid = '$BranchID'");
+                $query = $this->db->get();
+                $productCat[] = $query->result();
+            }
+
+            $data['category'] = $category;
+            $data['productCat'] = @$productCat;
+            $data['show'] = 0;
+        }
         $this->load->view('Administrator/reports/branch_stock_print', $data);
     }
-	
-	public function selectOne($value){
-		if($value == 'Category')
-		{
-			$category = $this->Billing_model->select_category_by_branch($this->brunch);
-			?>
-			<select id="category"  data-placeholder="Choose a Category ....." class="chosen-select" style="width:200px">
-				<option value=""></option>		
-			<?php
-			foreach($category as $vcategory)
-			{
-			?>
-				<option value="<?php echo $vcategory->ProductCategory_SlNo; ?>"><?php echo $vcategory->ProductCategory_Name; ?></option>
-			<?php
-			}
-			?>
-			</select>
-			<?php
-		}else{
-			$products = $this->Product_model->products_by_brunch();
-			//echo "<pre>";print_r($product);exit;
-			?>
-			<select id="product"  data-placeholder="Choose a Product ....." class="chosen-select" style="width:200px">
-				<option value=""></option>		
-			<?php
-			foreach($products as $product)
-			{
-			?>
-				<option value="<?php echo $product->Product_SlNo; ?>"><?php echo $product->Product_Name; ?>-<?php echo $product->Product_Code; ?></option>
-			<?php
-			}
-			?>
-			</select>
-			<?php
-		}
-	}
-	
-	public function price_list_report(){
-		$session['select_one'] = $select_one = $this->input->post('select_one');
-		$session['category'] = $category = $this->input->post('category');
-		$session['product'] = $product = $this->input->post('product');
-		$this->session->set_userdata($session);
 
-		if($select_one =='All'){
-			$data['products'] = $this->Product_model->get_all_product_price_list();
-		}elseif($select_one == 'Category'){
-			$data['category'] = $this->Other_model->get_single_category_info($category);
-		}elseif($select_one == 'Product'){
-			$data['products'] = $this->Product_model->get_singel_product_pice_list($product);
+    public function selectOne($value)
+    {
+        if ($value == 'Category') {
+            $category = $this->Billing_model->select_category_by_branch($this->brunch);
+?>
+            <select id="category" data-placeholder="Choose a Category ....." class="chosen-select" style="width:200px">
+                <option value=""></option>
+                <?php
+                foreach ($category as $vcategory) {
+                ?>
+                    <option value="<?php echo $vcategory->ProductCategory_SlNo; ?>"><?php echo $vcategory->ProductCategory_Name; ?></option>
+                <?php
+                }
+                ?>
+            </select>
+        <?php
+        } else {
+            $products = $this->Product_model->products_by_brunch();
+            //echo "<pre>";print_r($product);exit;
+        ?>
+            <select id="product" data-placeholder="Choose a Product ....." class="chosen-select" style="width:200px">
+                <option value=""></option>
+                <?php
+                foreach ($products as $product) {
+                ?>
+                    <option value="<?php echo $product->Product_SlNo; ?>"><?php echo $product->Product_Name; ?>-<?php echo $product->Product_Code; ?></option>
+                <?php
+                }
+                ?>
+            </select>
+<?php
         }
-        
-		$this->load->view('Administrator/reports/price_list_search', $data);
-	}
-	
-	public function profitLossPrint(){
-		$data['searchtype'] = $this->session->userdata('searchtype');
-		$data['ProductID'] = $this->session->userdata('ProductID');
-		$data['startdate'] = $this->session->userdata('startdate');
-		$data['enddate'] = $this->session->userdata('enddate');
-		$this->load->view('Administrator/reports/profit_loss',$data);
     }
-    
-    public function reOrderList(){
+
+    public function price_list_report()
+    {
+        $session['select_one'] = $select_one = $this->input->post('select_one');
+        $session['category'] = $category = $this->input->post('category');
+        $session['product'] = $product = $this->input->post('product');
+        $this->session->set_userdata($session);
+
+        if ($select_one == 'All') {
+            $data['products'] = $this->Product_model->get_all_product_price_list();
+        } elseif ($select_one == 'Category') {
+            $data['category'] = $this->Other_model->get_single_category_info($category);
+        } elseif ($select_one == 'Product') {
+            $data['products'] = $this->Product_model->get_singel_product_pice_list($product);
+        }
+
+        $this->load->view('Administrator/reports/price_list_search', $data);
+    }
+
+    public function profitLossPrint()
+    {
+        $data['searchtype'] = $this->session->userdata('searchtype');
+        $data['ProductID'] = $this->session->userdata('ProductID');
+        $data['startdate'] = $this->session->userdata('startdate');
+        $data['enddate'] = $this->session->userdata('enddate');
+        $this->load->view('Administrator/reports/profit_loss', $data);
+    }
+
+    public function reOrderList()
+    {
         $data['title'] = "Re-Order List";
         $data['content'] = $this->load->view('Administrator/reports/reorder_list', $data, true);
         $this->load->view('Administrator/index', $data);
     }
 
-    public function dayBook(){
+    public function dayBook()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
         $data['title'] = "Daily Book";
@@ -264,9 +446,10 @@ class Reports extends CI_Controller {
         $this->load->view('Administrator/index', $data);
     }
 
-    public function balance_sheet() {
+    public function balance_sheet()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
         $datas['title'] = "Balance Sheet";
@@ -277,18 +460,18 @@ class Reports extends CI_Controller {
 
     public function getBalanceSheet()
     {
-        $res = [ 'success'   => false, 'message'  => 'Invalid' ];
+        $res = ['success'   => false, 'message'  => 'Invalid'];
 
         try {
             $branchId = $this->brunch;
             $data       = json_decode($this->input->raw_input_stream);
             $date       = null;
 
-            if(isset($data->date) && $data->date != ''){
+            if (isset($data->date) && $data->date != '') {
                 $date = new DateTime($data->date);
                 $date = $date->modify('+1 day')->format('Y-m-d');
             }
-            
+
             $cash_balance = $this->mt->getTransactionSummary($date)->cash_balance;
             $bank_accounts = $this->mt->getBankTransactionSummary(null, $date);
             $loan_accounts = $this->mt->getLoanTransactionSummary(null, $date);
@@ -297,7 +480,9 @@ class Reports extends CI_Controller {
             //assets
             $assets = $this->mt->assetsReport('', $date);
 
-            $assets = array_reduce($assets, function($prev, $curr){ return $prev + $curr->approx_amount;});
+            $assets = array_reduce($assets, function ($prev, $curr) {
+                return $prev + $curr->approx_amount;
+            });
 
             //customer prev due adjust
             $customer_prev_due = $this->db->query("
@@ -310,9 +495,13 @@ class Reports extends CI_Controller {
             $customer_dues = $this->mt->customerDue(" and c.status = 'a'", $date);
             $bad_debts = $this->mt->customerDue(" and c.status = 'd'", $date);
 
-            $customer_dues = array_reduce($customer_dues, function($prev, $curr){ return $prev + $curr->dueAmount;});
+            $customer_dues = array_reduce($customer_dues, function ($prev, $curr) {
+                return $prev + $curr->dueAmount;
+            });
 
-            $bad_debts = array_reduce($bad_debts, function($prev, $curr){ return $prev + $curr->dueAmount;});
+            $bad_debts = array_reduce($bad_debts, function ($prev, $curr) {
+                return $prev + $curr->dueAmount;
+            });
 
             //stock values
             $stocks = $this->db->query("
@@ -384,9 +573,10 @@ class Reports extends CI_Controller {
             ")->result();
 
             $stock_value = array_sum(
-                array_map(function($product){
+                array_map(function ($product) {
                     return $product->stock_value;
-                }, $stocks));
+                }, $stocks)
+            );
 
             //supplier prev due adjust
             $supplier_prev_due = $this->db->query("
@@ -398,7 +588,9 @@ class Reports extends CI_Controller {
             //supplier due
             $supplier_dues = $this->mt->supplierDue("", $date);
 
-            $supplier_dues = array_reduce($supplier_dues, function($prev, $curr){ return $prev + $curr->due;});
+            $supplier_dues = array_reduce($supplier_dues, function ($prev, $curr) {
+                return $prev + $curr->due;
+            });
 
             //profit loss
             $sales = $this->db->query("
@@ -410,7 +602,7 @@ class Reports extends CI_Controller {
                 " . ($date == null ? "" : " and sm.SaleMaster_SaleDate < '$date'") . "
             ", $this->session->userdata('BRANCHid'))->result();
 
-            foreach($sales as $sale){
+            foreach ($sales as $sale) {
                 $sale->saleDetails = $this->db->query("
                     select
                         sd.*,
@@ -422,21 +614,21 @@ class Reports extends CI_Controller {
                 ", $sale->SaleMaster_SlNo)->result();
             }
 
-            $profits = array_reduce($sales, function($prev, $curr){ 
-                return $prev + array_reduce($curr->saleDetails, function($p, $c){
+            $profits = array_reduce($sales, function ($prev, $curr) {
+                return $prev + array_reduce($curr->saleDetails, function ($p, $c) {
                     return $p + $c->profit_loss;
                 });
             });
 
-            $total_transport_cost = array_reduce($sales, function($prev, $curr){ 
+            $total_transport_cost = array_reduce($sales, function ($prev, $curr) {
                 return $prev + $curr->SaleMaster_Freight;
             });
-            
-            $total_discount = array_reduce($sales, function($prev, $curr){ 
+
+            $total_discount = array_reduce($sales, function ($prev, $curr) {
                 return $prev + $curr->SaleMaster_TotalDiscountAmount;
             });
 
-            $total_vat = array_reduce($sales, function($prev, $curr){ 
+            $total_vat = array_reduce($sales, function ($prev, $curr) {
                 return $prev + $curr->SaleMaster_TaxAmount;
             });
 
@@ -539,7 +731,7 @@ class Reports extends CI_Controller {
                 ) as returned_amount
             ")->row();
 
-            $net_profit = ($profits + $total_transport_cost + $other_income_expense->income + $other_income_expense->purchase_discount + $total_vat) - ($total_discount + $other_income_expense->returned_amount + $other_income_expense->purchase_transport_cost + $other_income_expense->purchase_vat + $other_income_expense->damaged_amount + $other_income_expense->expense + $other_income_expense->employee_payment + $other_income_expense->profit_distribute + $other_income_expense->loan_interest + $other_income_expense->assets_sales_profit_loss );
+            $net_profit = ($profits + $total_transport_cost + $other_income_expense->income + $other_income_expense->purchase_discount + $total_vat) - ($total_discount + $other_income_expense->returned_amount + $other_income_expense->purchase_transport_cost + $other_income_expense->purchase_vat + $other_income_expense->damaged_amount + $other_income_expense->expense + $other_income_expense->employee_payment + $other_income_expense->profit_distribute + $other_income_expense->loan_interest + $other_income_expense->assets_sales_profit_loss);
 
             $statements = [
                 'assets'            => $assets,
@@ -556,10 +748,9 @@ class Reports extends CI_Controller {
                 'net_profit'        => $net_profit,
             ];
 
-            $res = [ 'success'   => true, 'statements'  => $statements ];
-
-        } catch (Exception $ex){
-            $res = ['success'=>false, 'message'=>$ex->getMessage()];
+            $res = ['success'   => true, 'statements'  => $statements];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
         }
 
         echo json_encode($res);

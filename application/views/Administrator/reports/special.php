@@ -63,59 +63,61 @@
 			</form>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-md-12" style="padding-top:15px;">
+	<div class="row" style="display: flex;align-items:center;margin-bottom: 5px;">
+		<div class="col-md-6" style="padding-top:10px;">
+			<a href="/dayclose" target="_blank" class="btn btn-xs btn-primary" style="padding: 5px 15px;"> Day Close Entry </a>
+		</div>
+		<div class="col-md-6 text-right" style="padding-top:10px;">
 			<a href="" @click.prevent="print"><i class="fa fa-print"></i> Print</a>
 		</div>
 	</div>
 
 	<div id="printContent">
+		<table class="table table-bordered table-hover table-striped">
+			<thead>
+				<tr>
+					<td colspan="8">
+						<h2>Transaction Statement</h2>
+					</td>
+				</tr>
+				<tr>
+					<td>Name</td>
+					<td>Total Sale Amount</td>
+					<td>Cash Amount</td>
+					<td>Bank Amount</td>
+					<td>Change Amount (optional)</td>
+					<td>Return Amount</td>
+					<td>Exchange Amount</td>
+					<td>Close Balance</td>
+				</tr>
+			</thead>
+			<tr v-for="statement in special_report_all">
+				<td v-text="statement.AddBy"></td>
+				<td v-text="statement.totalsales"></td>
+				<td v-text="statement.cashamount"></td>
+				<td v-text="statement.bankamount"></td>
+				<td v-text="statement.changeamount"></td>
+				<td v-text="statement.returnamount"></td>
+				<td v-text="statement.exchangeamount"></td>
+				<td>{{ closeBlance(statement)}}</td>
 
-				<table class="table table-bordered table-hover table-striped">
-					<thead>
-						<tr>
-							<td colspan="8">
-								<h2>Transaction Statement</h2>
-							</td>
-						</tr>
-						<tr>
-							<td>Name</td>
-							<td>Total Sale Amount</td>
-							<td>Cash Amount</td>
-							<td>Bank Amount</td>
-							<td>Change Amount (optional)</td>
-							<td>Return Amount</td>
-							<td>Exchange Amount</td>
-							<td>Close Balance</td>
-						</tr>
-					</thead>
-					<tr v-for="statement in special_report_all">
-						<td v-text="statement.AddBy"></td>
-						<td v-text="statement.totalsales"></td>
-						<td v-text="statement.cashamount"></td>
-						<td v-text="statement.bankamount"></td>
-						<td v-text="statement.changeamount"></td>
-						<td v-text="statement.returnamount"></td>
-						<td v-text="statement.exchangeamount"></td>
-						<td>{{ closeBlance(statement)}}</td>
+			</tr>
+			<tr style="font-weight: bold; background-color: #ccc">
+				<td>Total</td>
+				<td v-text="totals_report_all.totalsales"></td>
+				<td v-text="totals_report_all.cashamount"></td>
+				<td v-text="totals_report_all.bankamount"></td>
+				<td v-text="totals_report_all.changeamount"></td>
+				<td v-text="totals_report_all.returnamount"></td>
+				<td v-text="totals_report_all.exchangeamount"></td>
+				<td>{{ closeBlance(totals_report_all)}}</td>
+			</tr>
 
-					</tr>
-					<tr style="font-weight: bold; background-color: #ccc">
-						<td >Total</td>
-						<td v-text="totals_report_all.totalsales"></td>
-						<td v-text="totals_report_all.cashamount"></td>
-						<td v-text="totals_report_all.bankamount"></td>
-						<td v-text="totals_report_all.changeamount"></td>
-						<td v-text="totals_report_all.returnamount"></td>
-						<td v-text="totals_report_all.exchangeamount"></td>
-						<td >{{ closeBlance(totals_report_all)}}</td>
-					</tr>
-				
-					<tr v-if="special_report_all.length == 0">
-						<td colspan="8"> No Record Found </td>
-					</tr>
-				</table>
-		
+			<tr v-if="special_report_all.length == 0">
+				<td colspan="8"> No Record Found </td>
+			</tr>
+		</table>
+
 	</div>
 </div>
 
@@ -150,7 +152,7 @@
 			this.getUser();
 			this.special_report_all_data();
 		},
-	
+
 		methods: {
 			getUser() {
 				axios.get('/get_users')
@@ -164,7 +166,7 @@
 			},
 
 			closeBlance(statement) {
-				let data= parseFloat(statement.totalsales);
+				let data = parseFloat(statement.totalsales);
 				data += parseFloat(statement.exchangeamount);
 				data -= parseFloat(statement.returnamount);
 				data = data.toFixed(2);
