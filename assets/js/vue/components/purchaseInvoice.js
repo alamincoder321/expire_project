@@ -40,7 +40,6 @@ const purchaseInvoice = Vue.component('purchase-invoice', {
                                 <tr>
                                     <td>Sl.</td>
                                     <td>Description</td>
-                                    <td>Expiry Date</td>
                                     <td>Quantity</td>
                                     <td>Rate</td>
                                     <td align="right">Total</td>

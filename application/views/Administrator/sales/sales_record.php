@@ -251,6 +251,7 @@
 									Total: {{ sale.SaleMaster_TotalSaleAmount }}<br>
 									Paid: {{ sale.SaleMaster_PaidAmount }}<br>
 									Return: {{ sale.returnAmount }}
+									Due: {{ sale.SaleMaster_DueAmount }}
 								</td>
 								<td></td>
 							</tr>
@@ -277,6 +278,7 @@
 							<th>Cash</th>
 							<th>Bank</th>
 							<th>Return</th>
+							<th>Due</th>
 							<th>Note</th>
 							<th>Action</th>
 						</tr>
@@ -303,6 +305,7 @@
 							<td style="text-align:right;">{{ sale.SaleMaster_cashPaid }}</td>
 							<td style="text-align:right;">{{ sale.SaleMaster_bankPaid }}</td>
 							<td style="text-align:right;">{{ sale.returnAmount }}</td>
+							<td style="text-align:right;">{{ sale.SaleMaster_DueAmount }}</td>
 							<td style="text-align:left;">{{ sale.SaleMaster_Description }}</td>
 							<td style="text-align:center;">
 								<a href="" title="Sale Invoice" v-bind:href="`/sale_invoice_print/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file"></i></a>
@@ -340,6 +343,7 @@
 							<td style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_cashPaid)}, 0).toFixed(2) }}</td>
 							<td style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_bankPaid)}, 0).toFixed(2) }}</td>
 							<td style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + parseFloat(curr.returnAmount)}, 0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_DueAmount)}, 0).toFixed(2) }}</td>
 							<td></td>
 							<td></td>
 						</tr>
@@ -352,6 +356,7 @@
 							<td style="text-align:right;">Cash</td>
 							<td style="text-align:right;">Bank</td>
 							<td style="text-align:right;">Return</td>
+							<td style="text-align:right;">Due</td>
 							<td></td>
 							<td></td>
 						</tr>
@@ -802,6 +807,7 @@
 						'Total': item.SaleMaster_TotalSaleAmount,
 						'Paid': item.SaleMaster_PaidAmount,
 						'Return': item.returnAmount,
+						'Due': item.SaleMaster_DueAmount,
 						'Note': item.SaleMaster_Description
 					}
 				})
