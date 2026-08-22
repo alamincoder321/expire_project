@@ -103,251 +103,107 @@ class Reports extends CI_Controller
         $this->load->view('Administrator/index', $data);
     }
 
-    // public function special_report_all_data()
-    // {
-    //     $data = json_decode($this->input->raw_input_stream);
-    //     $brunch = $this->session->userdata('BRANCHid');
-
-    //     $dateFrom = $data->fromDate;
-    //     $dateTo   = $data->toDate;
-
-    //     $query = "
-    //         select
-    //         u.User_SlNo,
-    //         u.FullName,
-    //         u.FullName as AddBy,
-
-    //         (select ifnull(sum(sm.SaleMaster_TotalSaleAmount), 0) from tbl_salesmaster sm
-    //         where sm.Status = 'a' and sm.AddBy = u.FullName
-    //         and sm.AddTime between '$dateFrom' and '$dateTo') as totalsales,
-
-    //         (select ifnull(sum(sm.SaleMaster_cashPaid), 0) from tbl_salesmaster sm
-    //         where sm.Status = 'a' and sm.AddBy = u.FullName
-    //         and sm.AddTime between '$dateFrom' and '$dateTo') as cashamount,
-
-    //         (select ifnull(sum(sm.SaleMaster_bankPaid), 0) from tbl_salesmaster sm
-    //         where sm.Status = 'a' and sm.AddBy = u.FullName
-    //         and sm.AddTime between '$dateFrom' and '$dateTo') as bankamount,
-
-    //         (select ifnull(sum(sm.returnAmount), 0) from tbl_salesmaster sm
-    //         where sm.Status = 'a' and sm.AddBy = u.FullName
-    //         and sm.AddTime between '$dateFrom' and '$dateTo') as changeamount,
-
-    //         (select ifnull(sum(sr.SaleReturn_ReturnAmount), 0) from tbl_salereturn sr
-    //         where sr.Status = 'a' and sr.AddBy = u.FullName 
-    //         and sr.AddTime between '$dateFrom' and '$dateTo') as returnamount,
-
-    //         (select ifnull(sum(ex.total), 0) from tbl_exchange ex
-    //         where ex.Status = 'a' and ex.AddBy = u.FullName 
-    //         and ex.AddTime between '$dateFrom' and '$dateTo') as exchangeamount
-
-    //         from tbl_user u
-    //         where u.status = 'a'
-    //         and u.Brunch_ID = '$brunch'
-    //         ".(!empty($data->userFullName) ? " and u.FullName = '$data->userFullName'" : "")."
-    //         ";
-
-    //     $totals = $this->db->query($query)->result();
-
-    //     echo json_encode($totals);
-
-    // }
 
     public function special_report_all_data()
     {
         $data = json_decode($this->input->raw_input_stream);
 
-        $branch = $this->session->userdata('BRANCHid');
-
-        $dateFrom = $data->fromDate;
+        $brunch  = $this->session->userdata('BRANCHid');
+        $dateFrom =  date('Y-m-d', strtotime($data->fromDate . ' -1 day'));
         $dateTo   = $data->toDate;
 
-        $previousDayClose = $this->db
-            ->where('branch_id', $branch)
-            ->where('close_date_time <', $dateFrom . ' 00:00:00')
-            ->order_by('close_date_time', 'DESC')
-            ->limit(1)
-            ->get('tbl_dayclose')
-            ->row();
+        $userQuery = "
+            SELECT
+                u.User_SlNo,
+                u.FullName,
+                u.FullName AS AddBy
+            FROM tbl_user u
+            WHERE u.status = 'a'
+            AND u.Brunch_ID = '$brunch'
+            " . (!empty($data->userFullName) ? " AND u.FullName = " . $this->db->escape($data->userFullName) : "") . "
+            ORDER BY u.FullName ASC
+        ";
+
+        $users = $this->db->query($userQuery)->result();
+
+        $totals = [];
+
+        foreach ($users as $user) {
+            $reportFrom = $this->db
+                ->query("select ds.close_date_time from tbl_dayclose ds 
+                        where ds.status = 'a' 
+                        and DATE_FORMAT(ds.close_date_time, '%Y-%m-%d') = ? 
+                        and ds.user_id = ?", [$dateFrom, $user->User_SlNo])
+                ->row()
+                ->close_date_time ?? $dateFrom . ' 00:00:00';
+
+            $reportTo = $this->db
+                ->query("select ds.close_date_time from tbl_dayclose ds 
+                        where ds.status = 'a' 
+                        and DATE_FORMAT(ds.close_date_time, '%Y-%m-%d') = ? 
+                        and ds.user_id = ?", [$dateTo, $user->User_SlNo])
+                ->row()
+                ->close_date_time ?? $dateTo . ' 23:59:59';
+
+            $sales = $this->db
+                ->select("
+                IFNULL(SUM(SaleMaster_TotalSaleAmount), 0) AS totalsales,
+                IFNULL(SUM(SaleMaster_cashPaid), 0) AS cashamount,
+                IFNULL(SUM(SaleMaster_bankPaid), 0) AS bankamount,
+                IFNULL(SUM(returnAmount), 0) AS changeamount")
+                ->where('Status', 'a')
+                ->where('AddBy', $user->FullName)
+                ->where('AddTime >', $reportFrom)
+                ->where('AddTime <=', $reportTo)
+                ->get('tbl_salesmaster')
+                ->row();
 
 
-        $currentDayClose = $this->db
-            ->where('branch_id', $branch)
-            ->where('close_date_time >=', $dateTo . ' 00:00:00')
-            ->where('close_date_time <=', $dateTo . ' 23:59:59')
-            ->order_by('close_date_time', 'DESC')
-            ->limit(1)
-            ->get('tbl_dayclose')
-            ->row();
+            $return = $this->db
+                ->select("IFNULL(SUM(SaleReturn_ReturnAmount), 0) AS returnamount")
+                ->where('Status', 'a')
+                ->where('AddBy', $user->FullName)
+                ->where('AddTime >', $reportFrom)
+                ->where('AddTime <=', $reportTo)
+                ->get('tbl_salereturn')
+                ->row();
+
+            $exchange = $this->db
+                ->select("
+                IFNULL(SUM(total), 0) AS exchangeamount")
+                ->where('Status', 'a')
+                ->where('AddBy', $user->FullName)
+                ->where('AddTime >', $reportFrom)
+                ->where('AddTime <=', $reportTo)
+                ->get('tbl_exchange')
+                ->row();
 
 
-        if ($previousDayClose) {
-            $reportFrom = $previousDayClose->close_date_time;
-        } else {
-            $reportFrom = $dateFrom . ' 00:00:00';
+            $user->totalsales =
+                $sales->totalsales ?? 0;
+
+            $user->cashamount =
+                $sales->cashamount ?? 0;
+
+            $user->bankamount =
+                $sales->bankamount ?? 0;
+
+            $user->changeamount =
+                $sales->changeamount ?? 0;
+
+            $user->returnamount =
+                $return->returnamount ?? 0;
+
+            $user->exchangeamount =
+                $exchange->exchangeamount ?? 0;
+
+
+            $user->reportFrom = $reportFrom;
+            $user->reportTo   = $reportTo;
+
+            $totals[] = $user;
         }
 
-
-        if ($currentDayClose) {
-            $reportTo = $currentDayClose->close_date_time;
-        } else {
-            $reportTo = $dateTo . ' 23:59:59';
-        }
-
-        $userCondition = '';
-
-        if (
-            !empty($data->userFullName) &&
-            strtolower(trim($data->userFullName)) != 'all user'
-        ) {
-            $userCondition = " AND u.FullName = "
-                . $this->db->escape($data->userFullName);
-        }
-
-
-        $query = "
-        SELECT
-
-            u.User_SlNo,
-
-            u.FullName,
-
-            u.FullName AS AddBy,
-
-
-            (
-                SELECT IFNULL(
-                    SUM(sm.SaleMaster_TotalSaleAmount),
-                    0
-                )
-
-                FROM tbl_salesmaster sm
-
-                WHERE sm.Status = 'a'
-
-                AND sm.AddBy = u.FullName
-
-                AND sm.AddTime > '$reportFrom'
-
-                AND sm.AddTime <= '$reportTo'
-
-                AND sm.SaleMaster_branchid = '$branch'
-
-            ) AS totalsales,
-
-
-            (
-                SELECT IFNULL(
-                    SUM(sm.SaleMaster_cashPaid),
-                    0
-                )
-
-                FROM tbl_salesmaster sm
-
-                WHERE sm.Status = 'a'
-
-                AND sm.AddBy = u.FullName
-
-                AND sm.AddTime > '$reportFrom'
-
-                AND sm.AddTime <= '$reportTo'
-
-                AND sm.SaleMaster_branchid = '$branch'
-
-            ) AS cashamount,
-
-
-            (
-                SELECT IFNULL(
-                    SUM(sm.SaleMaster_bankPaid),
-                    0
-                )
-
-                FROM tbl_salesmaster sm
-
-                WHERE sm.Status = 'a'
-
-                AND sm.AddBy = u.FullName
-
-                AND sm.AddTime > '$reportFrom'
-
-                AND sm.AddTime <= '$reportTo'
-
-                AND sm.SaleMaster_branchid = '$branch'
-
-            ) AS bankamount,
-
-            (
-                SELECT IFNULL(
-                    SUM(sm.returnAmount),
-                    0
-                )
-
-                FROM tbl_salesmaster sm
-
-                WHERE sm.Status = 'a'
-
-                AND sm.AddBy = u.FullName
-
-                AND sm.AddTime > '$reportFrom'
-
-                AND sm.AddTime <= '$reportTo'
-
-                AND sm.SaleMaster_branchid = '$branch'
-
-            ) AS changeamount,
-
-
-            (
-                SELECT IFNULL(
-                    SUM(sr.SaleReturn_ReturnAmount),
-                    0
-                )
-
-                FROM tbl_salereturn sr
-
-                WHERE sr.Status = 'a'
-
-                AND sr.AddBy = u.FullName
-
-                AND sr.AddTime > '$reportFrom'
-
-                AND sr.AddTime <= '$reportTo'
-
-                AND sr.SaleReturn_brunchId = '$branch'
-
-            ) AS returnamount,
-
-            (SELECT IFNULL(SUM(ex.total),0)
-
-                FROM tbl_exchange ex
-
-                WHERE ex.Status = 'a'
-
-                AND ex.AddBy = u.FullName
-
-                AND ex.AddTime > '$reportFrom'
-
-                AND ex.AddTime <= '$reportTo'
-
-                AND ex.branchId = '$branch'
-
-            ) AS exchangeamount
-
-
-        FROM tbl_user u
-
-
-        WHERE u.status = 'a'
-
-        AND u.Brunch_ID = '$branch'
-
-        $userCondition
-
-        ORDER BY u.FullName ASC
-    ";
-
-        $totals = $this->db->query($query)->result();
         echo json_encode($totals);
     }
 
