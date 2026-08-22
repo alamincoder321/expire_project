@@ -106,6 +106,7 @@ class DayClose extends CI_Controller
             left join tbl_user u on u.User_SlNo = dc.user_id
             where dc.status = 'a'
             and dc.branch_id = ?
+            " . (!empty($data->userId) ? "and dc.user_id = '$data->userId'" : "") . "
             order by dc.id desc
         ", $this->session->userdata('BRANCHid'))->result();
 

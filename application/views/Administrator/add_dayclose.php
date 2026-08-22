@@ -93,9 +93,9 @@
                             <td>{{ row.FullName }}</td>
                             <td>
                                 <?php if (!in_array($this->session->userdata('accountType'), ['u', 'e'])) { ?>
-                                <button type="button" class="button edit" @click="editDayClose(row)">
-                                    <i class="ri-edit-2-line"></i>
-                                </button>
+                                    <button type="button" class="button edit" @click="editDayClose(row)">
+                                        <i class="ri-edit-2-line"></i>
+                                    </button>
                                     <button type="button" class="button" @click="deleteDayClose(row.id)">
                                         <i class="ri-delete-bin-line"></i>
                                     </button>
@@ -132,6 +132,7 @@
                 daycloses: [],
                 users: [],
                 selectedUser: null,
+                userType: "<?= $this->session->userdata('accountType'); ?>",
 
                 columns: [{
                         label: 'SlNo.',
@@ -178,7 +179,11 @@
             },
 
             getDayCloses() {
-                axios.get('/get_daycloses').then(res => {
+                let data = {
+                    userId: ['u', 'e'].includes(this.userType) ? "<?= $this->session->userdata('userId'); ?>" : null
+                }
+
+                axios.post('/get_daycloses', data).then(res => {
                     this.daycloses = res.data.map((item, index) => {
                         item.sl = index + 1;
                         return item;
