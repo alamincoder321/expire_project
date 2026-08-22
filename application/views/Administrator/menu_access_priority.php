@@ -152,7 +152,6 @@
                     <li><input type="checkbox" class="access" value="supplierPaymentReport" v-model="access"> Supplier Payment Report</li>
                     <li><input type="checkbox" class="access" value="supplierList" v-model="access"> Supplier List</li>
                     <li><input type="checkbox" class="access" value="returnsList" v-model="access"> Purchase Return List</li>
-                    <li><input type="checkbox" class="access" value="expiry_product_report" v-model="access"> Expiry Product</li>
                     <li><input type="checkbox" class="access" value="reorder_list" v-model="access"> Re-Order List</li>
                 </ul>
             </div>

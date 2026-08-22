@@ -56,7 +56,6 @@ const purchaseInvoice = Vue.component('purchase-invoice', {
                                             <i style="font-weight: 700;font-size: 11px;">Free</i>
                                          </span>
                                     </td>
-                                    <td>{{ product.exp_date | dateFormat('DD-MM-YYYY') }}</td>
                                     <td>{{ product.PurchaseDetails_TotalQuantity }} {{ product.Unit_Name }}</td>
                                     <td align="right">{{ product.PurchaseDetails_Rate }}</td>
                                     <td align="right">{{ product.PurchaseDetails_TotalAmount }}</td>
@@ -159,12 +158,6 @@ const purchaseInvoice = Vue.component('purchase-invoice', {
             style: null,
             companyProfile: null,
             currentBranch: null
-        }
-    },
-
-    filters: {
-        dateFormat(dt, format){
-            return dt == '' || dt == null ? '' : moment(dt).format(format);
         }
     },
 

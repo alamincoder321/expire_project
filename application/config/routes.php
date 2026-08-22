@@ -61,11 +61,9 @@ $route['get_products']          = 'Administrator/Products/getProducts';
 $route['get_product_stock']     = 'Administrator/Products/getProductStock';
 $route['get_current_stock']     = 'Administrator/Products/getCurrentStock';
 $route['get_total_stock']       = 'Administrator/Products/getTotalStock';
-$route['get_expire_stock']      = 'Administrator/Products/getExpWiseStock';
 $route['product_ledger']        = 'Administrator/Products/productLedger';
 $route['get_product_ledger']    = 'Administrator/Products/getProductLedger';
 $route['reorder_list']          = 'Administrator/Reports/reOrderList';
-$route['expiry_product_report'] = 'Administrator/Products/expiryProductReport';
 
 $route['totalStock'] = 'Administrator/Products/total_stock';
 $route['totalStockPrint'] = 'Administrator/Reports/total_stock';

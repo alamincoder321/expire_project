@@ -98,28 +98,12 @@
 			<div class="col-md-10 col-xs-12" style="padding: 0;">
 
 				<div class="col-md-6" style="padding: 0;">
-					<?php if (count($exp_dates) > 0): ?>
-						<div class="form-group clearfix">
-							<label class="control-label col-xs-4 col-md-4">Expiry Date:</label>
-							<div class=" col-xs-8 col-md-7">
-								<select name="exp_date" id="exp_date" class="form-control" onchange="onChangeExpDate(event)">
-									<option value="">select expiry date</option>
-									<?php foreach ($exp_dates as $item) { ?>
-										<option data-rate="<?= $item->sale_rate; ?>" value="<?= $item->barcode; ?>"><?= date('d-m-Y', strtotime($item->exp_date)); ?></option>
-									<?php } ?>
-								</select>
-							</div>
+					<div class="form-group clearfix">
+						<label class="control-label col-xs-4 col-md-4">Code:</label>
+						<div class=" col-xs-8 col-md-7">
+							<input type="text" class="form-control" id="code" value="<?= $product->Product_Code; ?>" readonly>
 						</div>
-					<?php endif; ?>
-
-					<?php if (count($exp_dates) == 0): ?>
-						<div class="form-group clearfix">
-							<label class="control-label col-xs-4 col-md-4">Product Code:</label>
-							<div class=" col-xs-8 col-md-7">
-								<input type="text" class="form-control" id="code" value="<?= $product->Product_Code; ?>" readonly>
-							</div>
-						</div>
-					<?php endif; ?>
+					</div>
 
 					<div class="form-group clearfix">
 						<label class="control-label col-xs-4 col-md-4">Sale Rate:</label>
@@ -224,19 +208,14 @@
 
 		methods: {
 			async barcodeGenerate(event) {
-				let countExpDate = "<?= count($exp_dates) ?>";
-				if (countExpDate > 0 && $("#exp_date option:selected").val() == '') {
-					alert("Select expiry date")
-					return;
-				}
 				this.products = [];
 				this.onProgress = true;
 				await new Promise(resolve => setTimeout(resolve, 500));
-				let code = countExpDate > 0 ? $("#exp_date option:selected").val() : "<?= $product->Product_Code; ?>";
+				let code = "<?= $product->Product_Code; ?>";
 				let name = $("#name").val();
 				let article = $("#article").val();
 				let qty = $("#quantity").val();
-				let price = countExpDate > 0 ? $("#exp_date option:selected").data("rate") : $("#price").val();
+				let price = $("#price").val();
 				if (qty == '' || qty == 0) {
 					alert("Quantity is empty")
 					this.onProgress = false;
@@ -310,9 +289,5 @@
 		window.print();
 		document.body.innerHTML = originalContent;
 		location.reload();
-	}
-
-	async function onChangeExpDate() {
-		$("#price").val($("#exp_date option:selected").data("rate"));
 	}
 </script>

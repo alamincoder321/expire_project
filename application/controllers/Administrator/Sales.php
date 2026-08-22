@@ -139,7 +139,6 @@ class Sales extends CI_Controller
                 $saleDetails = array(
                     'SaleMaster_IDNo'           => $salesId,
                     'Product_IDNo'              => $cartProduct->productId,
-                    'exp_date'                  => $cartProduct->exp_date ?? NULL,
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
                     'Purchase_Detail_Rate'      => $prod->Product_Purchase_Rate,
                     'Purchase_Rate'             => $cartProduct->purchaseRate,
@@ -173,7 +172,6 @@ class Sales extends CI_Controller
                             'SaleMaster_IDNo'           => $salesId,
                             'detail_id'                 => $detailId,
                             'Product_IDNo'              => $offerProduct->product_id,
-                            'exp_date'                  => NULL,
                             'SaleDetails_TotalQuantity' => $offerProduct->offer_quantity,
                             'Purchase_Rate'             => $offer_product->Product_Purchase_Rate ?? 0,
                             'SaleDetails_Rate'          => 0,
@@ -864,7 +862,6 @@ class Sales extends CI_Controller
                 $saleDetails = array(
                     'SaleMaster_IDNo'           => $salesId,
                     'Product_IDNo'              => $cartProduct->productId,
-                    'exp_date'                  => $cartProduct->exp_date ?? NULL,
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
                     'Purchase_Detail_Rate'      => $prod->Product_Purchase_Rate,
                     'Purchase_Rate'             => $cartProduct->purchaseRate,
@@ -898,7 +895,6 @@ class Sales extends CI_Controller
                             'SaleMaster_IDNo'           => $salesId,
                             'detail_id'                 => $detailId,
                             'Product_IDNo'              => $offerProduct->product_id,
-                            'exp_date'                  => NULL,
                             'SaleDetails_TotalQuantity' => $offerProduct->offer_quantity,
                             'Purchase_Rate'             => $offer_product->Product_Purchase_Rate ?? 0,
                             'SaleDetails_Rate'          => 0,
@@ -1016,7 +1012,6 @@ class Sales extends CI_Controller
                 $returnDetails = array(
                     'SaleReturn_IdNo' => $salesReturnId,
                     'SaleReturnDetailsProduct_SlNo' => $product->Product_IDNo,
-                    'exp_date' => $product->exp_date,
                     'SaleReturnDetails_ReturnQuantity' => $product->return_quantity,
                     'SaleReturnDetails_ReturnAmount' => $product->return_amount,
                     'Status' => 'a',
@@ -1103,7 +1098,6 @@ class Sales extends CI_Controller
                 $returnDetails = array(
                     'SaleReturn_IdNo' => $salesReturnId,
                     'SaleReturnDetailsProduct_SlNo' => $product->Product_IDNo,
-                    'exp_date' => $product->exp_date,
                     'SaleReturnDetails_ReturnQuantity' => $product->return_quantity,
                     'SaleReturnDetails_ReturnAmount' => $product->return_amount,
                     'Status' => 'a',
@@ -2375,7 +2369,6 @@ class Sales extends CI_Controller
                 $saleDetails = array(
                     'SaleMaster_IDNo'           => $salesId,
                     'Product_IDNo'              => $cartProduct->productId,
-                    'exp_date'                  => $cartProduct->exp_date ?? NULL,
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
                     'Purchase_Detail_Rate'      => $prod->Product_Purchase_Rate,
                     'Purchase_Rate'             => $cartProduct->purchaseRate,
@@ -2402,7 +2395,6 @@ class Sales extends CI_Controller
                             'SaleMaster_IDNo'           => $salesId,
                             'detail_id'                 => $detailId,
                             'Product_IDNo'              => $offerProduct->product_id,
-                            'exp_date'                  => NULL,
                             'SaleDetails_TotalQuantity' => $offerProduct->offer_quantity,
                             'Purchase_Rate'             => $offer_product->Product_Purchase_Rate ?? 0,
                             'SaleDetails_Rate'          => 0,

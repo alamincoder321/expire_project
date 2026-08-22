@@ -129,7 +129,6 @@ class Purchase extends CI_Controller
                 $returnDetails = array(
                     'PurchaseReturn_SlNo'                  => $purchaseReturnId,
                     'PurchaseReturnDetailsProduct_SlNo'    => $product->Product_IDNo,
-                    'exp_date'                             => $product->exp_date,
                     'PurchaseReturnDetails_ReturnQuantity' => $product->return_quantity,
                     'PurchaseReturnDetails_ReturnAmount'   => $product->return_amount,
                     'Status'                               => 'a',
@@ -216,7 +215,6 @@ class Purchase extends CI_Controller
                 $returnDetails = array(
                     'PurchaseReturn_SlNo' => $purchaseReturnId,
                     'PurchaseReturnDetailsProduct_SlNo' => $product->Product_IDNo,
-                    'exp_date' => $product->exp_date,
                     'PurchaseReturnDetails_ReturnQuantity' => $product->return_quantity,
                     'PurchaseReturnDetails_ReturnAmount' => $product->return_amount,
                     'Status' => 'a',
@@ -441,14 +439,9 @@ class Purchase extends CI_Controller
             $purchaseId = $this->db->insert_id();
 
             foreach ($data->cartProducts as $product) {
-                $barcode = date('Ymd', strtotime($product->exp_date)) . str_pad($product->productId, 5, '0', STR_PAD_LEFT);
                 $purchaseDetails = array(
                     'PurchaseMaster_IDNo'           => $purchaseId,
                     'Product_IDNo'                  => $product->productId,
-                    'exp_date'                      => $product->exp_date ?? NULL,
-                    'short_date_month'              => $product->short_date_month ?? NULL,
-                    'short_date'                    => $product->is_mrp == 'yes' ? date('Y-m-d', strtotime($product->exp_date . '-' . $product->short_date_month . 'months')) : NULL,
-                    'barcode'                       => $product->is_mrp == 'yes' ? $barcode : NULL,
                     'PurchaseDetails_TotalQuantity' => $product->quantity,
                     'Product_SellingPrice'          => $product->salesRate,
                     'PurchaseDetails_Rate'          => $product->purchaseRate,
@@ -619,14 +612,9 @@ class Purchase extends CI_Controller
             }
 
             foreach ($data->cartProducts as $product) {
-                $barcode = date('Ymd', strtotime($product->exp_date)) . str_pad($product->productId, 5, '0', STR_PAD_LEFT);
                 $purchaseDetails = array(
                     'PurchaseMaster_IDNo'           => $purchaseId,
                     'Product_IDNo'                  => $product->productId,
-                    'exp_date'                      => $product->exp_date ?? NULL,
-                    'short_date_month'              => $product->short_date_month ?? NULL,
-                    'short_date'                    => $product->is_mrp == 'yes' ? date('Y-m-d', strtotime($product->exp_date . '-' . $product->short_date_month . 'months')) : NULL,
-                    'barcode'                       => $product->is_mrp == 'yes' ? $barcode : NULL,
                     'PurchaseDetails_TotalQuantity' => $product->quantity,
                     'Product_SellingPrice'          => $product->salesRate,
                     'PurchaseDetails_Rate'          => $product->purchaseRate,

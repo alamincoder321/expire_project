@@ -62,7 +62,7 @@ class PurchaseOrder extends CI_Controller
             from tbl_purchase_order pm
             left join tbl_supplier s on s.Supplier_SlNo = pm.Supplier_SlNo
             where pm.PurchaseMaster_BranchID = '$branchId' 
-            ".(!empty($data->status) ? "and pm.status = '$data->status'" : "and pm.status != 'd'")."
+            " . (!empty($data->status) ? "and pm.status = '$data->status'" : "and pm.status != 'd'") . "
             $purchaseIdClause $clauses
             order by pm.PurchaseMaster_SlNo desc
         ")->result();

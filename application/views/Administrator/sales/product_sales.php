@@ -201,15 +201,6 @@
 								</div>
 
 								<div class="form-group">
-									<label class="col-xs-3 control-label no-padding-right"> Exp. Date </label>
-									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
-										<div style="width: 100%;">
-											<v-select v-bind:options="exp_dates" :disabled="barcode" id="exp_date" style="margin: 0;" v-model="selectedExpStock" label="exp_date" @input="onChangeExpDate"></v-select>
-										</div>
-									</div>
-								</div>
-
-								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Sale Rate </label>
 									<div class="col-xs-4">
 										<input type="number" id="salesRate" placeholder="Rate" step="0.01" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
@@ -257,8 +248,7 @@
 							<th style="width:10%;color:#000;">Sl</th>
 							<th style="width:25%;color:#000;">Description</th>
 							<th style="width:15%;color:#000;">Category</th>
-							<th style="width:12%;color:#000;">Exp.Date</th>
-							<th style="width:7%;color:#000;">Qty</th>
+							<th style="width:7%;color:#000;">Quantity</th>
 							<th style="width:8%;color:#000;">Rate</th>
 							<th style="width:15%;color:#000;">Total</th>
 							<th style="width:5%;color:#000;">Action</th>
@@ -270,7 +260,6 @@
 								<td>{{ sl + 1 }}</td>
 								<td>{{ product.name }} - {{ product.productCode }}</td>
 								<td>{{ product.categoryName }}</td>
-								<td>{{ product.exp_date }}</td>
 								<td>
 									<input type="number" min="0" step="any" @input="quantityRateChange(product)" v-model="product.quantity" style="height:26px;width:100px;text-align:center;" />
 								</td>
@@ -301,16 +290,16 @@
 						</template>
 
 						<tr>
-							<td colspan="8"></td>
+							<td colspan="7"></td>
 						</tr>
 
 						<tr style="font-weight: bold;">
-							<td colspan="5">Note</td>
+							<td colspan="4">Note</td>
 							<td colspan="3">Total</td>
 						</tr>
 
 						<tr>
-							<td colspan="5"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="sales.note"></textarea></td>
+							<td colspan="4"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="sales.note"></textarea></td>
 							<td colspan="3" style="padding-top: 15px;font-size:18px;">{{ sales.total }}</td>
 						</tr>
 					</tbody>
@@ -612,8 +601,6 @@
 					vat: 0,
 					total: 0
 				},
-				exp_dates: [],
-				selectedExpStock: null,
 				productPurchaseRate: '',
 				productStockText: '',
 				productStock: '',
@@ -857,39 +844,14 @@
 					}).then(res => {
 						return res.data;
 					})
-
-					let checkProdCode = this.barcodeVal.slice(0, 2);
-					if (checkProdCode != '21') {
-						await axios.post('/get_expire_stock', {
-							productId: this.selectedProduct.Product_SlNo
-						}).then(res => {
-							this.exp_dates = res.data;
-							this.selectedExpStock = null;
-
-							let exp_date = this.barcodeVal.slice(0, -5);
-							this.selectedExpStock = this.exp_dates.find(ed => moment(ed.exp_date).format("YYYYMMDD") == exp_date);
-							this.selectedProduct.Product_Purchase_Rate = this.selectedExpStock.purchase_rate;
-							this.selectedProduct.Product_SellingPrice = this.selectedExpStock.sale_rate;
-						});
+					this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
+					if (this.barcode) {
+						this.$refs.barcode.focus();
+					} else {
+						this.$refs.quantity.focus();
 					}
-
-					this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
 				}
 
-			},
-			onChangeExpDate() {
-				if (this.selectedExpStock == null) {
-					return;
-				}
-				if (this.selectedExpStock.exp_date != '') {
-					this.productStock = this.selectedExpStock.stock;
-					this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
-				}
-				if (this.barcode) {
-					this.$refs.barcode.focus();
-				} else {
-					this.$refs.quantity.focus();
-				}
 			},
 
 			toggleProductPurchaseRate() {
@@ -898,19 +860,16 @@
 
 			async addToCart() {
 				if (this.barcode && this.barcodeVal != '') {
-					let checkCode = this.barcodeVal.slice(0, 2);
-
 					await axios.post('/get_products', {
 						isService: this.sales.isService,
 						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
 						name: this.barcodeVal,
-						fromBarcode: checkCode == '21' ? 'yes' : null,
-						barcode: checkCode == '21' ? null : 'yes'
+						fromBarcode: 'yes'
 					}).then(async res => {
 						if (res.data.length > 0) {
 							this.selectedProduct = res.data.length > 0 ? res.data[0] : this.selectedProduct;
 							await this.productOnChange();
-							this.selectedProduct.quantity = checkCode == '21' ? this.selectedProduct.quantity : 1;
+							this.selectedProduct.quantity = this.selectedProduct.quantity || 1;
 							await this.productTotal();
 							this.barcodeVal = '';
 						} else {
@@ -942,7 +901,6 @@
 					discount: this.selectedProduct.discount,
 					discountAmount: this.selectedProduct.discountAmount,
 					total: this.selectedProduct.total,
-					exp_date: this.selectedExpStock ? this.selectedExpStock.exp_date : null,
 					purchaseRate: this.selectedProduct.Product_Purchase_Rate,
 					is_offer: this.selectedProduct.productType == 'offer' ? 'yes' : 'no',
 					range_quantity: this.selectedProduct.productType == 'offer' ? this.selectedProduct.range_quantity : 0,
@@ -950,7 +908,7 @@
 				}
 
 				if (product.productId == '') {
-					alert('Select Product');
+					alert(`${this.barcode ? 'Product not found' : 'Select product'}`);
 					return;
 				}
 
@@ -959,7 +917,7 @@
 					return;
 				}
 
-				let cartInd = this.cart.findIndex(p => (p.productId == product.productId) && (p.exp_date == product.exp_date));
+				let cartInd = this.cart.findIndex(p => p.productId == product.productId);
 				if (cartInd > -1) {
 					let cartProduct = this.cart[cartInd];
 					product.quantity = parseFloat(+cartProduct.quantity + +product.quantity);
@@ -1071,8 +1029,6 @@
 					vat: 0,
 					total: 0,
 				}
-				this.exp_dates = [];
-				this.selectedExpStock = null;
 				this.productStock = '';
 				this.productStockText = '';
 				this.isFree = 'no';
@@ -1237,22 +1193,12 @@
 					let r = res.data;
 					if (r.success) {
 						if (print == 1) {
-							// window.open('/sale_invoice_print/' + r.salesId+'?print=1', '');
 							location.href = "/sale_invoice_print/" + r.salesId + "?print=1";
 							await new Promise(r => setTimeout(r, 1000));
 							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
 						} else {
 							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
 						}
-
-						// let conf = confirm('Sale success, Do you want to view invoice?');
-						// if (conf) {
-						// 	window.open('/sale_invoice_print/' + r.salesId, '_blank');
-						// 	await new Promise(r => setTimeout(r, 1000));
-						// 	window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
-						// } else {
-						// 	window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
-						// }
 					} else {
 						alert(r.message);
 						this.saleOnProgress = false;

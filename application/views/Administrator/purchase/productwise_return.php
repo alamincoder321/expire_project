@@ -99,13 +99,6 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-xs-4 control-label no-padding-right"> Exp. Date </label>
-                                    <div class="col-xs-8">
-                                        <input type="date" id="exp_date" ref="exp_date" name="exp_date" class="form-control" v-model="selectedProduct.exp_date" @change="onChangeDate" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
                                     <label class="col-xs-4 control-label no-padding-right"> Pur. Rate </label>
                                     <div class="col-xs-3">
                                         <input type="text" id="purchaseRate" name="purchaseRate" class="form-control" placeholder="Pur. Rate" v-model="selectedProduct.Product_Purchase_Rate" v-on:input="productTotal" required />
@@ -113,7 +106,7 @@
 
                                     <label class="col-xs-2 control-label no-padding-right"> Quantity </label>
                                     <div class="col-xs-3">
-                                        <input type="text" step="0.01" id="quantity" name="quantity" class="form-control" placeholder="Quantity" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" required />
+                                        <input type="text" id="quantity" name="quantity" class="form-control" placeholder="Quantity" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" required />
                                     </div>
                                 </div>
 
@@ -155,7 +148,6 @@
                     <tbody style="display:none;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
                         <tr v-for="(product, sl) in cart">
                             <td>{{ sl + 1}}</td>
-                            <td>{{ product.exp_date }}</td>
                             <td>{{ product.name }}</td>
                             <td>{{ product.categoryName }}</td>
                             <td>{{ product.purchaseRate }}</td>
@@ -165,16 +157,16 @@
                         </tr>
 
                         <tr>
-                            <td colspan="8"></td>
+                            <td colspan="7"></td>
                         </tr>
 
                         <tr style="font-weight: bold;">
-                            <td colspan="5">Note</td>
+                            <td colspan="4">Note</td>
                             <td colspan="3">Total</td>
                         </tr>
 
                         <tr>
-                            <td colspan="5"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="purchase.note"></textarea></td>
+                            <td colspan="4"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="purchase.note"></textarea></td>
                             <td colspan="3" style="padding-top: 15px;font-size:18px;">{{ purchase.total }}</td>
                         </tr>
                     </tbody>
@@ -351,7 +343,7 @@
                     }).then(res => {
                         return res.data;
                     })
-                    this.$refs.exp_date.focus();
+                    this.$refs.quantity.focus();
                 }
             },
 
@@ -380,10 +372,6 @@
                     alert('Select product');
                     return;
                 }
-                if (this.selectedProduct.exp_date == undefined || this.selectedProduct.exp_date == '') {
-                    alert('Select Exp. Date');
-                    return;
-                }
                 if (this.selectedProduct.quantity == undefined || this.selectedProduct.quantity == '') {
                     alert('Enter quantity');
                     return;
@@ -392,7 +380,7 @@
                     alert('Stock unavailable');
                     return;
                 }
-                let cartInd = this.cart.findIndex(p => (p.productId == this.selectedProduct.Product_SlNo) && (p.exp_date == this.selectedProduct.exp_date) && (p.isFree == this.isFree));
+                let cartInd = this.cart.findIndex(p => (p.productId == this.selectedProduct.Product_SlNo) && (p.isFree == this.isFree));
                 if (cartInd > -1) {
                     alert('Product exists in cart');
                     return;
@@ -405,8 +393,7 @@
                     categoryName: this.selectedProduct.ProductCategory_Name,
                     purchaseRate: this.selectedProduct.Product_Purchase_Rate,
                     quantity: this.selectedProduct.quantity,
-                    total: this.selectedProduct.total,
-                    exp_date: this.selectedProduct.exp_date ?? ''
+                    total: this.selectedProduct.total
                 }
 
                 this.cart.push(product);

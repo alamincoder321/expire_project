@@ -269,27 +269,8 @@ class Products extends CI_Controller
             $codeCheck = substr($data->name, 0, 2);
             if ($codeCheck == 21) {
                 $search = substr($data->name, 2, 5);
-                $prod = $this->db->where('Product_Code', $search)->get('tbl_product')->row();
-                if ($prod) {
-                    $search = $prod->Product_Code;
-                } else {
-                    echo json_encode([]);
-                    exit;
-                }
-                $clauses .= " and p.Product_Code = '$search'";
             }
-
-            if (!empty($data->barcode)) {
-                $search = (int) getIdFromBarcode($search);
-                $prod = $this->db->where('Product_SlNo', $search)->get('tbl_product')->row();
-                if ($prod) {
-                    $search = $prod->Product_Code;
-                } else {
-                    echo json_encode([]);
-                    exit;
-                }
-                $clauses .= " and (p.Product_Code like '%$search%' or p.Product_Name like '%$search%')";
-            }
+            $clauses .= " and (p.Product_Code like '%$search%' or p.Product_Name like '%$search%')";
         }
 
         $products = $this->db->query("
@@ -352,36 +333,12 @@ class Products extends CI_Controller
             });
         }
 
-        // if ((isset($data->name) && $data->name != '') && !empty($data->fromBarcode) && count($products)) {
-        //     $quantity = 1;
-        //     $codeCheck = substr($data->name, 0, 2);
-        //     if ($codeCheck == 21) {
-        //         $quantity = substr($data->name, 7, 5) / 1000;
-        //     }
-        //     $products[0]->quantity = $quantity;
-        // }
-
-        if (!empty($data->name) && !empty($data->fromBarcode) && !empty($products)) {
-
-            $barcode = (string) $data->name;
+        if ((isset($data->name) && $data->name != '') && !empty($data->fromBarcode) && count($products)) {
             $quantity = 1;
-
-            $prefix = substr($barcode, 0, 2);      // 21
-            $barcodeProductCode = substr($barcode, 0, 5); // 01234
-            $weightPart = substr($barcode, 7, 5);  // 00750
-
-            // Your product barcode/code
-            $productCode = str_pad($products[0]->Product_Code, 5, '0', STR_PAD_LEFT);
-
-            if (
-                $prefix === "21" &&
-                strlen($barcode) >= 12 &&
-                $barcodeProductCode === $productCode &&
-                is_numeric($weightPart)
-            ) {
-                $quantity = $weightPart / 1000;
+            $codeCheck = substr($data->name, 0, 2);
+            if ($codeCheck == 21) {
+                $quantity = substr($data->name, 7, 5) / 1000;
             }
-
             $products[0]->quantity = $quantity;
         }
 
@@ -413,43 +370,6 @@ class Products extends CI_Controller
         );
 
         echo json_encode($res);
-    }
-
-    public function getExpWiseStock()
-    {
-        $data = json_decode($this->input->raw_input_stream);
-
-        $stock = $this->mt->expStock($data->productId ?? null, false);
-
-        if (empty($data->productId)) {
-            foreach ($stock as $key => $item) {
-                $product = $this->db->select('Product_SlNo, Product_Code, Product_Name')->where('Product_SlNo', $item->product_id)->get('tbl_product')->row();
-                $item->Product_Code = $product->Product_Code;
-                $item->Product_Name = $product->Product_Name;
-
-                $date1 = new DateTime($data->date);
-                $date2 = new DateTime($item->exp_date);
-
-                $diff = $date1->diff($date2);
-                $totalMonths = ($diff->y * 12) + $diff->m;
-                if ($totalMonths > $item->short_date_month && $diff->invert == 0) {
-                    unset($stock[$key]);
-                }
-            }
-        }
-
-        echo json_encode(array_values($stock));
-    }
-
-    public function expiryProductReport()
-    {
-        $access = $this->mt->userAccess();
-        if (!$access) {
-            redirect(base_url());
-        }
-        $data['title']  = 'Expiry Product List';
-        $data['content'] = $this->load->view('Administrator/products/expire_product_report', $data, TRUE);
-        $this->load->view('Administrator/index', $data);
     }
 
     public function getTotalStock()
@@ -563,10 +483,6 @@ class Products extends CI_Controller
             left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
             where p.status = 'a' and p.is_service = 'false' $clauses
         ")->result();
-
-        foreach ($stock as $item) {
-            $item->expire_stocks = $this->mt->expStock($item->Product_SlNo, true, $this->session->userdata("BRANCHid"));
-        }
 
         $res['stock'] = $stock;
         $res['totalValue'] = array_sum(

@@ -90,40 +90,29 @@
 				<table class="table table-bordered" v-if="searchType == 'current'" style="display:none" v-bind:style="{display: searchType == 'current' ? '' : 'none'}">
 					<thead>
 						<tr>
-							<th rowspan="2">Product Id</th>
-							<th rowspan="2">Product Name</th>
-							<th rowspan="2">Category</th>
-							<th colspan="2">Expire Stock</th>
-							<th rowspan="2">Current Quantity</th>
-							<th rowspan="2">Rate</th>
-							<th rowspan="2">Stock Value</th>
-						</tr>
-						<tr>
-							<th>Exp. Date</th>
-							<th>Stock</th>
+							<th>Product Id</th>
+							<th>Product Name</th>
+							<th>Category</th>
+							<th>Current Quantity</th>
+							<th>Rate</th>
+							<th>Stock Value</th>
 						</tr>
 					</thead>
 					<tbody>
 						<template v-for="product in stock">
 							<tr>
-								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">{{ product.Product_Code }}</td>
-								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">{{ product.Product_Name }}</td>
-								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">{{ product.ProductCategory_Name }}</td>
-								<td>{{product.expire_stocks[0]?.exp_date}}</td>
-								<td>{{product.expire_stocks[0]?.stock}}</td>
-								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">
+								<td>{{ product.Product_Code }}</td>
+								<td>{{ product.Product_Name }}</td>
+								<td>{{ product.ProductCategory_Name }}</td>
+								<td>
 									{{ product.current_quantity | decimal }} {{ product.Unit_Name }}
 								</td>
-								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">{{ product.Product_Purchase_Rate | decimal }}</td>
-								<td :rowspan="product.expire_stocks.length > 0 ? product.expire_stocks.length : 1">{{ product.stock_value | decimal }}</td>
-							</tr>
-							<tr v-for="(stock, index) in product.expire_stocks.slice(1)" v-if="product.expire_stocks.length > 1">
-								<td>{{ stock.exp_date }}</td>
-								<td>{{ stock.stock }}</td>
+								<td>{{ product.Product_Purchase_Rate | decimal }}</td>
+								<td>{{ product.stock_value | decimal }}</td>
 							</tr>
 						</template>
 						<tr style="font-weight: bold;">
-							<td colspan="7" style="text-align:right;">Total Stock Value</td>
+							<td colspan="5" style="text-align:right;">Total Stock Value</td>
 							<td>{{ totalStockValue | decimal }}</td>
 						</tr>
 					</tbody>

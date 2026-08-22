@@ -1156,7 +1156,7 @@ class Account extends CI_Controller
                     smb.bank_id as account_id,
                     sm.SaleMaster_SaleDate as transaction_date,
                     'deposit' as transaction_type,
-                    smb.amount as deposit,
+                    (smb.amount - smb.bank_charge) as deposit,
                     0.00 as withdraw,
                     '' as note,
                     ac.account_name,

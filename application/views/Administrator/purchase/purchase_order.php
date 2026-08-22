@@ -145,20 +145,6 @@
 								</div>
 
 								<div class="form-group">
-									<label class="col-xs-4 control-label no-padding-right"> Expiry Date </label>
-									<div class="col-xs-8">
-										<input type="date" id="exp_date" name="exp_date" ref="exp_date" class="form-control" v-model="selectedProduct.exp_date" />
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-xs-4 control-label no-padding-right"> Short Date(Month) </label>
-									<div class="col-xs-8">
-										<input type="number" min="0" step="any" id="short_date_month" name="short_date_month" ref="short_date_month" class="form-control" v-model="selectedProduct.short_date_month" />
-									</div>
-								</div>
-
-								<div class="form-group">
 									<label class="col-xs-4 control-label no-padding-right"> Pur. Rate </label>
 									<div class="col-xs-3">
 										<input type="text" id="purchaseRate" name="purchaseRate" class="form-control" placeholder="Pur. Rate" v-model="selectedProduct.Product_Purchase_Rate" v-on:input="productTotal" required />
@@ -210,8 +196,6 @@
 							<th style="width:4%;color:#000;">SL</th>
 							<th style="width:20%;color:#000;">Product Name</th>
 							<th style="width:13%;color:#000;">Category</th>
-							<th style="width:10%;color:#000;">Exp.Date</th>
-							<th style="width:8%;color:#000;">Short Date</th>
 							<th style="width:10%;color:#000;">Sale Rate</th>
 							<th style="width:8%;color:#000;">Rate</th>
 							<th style="width:10%;color:#000;">Qty</th>
@@ -224,12 +208,6 @@
 							<td>{{ sl + 1}}</td>
 							<td>{{ product.name }}</td>
 							<td>{{ product.categoryName }}</td>
-							<td>
-								<input type="date" style="margin: 0px;" class="form-control" v-model="product.exp_date" />
-							</td>
-							<td>
-								<input type="number" step="any" min="0" style="margin: 0px;" class="form-control" v-model="product.short_date_month" />
-							</td>
 							<td>
 								<input type="text" style="margin-bottom: 0;" class="form-control" v-model="product.salesRate" />
 							</td>
@@ -244,16 +222,16 @@
 						</tr>
 
 						<tr>
-							<td colspan="10"></td>
+							<td colspan="8"></td>
 						</tr>
 
 						<tr style="font-weight: bold;">
-							<td colspan="7">Note</td>
+							<td colspan="5">Note</td>
 							<td colspan="3">Total</td>
 						</tr>
 
 						<tr>
-							<td colspan="7"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="purchase.note"></textarea></td>
+							<td colspan="5"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="purchase.note"></textarea></td>
 							<td colspan="3" style="padding-top: 15px;font-size:18px;">{{ purchase.total }}</td>
 						</tr>
 					</tbody>
@@ -564,7 +542,7 @@
 					if (this.isFree == 'yes') {
 						this.selectedProduct.Product_Purchase_Rate = 0;
 					}
-					this.$refs.exp_date.focus();
+					this.$refs.quantity.focus();
 				}
 			},
 			onChangeFreeProduct() {
@@ -604,7 +582,7 @@
 						this.selectedSupplier = this.suppliers.find(supplier => supplier.Supplier_SlNo == res.data.purchases[0].Supplier_SlNo);
 						let products = res.data.purchaseDetails;
 						products.forEach(product => {
-							let cartInd = this.cart.findIndex(p => (p.productId == product.Product_SlNo) && (p.isFree == 'no') && (p.exp_date == product.exp_date));
+							let cartInd = this.cart.findIndex(p => (p.productId == product.Product_SlNo) && (p.isFree == 'no'));
 							if (cartInd > -1) {
 								alert('Product exists in cart');
 								return;
@@ -619,8 +597,6 @@
 								quantity: product.PurchaseDetails_TotalQuantity,
 								total: product.PurchaseDetails_TotalAmount,
 								is_mrp: product.is_mrp,
-								exp_date: '',
-								short_date_month: '',
 								isFree: 'no'
 							}
 							this.cart.push(productObj);
@@ -631,7 +607,7 @@
 			},
 
 			addToCart() {
-				let cartInd = this.cart.findIndex(p => (p.productId == this.selectedProduct.Product_SlNo) && (p.isFree == this.isFree) && (p.exp_date == this.selectedProduct.exp_date));
+				let cartInd = this.cart.findIndex(p => (p.productId == this.selectedProduct.Product_SlNo) && (p.isFree == this.isFree));
 				if (cartInd > -1) {
 					alert('Product exists in cart');
 					return;
@@ -647,11 +623,6 @@
 					return;
 				}
 
-				if ((this.selectedProduct.exp_date == '' || this.selectedProduct.short_date_month == '' || this.selectedProduct.exp_date == undefined || this.selectedProduct.short_date_month == undefined) && this.selectedProduct.is_mrp == 'yes') {
-					alert('Enter expiry and short date');
-					return;
-				}
-
 				let product = {
 					productId: this.selectedProduct.Product_SlNo,
 					name: this.selectedProduct.Product_Name,
@@ -661,8 +632,6 @@
 					salesRate: this.selectedProduct.Product_SellingPrice,
 					quantity: this.selectedProduct.quantity,
 					total: this.selectedProduct.total,
-					exp_date: this.selectedProduct.exp_date ? this.selectedProduct.exp_date : null,
-					short_date_month: this.selectedProduct.short_date_month ? this.selectedProduct.short_date_month : null,
 					isFree: this.isFree,
 					is_mrp: this.selectedProduct.is_mrp
 				}
@@ -728,11 +697,6 @@
 
 				if (this.cart.length == 0) {
 					alert('Cart is empty');
-					return;
-				}
-
-				if (this.cart.some(product => (product.exp_date == '' || product.short_date_month == '') && product.is_mrp == 'yes')) {
-					alert('Enter expiry and short date for all products in cart');
 					return;
 				}
 
@@ -818,8 +782,6 @@
 							salesRate: product.Product_SellingPrice,
 							quantity: product.PurchaseDetails_TotalQuantity,
 							total: product.PurchaseDetails_TotalAmount,
-							exp_date: product.exp_date,
-							short_date_month: product.short_date_month,
 							isFree: product.isFree,
 							is_mrp: product.is_mrp
 						}

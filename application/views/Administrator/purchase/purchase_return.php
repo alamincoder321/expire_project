@@ -55,7 +55,6 @@
 					<tr>
 						<th>Sl</th>
 						<th>Product</th>
-						<th>Expire Date</th>
 						<th>Quantity</th>
 						<th>Amount</th>
 						<th>Already returned quantity</th>
@@ -69,7 +68,6 @@
 					<tr v-for="(product, sl) in cart">
 						<td>{{ sl + 1 }}</td>
 						<td>{{ product.Product_Name }}</td>
-						<td>{{ product.exp_date }}</td>
 						<td>{{ product.PurchaseDetails_TotalQuantity }}</td>
 						<td>{{ product.PurchaseDetails_TotalAmount }}</td>
 						<td>{{ product.returned_quantity }}</td>
