@@ -202,10 +202,13 @@ class Sales extends CI_Controller
             if (count($data->banks) > 0) {
                 foreach ($data->banks as $key => $item) {
                     $bank = array(
-                        'sale_id'    => $salesId,
-                        'bank_id'    => $item->bank_id,
-                        'last_digit' => $item->last_digit,
-                        'amount'     => $item->amount,
+                        'sale_id'     => $salesId,
+                        'bank_id'     => $item->bank_id,
+                        'last_digit'  => $item->last_digit,
+                        'amount'      => $item->amount,
+                        'charge'      => $item->charge,
+                        'per_amount'  => $item->per_amount,
+                        'bank_charge' => $item->per_amount > 0 ? ($item->amount / $item->per_amount) * $item->charge : 0,
                         'AddBy'      => $this->session->userdata("FullName"),
                         'AddTime'    => date('Y-m-d H:i:s'),
                         'branchId'   => $this->session->userdata('BRANCHid')
@@ -926,15 +929,18 @@ class Sales extends CI_Controller
             if (count($data->banks) > 0) {
                 foreach ($data->banks as $key => $item) {
                     $bank = array(
-                        'sale_id'    => $salesId,
-                        'bank_id'    => $item->bank_id,
-                        'last_digit' => $item->last_digit,
-                        'amount'     => $item->amount,
-                        'AddBy'      => $this->session->userdata("FullName"),
-                        'AddTime'    => date('Y-m-d H:i:s'),
-                        'UpdateBy'   => $this->session->userdata("FullName"),
-                        'UpdateTime' => date('Y-m-d H:i:s'),
-                        'branchId'   => $this->session->userdata('BRANCHid')
+                        'sale_id'     => $salesId,
+                        'bank_id'     => $item->bank_id,
+                        'last_digit'  => $item->last_digit,
+                        'amount'      => $item->amount,
+                        'charge'      => $item->charge,
+                        'per_amount'  => $item->per_amount,
+                        'bank_charge' => $item->per_amount > 0 ? ($item->amount / $item->per_amount) * $item->charge : 0,
+                        'AddBy'       => $this->session->userdata("FullName"),
+                        'AddTime'     => date('Y-m-d H:i:s'),
+                        'UpdateBy'    => $this->session->userdata("FullName"),
+                        'UpdateTime'  => date('Y-m-d H:i:s'),
+                        'branchId'    => $this->session->userdata('BRANCHid')
                     );
                     $this->db->insert('tbl_sales_bank', $bank);
                 }

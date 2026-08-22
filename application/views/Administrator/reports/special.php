@@ -41,11 +41,13 @@
 	<div class="row" style="border-bottom: 1px solid #ccc;">
 		<div class="col-md-12">
 			<form action="" class="form-inline" @submit.prevent="getStatements">
-				<div class="form-group">
-					<label for="">User</label>
-					<v-select v-model="selectedUser" :options="users" label="FullName"
-						placeholder="Select User"></v-select>
-				</div>
+				<?php if (!in_array($this->session->userdata('accountType'), ['u', 'e'])): ?>
+					<div class="form-group">
+						<label for="">User</label>
+						<v-select v-model="selectedUser" :options="users" label="FullName"
+							placeholder="Select User"></v-select>
+					</div>
+				<?php endif; ?>
 
 				<div class="form-group">
 					<label for="">Date from</label>
@@ -139,18 +141,18 @@
 					userFullName: "",
 				},
 				users: [],
-				selectedUser: '',
+				selectedUser: null,
 
 				special_report_all: [],
 				totals_report_all: [],
-
+				userType: "<?= $this->session->userdata('accountType'); ?>"
 			}
 		},
 
 
-		created() {
-			this.getUser();
-			this.special_report_all_data();
+		async created() {
+			await this.getUser();
+			await this.getStatements();
 		},
 
 		methods: {
@@ -158,10 +160,13 @@
 				axios.get('/get_users')
 					.then(res => {
 						this.users = res.data;
+						if(this.userType == 'u' || this.userType == 'e'){
+							this.selectedUser = this.users.find(u => u.User_SlNo == "<?= $this->session->userdata('userId'); ?>")
+						}
+						this.getStatements();
 					})
 			},
 			getStatements() {
-				this.filter.userFullName = this.selectedUser ? this.selectedUser.FullName : "";
 				this.special_report_all_data();
 			},
 
@@ -175,6 +180,7 @@
 
 
 			special_report_all_data() {
+				this.filter.userFullName = this.selectedUser ? this.selectedUser.FullName : "";				
 				let data = {
 					fromDate: this.filter.dateFrom,
 					toDate: this.filter.dateTo,

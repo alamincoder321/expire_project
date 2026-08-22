@@ -373,6 +373,24 @@ class Model_Table extends CI_Model
             select 
                 ba.*,
                 (
+                    select ifnull(sum(smb.amount), 0) from tbl_sales_bank smb
+                    left join tbl_salesmaster sm on sm.SaleMaster_SlNo = smb.sale_id
+                    where smb.bank_id = ba.account_id
+                    and smb.Status = 'a'
+                    and smb.branchId = ".$this->session->userdata('BRANCHid')."
+                    " . ($date == null ? "" : " and sm.SaleMaster_SaleDate < '$date'") . "
+                ) as sale_receive,
+                
+                (
+                    select ifnull(sum(smb.bank_charge), 0) from tbl_sales_bank smb
+                    left join tbl_salesmaster sm on sm.SaleMaster_SlNo = smb.sale_id
+                    where smb.bank_id = ba.account_id
+                    and smb.Status = 'a'
+                    and smb.branchId = ".$this->session->userdata('BRANCHid')."
+                    " . ($date == null ? "" : " and sm.SaleMaster_SaleDate < '$date'") . "
+                ) as bankCharge,
+
+                (
                     select ifnull(sum(ex.bankPaid), 0) from tbl_exchange ex
                     where ex.bank_id = ba.account_id
                     and ex.Status = 'a'
@@ -444,9 +462,10 @@ class Model_Table extends CI_Model
                     and sp.SPayment_brunchid = " . $this->session->userdata('BRANCHid') . "
                     " . ($date == null ? "" : " and sp.SPayment_date < '$date'") . "
                 ) as total_received_from_supplier,
-                (
-                    select (ba.initial_balance + total_deposit + bank_transfer_in + exchange_sales + total_received_from_customer + total_received_from_supplier) - (total_withdraw + bank_transfer_out + total_paid_to_customer + total_paid_to_supplier)
-                ) as balance
+                (select 
+                (ba.initial_balance + total_deposit + bank_transfer_in + exchange_sales + sale_receive + total_received_from_customer + total_received_from_supplier) 
+                    - 
+                (total_withdraw + bankCharge + bank_transfer_out + total_paid_to_customer + total_paid_to_supplier) ) as balance
             from tbl_bank_accounts ba
             where ba.branch_id = " . $this->session->userdata('BRANCHid') . "
             " . ($accountId == null ? "" : " and ba.account_id = '$accountId'") . "

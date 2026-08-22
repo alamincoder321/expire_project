@@ -43,6 +43,7 @@
                     <li><input type="checkbox" class="access" value="salesReturn" v-model="access"> Sale Return</li>
                     <li><input type="checkbox" class="access" value="exchange" v-model="access"> Sales Exchange</li>
                     <li><input type="checkbox" class="access" value="exchange_record" v-model="access"> Exchange Record</li>
+                    <li><input type="checkbox" class="access" value="special_report" v-model="access"> Special Report </li>
                     <li><input type="checkbox" class="access" value="currentStock" v-model="access"> Stock Report </li>
                     <!-- <li><input type="checkbox" class="access" value="quotation" v-model="access"> Quotation Entry</li> -->
                 </ul>

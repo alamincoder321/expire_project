@@ -1340,11 +1340,9 @@
 						Employee_SlNo: sales.employee_id,
 						Employee_Name: sales.Employee_Name
 					}
+
 					if (sales.SaleMaster_bankPaid > 0) {
-						this.selectedBank = {
-							account_id: sales.bank_id,
-							display_name: `${sales.bank_name} - ${sales.account_number} - ${sales.account_name}`
-						}
+						this.bankCart = r.banks;
 					}
 
 					this.selectedCustomer = {

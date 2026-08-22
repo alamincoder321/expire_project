@@ -156,19 +156,14 @@ class Reports extends CI_Controller
     public function special_report_all_data()
     {
         $data = json_decode($this->input->raw_input_stream);
-        $brunch = $this->session->userdata('BRANCHid');
+
+        $branch = $this->session->userdata('BRANCHid');
 
         $dateFrom = $data->fromDate;
         $dateTo   = $data->toDate;
 
-        /*
-    |--------------------------------------------------------------------------
-    | Previous Day Close
-    |--------------------------------------------------------------------------
-    | fromDate-এর আগের সর্বশেষ Day Close
-    */
         $previousDayClose = $this->db
-            ->where('branch_id', $brunch)
+            ->where('branch_id', $branch)
             ->where('close_date_time <', $dateFrom . ' 00:00:00')
             ->order_by('close_date_time', 'DESC')
             ->limit(1)
@@ -176,14 +171,8 @@ class Reports extends CI_Controller
             ->row();
 
 
-        /*
-    |--------------------------------------------------------------------------
-    | Current Day Close
-    |--------------------------------------------------------------------------
-    | dateTo-এর দিনের সর্বশেষ Day Close
-    */
         $currentDayClose = $this->db
-            ->where('branch_id', $brunch)
+            ->where('branch_id', $branch)
             ->where('close_date_time >=', $dateTo . ' 00:00:00')
             ->where('close_date_time <=', $dateTo . ' 23:59:59')
             ->order_by('close_date_time', 'DESC')
@@ -192,12 +181,6 @@ class Reports extends CI_Controller
             ->row();
 
 
-        /*
-    |--------------------------------------------------------------------------
-    | Report Start Time
-    |--------------------------------------------------------------------------
-    */
-
         if ($previousDayClose) {
             $reportFrom = $previousDayClose->close_date_time;
         } else {
@@ -205,121 +188,166 @@ class Reports extends CI_Controller
         }
 
 
-        /*
-    |--------------------------------------------------------------------------
-    | Report End Time
-    |--------------------------------------------------------------------------
-    */
-
         if ($currentDayClose) {
             $reportTo = $currentDayClose->close_date_time;
         } else {
             $reportTo = $dateTo . ' 23:59:59';
         }
 
-
-        /*
-    |--------------------------------------------------------------------------
-    | User Condition
-    |--------------------------------------------------------------------------
-    */
-
         $userCondition = '';
 
-        if (!empty($data->userFullName)) {
-            $userCondition = " AND u.FullName = " . $this->db->escape($data->userFullName);
+        if (
+            !empty($data->userFullName) &&
+            strtolower(trim($data->userFullName)) != 'all user'
+        ) {
+            $userCondition = " AND u.FullName = "
+                . $this->db->escape($data->userFullName);
         }
 
 
-        /*
-    |--------------------------------------------------------------------------
-    | Main Query
-    |--------------------------------------------------------------------------
-    */
-
         $query = "
         SELECT
+
             u.User_SlNo,
+
             u.FullName,
+
             u.FullName AS AddBy,
 
-            /* Total Sale */
+
             (
-                SELECT IFNULL(SUM(sm.SaleMaster_TotalSaleAmount), 0)
+                SELECT IFNULL(
+                    SUM(sm.SaleMaster_TotalSaleAmount),
+                    0
+                )
+
                 FROM tbl_salesmaster sm
+
                 WHERE sm.Status = 'a'
+
                 AND sm.AddBy = u.FullName
+
                 AND sm.AddTime > '$reportFrom'
+
                 AND sm.AddTime <= '$reportTo'
+
+                AND sm.SaleMaster_branchid = '$branch'
+
             ) AS totalsales,
 
 
-            /* Cash */
             (
-                SELECT IFNULL(SUM(sm.SaleMaster_cashPaid), 0)
+                SELECT IFNULL(
+                    SUM(sm.SaleMaster_cashPaid),
+                    0
+                )
+
                 FROM tbl_salesmaster sm
+
                 WHERE sm.Status = 'a'
+
                 AND sm.AddBy = u.FullName
+
                 AND sm.AddTime > '$reportFrom'
+
                 AND sm.AddTime <= '$reportTo'
+
+                AND sm.SaleMaster_branchid = '$branch'
+
             ) AS cashamount,
 
 
-            /* Bank */
             (
-                SELECT IFNULL(SUM(sm.SaleMaster_bankPaid), 0)
+                SELECT IFNULL(
+                    SUM(sm.SaleMaster_bankPaid),
+                    0
+                )
+
                 FROM tbl_salesmaster sm
+
                 WHERE sm.Status = 'a'
+
                 AND sm.AddBy = u.FullName
+
                 AND sm.AddTime > '$reportFrom'
+
                 AND sm.AddTime <= '$reportTo'
+
+                AND sm.SaleMaster_branchid = '$branch'
+
             ) AS bankamount,
 
-
-            /* Change */
             (
-                SELECT IFNULL(SUM(sm.returnAmount), 0)
+                SELECT IFNULL(
+                    SUM(sm.returnAmount),
+                    0
+                )
+
                 FROM tbl_salesmaster sm
+
                 WHERE sm.Status = 'a'
+
                 AND sm.AddBy = u.FullName
+
                 AND sm.AddTime > '$reportFrom'
+
                 AND sm.AddTime <= '$reportTo'
+
+                AND sm.SaleMaster_branchid = '$branch'
+
             ) AS changeamount,
 
 
-            /* Return */
             (
-                SELECT IFNULL(SUM(sr.SaleReturn_ReturnAmount), 0)
+                SELECT IFNULL(
+                    SUM(sr.SaleReturn_ReturnAmount),
+                    0
+                )
+
                 FROM tbl_salereturn sr
+
                 WHERE sr.Status = 'a'
+
                 AND sr.AddBy = u.FullName
+
                 AND sr.AddTime > '$reportFrom'
+
                 AND sr.AddTime <= '$reportTo'
+
+                AND sr.SaleReturn_brunchId = '$branch'
+
             ) AS returnamount,
 
+            (SELECT IFNULL(SUM(ex.total),0)
 
-            /* Exchange */
-            (
-                SELECT IFNULL(SUM(ex.total), 0)
                 FROM tbl_exchange ex
+
                 WHERE ex.Status = 'a'
+
                 AND ex.AddBy = u.FullName
+
                 AND ex.AddTime > '$reportFrom'
+
                 AND ex.AddTime <= '$reportTo'
+
+                AND ex.branchId = '$branch'
+
             ) AS exchangeamount
 
 
         FROM tbl_user u
 
+
         WHERE u.status = 'a'
-        AND u.Brunch_ID = '$brunch'
+
+        AND u.Brunch_ID = '$branch'
 
         $userCondition
+
+        ORDER BY u.FullName ASC
     ";
 
-
         $totals = $this->db->query($query)->result();
-
         echo json_encode($totals);
     }
 

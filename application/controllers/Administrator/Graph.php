@@ -320,8 +320,8 @@
                     from tbl_purchasemaster pm
                     where pm.PurchaseMaster_BranchID = '" . $this->session->userdata('BRANCHid') . "'
                     and pm.status = 'a'
-                    and month(pm.PurchaseMaster_Date) = '$month'
-                    and year(pm.PurchaseMaster_Date) = '$year'
+                    and month(pm.PurchaseMaster_OrderDate) = '$month'
+                    and year(pm.PurchaseMaster_OrderDate) = '$year'
                 ) as purchase_discount,
                 
                 (
@@ -329,8 +329,8 @@
                     from tbl_purchasemaster pm
                     where pm.PurchaseMaster_BranchID = '" . $this->session->userdata('BRANCHid') . "'
                     and pm.status = 'a'
-                    and month(pm.PurchaseMaster_Date) = '$month'
-                    and year(pm.PurchaseMaster_Date) = '$year'
+                    and month(pm.PurchaseMaster_OrderDate) = '$month'
+                    and year(pm.PurchaseMaster_OrderDate) = '$year'
                 ) as purchase_vat,
                 
                 (
@@ -338,8 +338,8 @@
                     from tbl_purchasemaster pm
                     where pm.PurchaseMaster_BranchID = '" . $this->session->userdata('BRANCHid') . "'
                     and pm.status = 'a'
-                    and month(pm.PurchaseMaster_Date) = '$month'
-                    and year(pm.PurchaseMaster_Date) = '$year'
+                    and month(pm.PurchaseMaster_OrderDate) = '$month'
+                    and year(pm.PurchaseMaster_OrderDate) = '$year'
                 ) as purchase_transport_cost,
 
                 (
