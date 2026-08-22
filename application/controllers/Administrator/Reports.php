@@ -150,6 +150,7 @@ class Reports extends CI_Controller
                 IFNULL(SUM(SaleMaster_TotalSaleAmount), 0) AS totalsales,
                 IFNULL(SUM(SaleMaster_cashPaid), 0) AS cashamount,
                 IFNULL(SUM(SaleMaster_bankPaid), 0) AS bankamount,
+                IFNULL(SUM(SaleMaster_DueAmount), 0) AS dueamount,
                 IFNULL(SUM(returnAmount), 0) AS changeamount")
                 ->where('Status', 'a')
                 ->where('AddBy', $user->FullName)
@@ -187,6 +188,9 @@ class Reports extends CI_Controller
 
             $user->bankamount =
                 $sales->bankamount ?? 0;
+            
+            $user->dueamount =
+                $sales->dueamount ?? 0;
 
             $user->changeamount =
                 $sales->changeamount ?? 0;

@@ -78,7 +78,7 @@
 		<table class="table table-bordered table-hover table-striped">
 			<thead>
 				<tr>
-					<td colspan="8">
+					<td colspan="9">
 						<h2>Transaction Statement</h2>
 					</td>
 				</tr>
@@ -90,6 +90,7 @@
 					<td>Change Amount (optional)</td>
 					<td>Return Amount</td>
 					<td>Exchange Amount</td>
+					<td>Due Amount</td>
 					<td>Close Balance</td>
 				</tr>
 			</thead>
@@ -101,6 +102,7 @@
 				<td v-text="statement.changeamount"></td>
 				<td v-text="statement.returnamount"></td>
 				<td v-text="statement.exchangeamount"></td>
+				<td v-text="statement.dueamount"></td>
 				<td>{{ closeBlance(statement)}}</td>
 
 			</tr>
@@ -112,11 +114,12 @@
 				<td v-text="totals_report_all.changeamount"></td>
 				<td v-text="totals_report_all.returnamount"></td>
 				<td v-text="totals_report_all.exchangeamount"></td>
+				<td v-text="totals_report_all.dueamount"></td>
 				<td>{{ closeBlance(totals_report_all)}}</td>
 			</tr>
 
 			<tr v-if="special_report_all.length == 0">
-				<td colspan="8"> No Record Found </td>
+				<td colspan="9"> No Record Found </td>
 			</tr>
 		</table>
 
@@ -173,6 +176,7 @@
 			closeBlance(statement) {
 				let data = parseFloat(statement.totalsales);
 				data += parseFloat(statement.exchangeamount);
+				data -= parseFloat(statement.dueamount);
 				data -= parseFloat(statement.returnamount);
 				data = data.toFixed(2);
 				return data;
@@ -193,6 +197,7 @@
 						this.totals_report_all = res.data.reduce((acc, sale) => {
 							acc.totalsales += parseFloat(sale.totalsales);
 							acc.cashamount += parseFloat(sale.cashamount);
+							acc.duenamount += parseFloat(sale.duenamount);
 							acc.changeamount += parseFloat(sale.changeamount);
 							acc.returnamount += parseFloat(sale.returnamount);
 							acc.exchangeamount += parseFloat(sale.exchangeamount);
@@ -201,6 +206,7 @@
 						}, {
 							totalsales: 0,
 							cashamount: 0,
+							dueamount: 0,
 							changeamount: 0,
 							returnamount: 0,
 							exchangeamount: 0,
