@@ -269,8 +269,10 @@ class Products extends CI_Controller
             $codeCheck = substr($data->name, 0, 2);
             if ($codeCheck == 21) {
                 $search = substr($data->name, 2, 5);
+                $clauses .= " and (p.Product_Code = '$search' or p.Product_Name = '$search')";
+            } else {
+                $clauses .= " and (p.Product_Code like '%$search%' or p.Product_Name like '%$search%')";
             }
-            $clauses .= " and (p.Product_Code like '%$search%' or p.Product_Name like '%$search%')";
         }
 
         $products = $this->db->query("

@@ -108,13 +108,13 @@
 			</tr>
 			<tr style="font-weight: bold; background-color: #ccc">
 				<td>Total</td>
-				<td v-text="totals_report_all.totalsales"></td>
-				<td v-text="totals_report_all.cashamount"></td>
-				<td v-text="totals_report_all.bankamount"></td>
-				<td v-text="totals_report_all.changeamount"></td>
-				<td v-text="totals_report_all.returnamount"></td>
-				<td v-text="totals_report_all.exchangeamount"></td>
-				<td v-text="totals_report_all.dueamount"></td>
+				<td v-text="parseFloat(totals_report_all.totalsales).toFixed(2)"></td>
+				<td v-text="parseFloat(totals_report_all.cashamount).toFixed(2)"></td>
+				<td v-text="parseFloat(totals_report_all.bankamount).toFixed(2)"></td>
+				<td v-text="parseFloat(totals_report_all.changeamount).toFixed(2)"></td>
+				<td v-text="parseFloat(totals_report_all.returnamount).toFixed(2)"></td>
+				<td v-text="parseFloat(totals_report_all.exchangeamount).toFixed(2)"></td>
+				<td v-text="parseFloat(totals_report_all.dueamount).toFixed(2)"></td>
 				<td>{{ closeBlance(totals_report_all)}}</td>
 			</tr>
 
@@ -152,6 +152,12 @@
 			}
 		},
 
+		filter: {
+			decimal(value, fixed) {
+				return parseFloat(value).toFixed(fixed);
+			}
+		},
+
 
 		async created() {
 			await this.getUser();
@@ -163,7 +169,7 @@
 				axios.get('/get_users')
 					.then(res => {
 						this.users = res.data;
-						if(this.userType == 'u' || this.userType == 'e'){
+						if (this.userType == 'u' || this.userType == 'e') {
 							this.selectedUser = this.users.find(u => u.User_SlNo == "<?= $this->session->userdata('userId'); ?>")
 						}
 						this.getStatements();
@@ -184,7 +190,7 @@
 
 
 			special_report_all_data() {
-				this.filter.userFullName = this.selectedUser ? this.selectedUser.FullName : "";				
+				this.filter.userFullName = this.selectedUser ? this.selectedUser.FullName : "";
 				let data = {
 					fromDate: this.filter.dateFrom,
 					toDate: this.filter.dateTo,

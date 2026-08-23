@@ -25,7 +25,7 @@ class DayClose extends CI_Controller
         try {
             $daycloseObj = json_decode($this->input->raw_input_stream);
 
-            $check = $this->db->where('date', $daycloseObj->date)->where('user_id', $daycloseObj->user_id)->get('tbl_dayclose')->row();
+            $check = $this->db->where('date', $daycloseObj->date)->where('status', 'a')->where('user_id', $daycloseObj->user_id)->get('tbl_dayclose')->row();
             if (!empty($check)) {
                 $res = ['success' => false, 'message' => 'Already exist this data'];
                 echo json_encode($res);
@@ -54,7 +54,7 @@ class DayClose extends CI_Controller
         try {
             $daycloseObj = json_decode($this->input->raw_input_stream);
 
-            $check = $this->db->where('date', $daycloseObj->date)->where('user_id', $daycloseObj->user_id)->where('id !=', $daycloseObj->id)->get('tbl_dayclose')->row();
+            $check = $this->db->where('date', $daycloseObj->date)->where('status', 'a')->where('user_id', $daycloseObj->user_id)->where('id !=', $daycloseObj->id)->get('tbl_dayclose')->row();
             if (!empty($check)) {
                 $res = ['success' => false, 'message' => 'Already exist this data'];
                 echo json_encode($res);

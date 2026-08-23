@@ -135,7 +135,7 @@ class Reports extends CI_Controller
                         and DATE_FORMAT(ds.close_date_time, '%Y-%m-%d') = ? 
                         and ds.user_id = ?", [$dateFrom, $user->User_SlNo])
                 ->row()
-                ->close_date_time ?? $dateFrom . ' 00:00:00';
+                ->close_date_time ?? $data->fromDate . ' 00:00:00';
 
             $reportTo = $this->db
                 ->query("select ds.close_date_time from tbl_dayclose ds 
@@ -180,27 +180,13 @@ class Reports extends CI_Controller
                 ->row();
 
 
-            $user->totalsales =
-                $sales->totalsales ?? 0;
-
-            $user->cashamount =
-                $sales->cashamount ?? 0;
-
-            $user->bankamount =
-                $sales->bankamount ?? 0;
-            
-            $user->dueamount =
-                $sales->dueamount ?? 0;
-
-            $user->changeamount =
-                $sales->changeamount ?? 0;
-
-            $user->returnamount =
-                $return->returnamount ?? 0;
-
-            $user->exchangeamount =
-                $exchange->exchangeamount ?? 0;
-
+            $user->totalsales = $sales->totalsales ?? 0;
+            $user->cashamount = $sales->cashamount ?? 0;
+            $user->bankamount = $sales->bankamount ?? 0;
+            $user->dueamount = $sales->dueamount ?? 0;
+            $user->changeamount = $sales->changeamount ?? 0;
+            $user->returnamount = $return->returnamount ?? 0;
+            $user->exchangeamount = $exchange->exchangeamount ?? 0;
 
             $user->reportFrom = $reportFrom;
             $user->reportTo   = $reportTo;
