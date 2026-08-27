@@ -292,6 +292,20 @@ class Products extends CI_Controller
                                 $limit")->result();
 
         foreach ($products as $product) {
+            if ($product->is_mrp == 'yes') {
+                $product->sale_rates = array_column(
+                    $this->db->query("select pd.Product_SellingPrice
+                                    from tbl_purchasedetails pd
+                                    where pd.Status = 'a'
+                                    and pd.Product_IDNo = ?
+                                    group by pd.Product_SellingPrice
+                                ", [$product->Product_SlNo])->result_array(),
+                    'Product_SellingPrice'
+                );
+            } else {
+                $product->sale_rates = [];
+            }
+
             $campaign = $this->db->query(
                 "select * from tbl_campaign where product_id = ? and branch_id = ?",
                 [$product->Product_SlNo, $this->brunch]

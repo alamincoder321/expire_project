@@ -174,25 +174,13 @@
 						</div>
 
 						<div class="col-md-5">
-							<form v-on:submit.prevent="barcode ? '' : addToCart()">
-								<!-- <div class="form-group">
-									<label class="col-xs-3 control-label no-padding-right"> Category </label>
-									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
-										<div style="width: 86%;">
-											<v-select v-bind:options="categories" id="category" style="margin: 0;" v-model="selectedCategory" label="ProductCategory_Name" @input="onChangeCategory" placeholder="Select Category"></v-select>
-										</div>
-										<div style="width: 13%;margin-left:2px;">
-											<a href="<?= base_url('category') ?>" class="add-button" target="_blank" title="Add New Category"><i class="fa fa-plus" aria-hidden="true"></i></a>
-										</div>
-									</div>
-								</div> -->
-
+							<form v-on:submit.prevent="barcode ? '' : addToCart($event, '')">
 								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Product </label>
 									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
 										<div style="width: 86%;">
 											<v-select v-show="!barcode" v-bind:options="products" id="product" style="margin: 0;" v-model="selectedProduct" label="display_text" @input="productOnChange" @search="onSearchProduct"></v-select>
-											<input v-show="barcode" placeholder="barcode here" style="margin-bottom: 0;" @change.enter="addToCart" id="barcode" ref="barcode" v-model="barcodeVal" type="text" class="form-control" />
+											<input v-show="barcode" placeholder="barcode here" style="margin-bottom: 0;" @change.enter="addToCart($event, '')" id="barcode" ref="barcode" v-model="barcodeVal" type="text" class="form-control" />
 										</div>
 										<div style="width: 13%;margin-left:2px;">
 											<a class="add-button" @click="barcode = !barcode"><i class="fa fa-barcode" aria-hidden="true"></i></a>
@@ -203,11 +191,11 @@
 								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Sale Rate </label>
 									<div class="col-xs-4">
-										<input type="number" id="salesRate" placeholder="Rate" step="0.01" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
+										<input type="number" id="salesRate" placeholder="Rate" step="any" :disabled="selectedProduct.sale_rates?.length > 1" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
 									</div>
 									<label class="col-xs-1 control-label no-padding-right"> Qty </label>
 									<div class="col-xs-4">
-										<input type="number" step="0.01" id="quantity" placeholder="Qty" class="form-control" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" autocomplete="off" required />
+										<input type="number" step="any" id="quantity" placeholder="Qty" class="form-control" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" autocomplete="off" required />
 									</div>
 								</div>
 
@@ -219,7 +207,13 @@
 								</div>
 
 								<div class="form-group">
-									<div class="col-xs-12">
+									<div class="col-xs-6">
+										<label :style="{display: selectedProduct.sale_rates.length > 1 && selectedProduct.is_mrp == 'yes' ? '' : 'none'}" :for="rate" v-for="rate in selectedProduct.sale_rates" style="display: none;margin: 0; background: #b7b7b7; padding: 1px 7px; margin-right: 5px; cursor: pointer; border-radius: 4px;">
+											<input type="checkbox" @change.prevent="addToCart($event, rate);" :id="rate" style="display: none;">
+											<span v-text="parseFloat(rate)"></span>
+										</label>
+									</div>
+									<div class="col-xs-6">
 										<button type="submit" style="padding: 3px 6px; background: rgb(0, 126, 187) !important; border-color: rgb(0, 126, 187) !important; outline: none; border-radius: 6px;" class="btn pull-right">Add to Cart</button>
 									</div>
 								</div>
@@ -798,7 +792,6 @@
 			productTotal() {
 				let qty = parseFloat(this.selectedProduct.quantity) || 0;
 				let rate = parseFloat(this.selectedProduct.Product_SellingPrice) || 0;
-
 				this.selectedProduct.total = ((qty * rate) - this.selectedProduct.discountAmount).toFixed(2);
 			},
 			onSalesTypeChange() {
@@ -858,7 +851,7 @@
 				this.$refs.productPurchaseRate.type = this.$refs.productPurchaseRate.type == 'text' ? 'password' : 'text';
 			},
 
-			async addToCart() {
+			async addToCart(event, sale_rate = '') {
 				if (this.barcode && this.barcodeVal != '') {
 					await axios.post('/get_products', {
 						isService: this.sales.isService,
@@ -871,7 +864,6 @@
 							await this.productOnChange();
 							this.selectedProduct.quantity = this.selectedProduct.quantity || 1;
 							await this.productTotal();
-							this.barcodeVal = '';
 						} else {
 							this.selectedProduct = {
 								Product_SlNo: '',
@@ -890,6 +882,11 @@
 					})
 				}
 
+				if (sale_rate != '') {
+					this.selectedProduct.Product_SellingPrice = sale_rate;
+					await this.productTotal();
+				}
+
 				let product = {
 					productId: this.selectedProduct.Product_SlNo,
 					productCode: this.selectedProduct.Product_Code,
@@ -906,6 +903,7 @@
 					range_quantity: this.selectedProduct.productType == 'offer' ? this.selectedProduct.range_quantity : 0,
 					campaignProducts: []
 				}
+
 
 				if (product.productId == '') {
 					alert(`${this.barcode ? 'Product not found' : 'Select product'}`);
@@ -982,6 +980,10 @@
 					this.cart.splice(cartInd, 1);
 				}
 
+				if (this.selectedProduct.sale_rates.length > 1 && sale_rate == '' && this.selectedProduct.is_mrp == 'yes') {
+					return;
+				}
+
 				this.cart.unshift(product);
 				this.clearProduct();
 				this.calculateTotal();
@@ -1029,6 +1031,7 @@
 					vat: 0,
 					total: 0,
 				}
+				this.barcodeVal = '';
 				this.productStock = '';
 				this.productStockText = '';
 				this.isFree = 'no';
