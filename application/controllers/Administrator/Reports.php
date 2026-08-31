@@ -168,6 +168,26 @@ class Reports extends CI_Controller
                 ->where('AddTime <=', $reportTo)
                 ->get('tbl_salereturn')
                 ->row();
+            
+            $receiveamount = $this->db
+                ->select("IFNULL(SUM(CPayment_amount), 0) AS receiveamount")
+                ->where('CPayment_status', 'a')
+                ->where('CPayment_TransactionType', 'CR')
+                ->where('CPayment_Addby', $user->FullName)
+                ->where('CPayment_AddDAte >', $reportFrom)
+                ->where('CPayment_AddDAte <=', $reportTo)
+                ->get('tbl_customer_payment')
+                ->row();
+            
+            $paymentamount = $this->db
+                ->select("IFNULL(SUM(CPayment_amount), 0) AS paymentamount")
+                ->where('CPayment_status', 'a')
+                ->where('CPayment_TransactionType', 'CP')
+                ->where('CPayment_Addby', $user->FullName)
+                ->where('CPayment_AddDAte >', $reportFrom)
+                ->where('CPayment_AddDAte <=', $reportTo)
+                ->get('tbl_customer_payment')
+                ->row();
 
             $exchange = $this->db
                 ->select("
@@ -187,6 +207,8 @@ class Reports extends CI_Controller
             $user->changeamount = $sales->changeamount ?? 0;
             $user->returnamount = $return->returnamount ?? 0;
             $user->exchangeamount = $exchange->exchangeamount ?? 0;
+            $user->receiveamount = $receiveamount->receiveamount ?? 0;
+            $user->paymentamount = $paymentamount->paymentamount ?? 0;
 
             $user->reportFrom = $reportFrom;
             $user->reportTo   = $reportTo;

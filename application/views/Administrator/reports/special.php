@@ -78,7 +78,7 @@
 		<table class="table table-bordered table-hover table-striped">
 			<thead>
 				<tr>
-					<td colspan="9">
+					<td colspan="11">
 						<h2>Transaction Statement</h2>
 					</td>
 				</tr>
@@ -91,6 +91,8 @@
 					<td>Return Amount</td>
 					<td>Exchange Amount</td>
 					<td>Due Amount</td>
+					<td>C.Receive</td>
+					<td>C.Payment</td>
 					<td>Close Balance</td>
 				</tr>
 			</thead>
@@ -103,6 +105,8 @@
 				<td v-text="statement.returnamount"></td>
 				<td v-text="statement.exchangeamount"></td>
 				<td v-text="statement.dueamount"></td>
+				<td v-text="statement.receiveamount"></td>
+				<td v-text="statement.paymentamount"></td>
 				<td>{{ closeBlance(statement)}}</td>
 
 			</tr>
@@ -115,11 +119,13 @@
 				<td v-text="parseFloat(totals_report_all.returnamount).toFixed(2)"></td>
 				<td v-text="parseFloat(totals_report_all.exchangeamount).toFixed(2)"></td>
 				<td v-text="parseFloat(totals_report_all.dueamount).toFixed(2)"></td>
+				<td v-text="parseFloat(totals_report_all.receiveamount).toFixed(2)"></td>
+				<td v-text="parseFloat(totals_report_all.paymentamount).toFixed(2)"></td>
 				<td>{{ closeBlance(totals_report_all)}}</td>
 			</tr>
 
 			<tr v-if="special_report_all.length == 0">
-				<td colspan="9"> No Record Found </td>
+				<td colspan="11"> No Record Found </td>
 			</tr>
 		</table>
 
@@ -182,8 +188,10 @@
 			closeBlance(statement) {
 				let data = parseFloat(statement.totalsales);
 				data += parseFloat(statement.exchangeamount);
+				data += parseFloat(statement.receiveamount);
 				data -= parseFloat(statement.dueamount);
 				data -= parseFloat(statement.returnamount);
+				data -= parseFloat(statement.paymentamount);
 				data = data.toFixed(2);
 				return data;
 			},
@@ -208,6 +216,8 @@
 							acc.returnamount += parseFloat(sale.returnamount);
 							acc.exchangeamount += parseFloat(sale.exchangeamount);
 							acc.bankamount += parseFloat(sale.bankamount);
+							acc.receiveamount += parseFloat(sale.receiveamount);
+							acc.paymentamount += parseFloat(sale.paymentamount);
 							return acc;
 						}, {
 							totalsales: 0,
@@ -216,7 +226,9 @@
 							changeamount: 0,
 							returnamount: 0,
 							exchangeamount: 0,
-							bankamount: 0
+							bankamount: 0,
+							receiveamount: 0,
+							paymentamount: 0
 						});
 					})
 			},

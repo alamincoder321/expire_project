@@ -61,9 +61,14 @@
     </div>
     <div style="display:none;" v-bind:style="{display: products.length > 0 ? '' : 'none'}">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <a href="" v-on:click.prevent="print">
                     <i class="fa fa-print"></i> Print
+                </a>
+            </div>
+            <div class="col-md-6 text-right">
+                <a href="" v-on:click.prevent="excelExport">
+                    <i class="fa fa-file-excel-o"></i> Export Excel
                 </a>
             </div>
         </div>
@@ -77,7 +82,10 @@
                                 <th>Product Id</th>
                                 <th>Product Name</th>
                                 <th>Category</th>
+                                <th>Stock</th>
+                                <th style="text-align: right;">Purchase Price</th>
                                 <th style="text-align: right;">Sale Price</th>
+                                <th>Profit(%)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -86,7 +94,15 @@
                                 <td>{{ product.Product_Code }}</td>
                                 <td>{{ product.Product_Name }}</td>
                                 <td>{{ product.ProductCategory_Name }}</td>
+                                <td>{{ Number(product.current_quantity) % 1 ? parseFloat(product.current_quantity).toFixed(2) : product.current_quantity }}</td>
+                                <td style="text-align:right;">{{ product.Product_Purchase_Rate }}</td>
                                 <td style="text-align:right;">{{ product.Product_SellingPrice }}</td>
+                                <td>
+                                    {{ product.Product_Purchase_Rate > 0
+                                        ? (((product.Product_SellingPrice - product.Product_Purchase_Rate) / product.Product_Purchase_Rate) * 100).toFixed(2)
+                                        : '0.00'
+                                    }}%
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -99,6 +115,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/vue.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
     Vue.component('v-select', VueSelect.VueSelect);
@@ -121,16 +138,16 @@
                 }
             },
             getCategory() {
-				axios.get('/get_categories').then(res => {
-					this.categories = res.data;
-				})
-			},
+                axios.get('/get_categories').then(res => {
+                    this.categories = res.data;
+                })
+            },
             getProducts() {
                 let filter = {
                     categoryId: this.selectedCategory == null ? null : this.selectedCategory.ProductCategory_SlNo
                 }
-                axios.post('/get_products', filter).then(res => {
-                    this.products = res.data;
+                axios.post('/get_total_stock', filter).then(res => {
+                    this.products = res.data.stock;
                 })
             },
             async print() {
@@ -161,8 +178,29 @@
                 mywindow.focus();
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 mywindow.print();
-                await new Promise(resolve => setTimeout(resolve, 1000));
                 mywindow.close();
+            },
+            excelExport() {
+                let onlyData = this.products.map((item, ind) => {
+                    return {
+                        'SlNo': ind + 1,
+                        'Product Id': item.Product_Code,
+                        'Product Name': item.Product_Name,
+                        'Category': item.ProductCategory_Name,
+                        'Stock': item.current_quantity,
+                        'Purchase Price': item.Product_Purchase_Rate,
+                        'Sale Price': item.Product_SellingPrice,
+                        'Profit(%)': (item.Product_Purchase_Rate > 0
+                                        ? (((item.Product_SellingPrice - item.Product_Purchase_Rate) / item.Product_Purchase_Rate) * 100).toFixed(2)
+                                        : '0.00')+'%'
+                    }
+                })
+
+                const worksheet = XLSX.utils.json_to_sheet(onlyData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Skipped Rows");
+                // Excel download
+                XLSX.writeFile(workbook, "ProductList.xlsx");
             }
         }
     })

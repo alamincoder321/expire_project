@@ -233,8 +233,6 @@
 								<?php } ?>
 							</td>
 						</tr>
-					</tbody>
-					<tfoot>
 						<tr style="font-weight:bold;">
 							<td colspan="3" style="text-align:right;">Total</td>
 							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_SubTotalAmount)}, 0).toFixed(2) }}</td>
@@ -247,7 +245,7 @@
 							<td></td>
 							<td></td>
 						</tr>
-					</tfoot>
+					</tbody>
 				</table>
 
 				<table
@@ -274,13 +272,11 @@
 							<td style="text-align:right;">{{ purchase.PurchaseDetails_Rate }}</td>
 							<td style="text-align:right;">{{ purchase.PurchaseDetails_TotalQuantity }}</td>
 						</tr>
-					</tbody>
-					<tfoot>
 						<tr style="font-weight:bold;">
 							<td colspan="5" style="text-align:right;">Total Quantity</td>
 							<td style="text-align:right;">{{ purchases.reduce((prev, curr) => { return prev + parseFloat(curr.PurchaseDetails_TotalQuantity)}, 0) }}</td>
 						</tr>
-					</tfoot>
+					</tbody>
 				</table>
 			</div>
 		</div>

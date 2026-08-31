@@ -181,7 +181,7 @@
 								<td colspan="5" style="font-weight:normal;"><strong>Note: </strong>{{ purchase.PurchaseMaster_Description }}</td>
 								<td style="text-align:center;">Total Quantity<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.PurchaseDetails_TotalQuantity)}, 0) }}</td>
 								<td style="text-align:right;">
-									Total: {{ purchase.PurchaseMaster_TotalAmount }}
+									Total: {{ parseFloat(purchase.PurchaseMaster_TotalAmount).toFixed(2) }}
 								</td>
 								<td></td>
 							</tr>
