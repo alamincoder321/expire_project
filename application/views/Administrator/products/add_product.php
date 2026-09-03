@@ -198,10 +198,13 @@
 					</div>
 				</div> -->
 				<div class="form-group clearfix">
-					<label for="" class="col-md-4"></label>
 					<label for="is_mrp" class="col-md-4" style="display: flex;align-items:center;gap:5px;cursor:pointer;margin-top: 5px;">
 						<input type="checkbox" style="width: 18px;height:18px;margin:0;" id="is_mrp" v-model="product.is_mrp" :true-value="`yes`" :false-value="`no`">
 						<span style="margin: 0;margin-top: 1px;">Is MRP</span>
+					</label>
+					<label for="is_slab" class="col-md-4" style="display: flex;align-items:center;gap:5px;cursor:pointer;margin-top: 5px;">
+						<input type="checkbox" style="width: 18px;height:18px;margin:0;" id="is_slab" v-model="product.is_slab" :true-value="`yes`" :false-value="`no`">
+						<span style="margin: 0;margin-top: 1px;">Is Slab</span>
 					</label>
 					<div class="col-md-3 text-right">
 						<input type="submit" class="btn btn-success btn-sm" value="Save">
@@ -247,18 +250,18 @@
 								data-target="#staticBackdrop">
 								<i class="fa fa-info-circle"></i>
 							</button> -->
-							<button type="button" class="button edit" @click="editProduct(row)">
-								<i class="ri-edit-2-line"></i>
-								<?php if ($this->session->userdata('accountType') != 'u') { ?>
-									</button>
-									<button type="button" class="button" @click="deleteProduct(row.Product_SlNo)">
-										<i class="ri-delete-bin-line"></i>
-									</button>
-								<?php } ?>
-								<button type="button" class="button"
-									@click="window.location = `/barcode/${row.Product_SlNo}`">
-									<i class="ri-barcode-fill"></i>
+								<button type="button" class="button edit" @click="editProduct(row)">
+									<i class="ri-edit-2-line"></i>
+									<?php if ($this->session->userdata('accountType') != 'u') { ?>
 								</button>
+								<button type="button" class="button" @click="deleteProduct(row.Product_SlNo)">
+									<i class="ri-delete-bin-line"></i>
+								</button>
+							<?php } ?>
+							<button type="button" class="button"
+								@click="window.location = `/barcode/${row.Product_SlNo}`">
+								<i class="ri-barcode-fill"></i>
+							</button>
 							</td>
 						</tr>
 					</template>
@@ -388,7 +391,8 @@
 					Product_Description: '',
 					images: '',
 					tags: '',
-					is_mrp: 'no'
+					is_mrp: 'no',
+					is_slab: 'yes'
 				},
 				imageUrl: '',
 				selectedFile: null,
@@ -631,14 +635,28 @@
 				})
 			},
 			clearForm() {
-				let keys = Object.keys(this.product);
-				keys.forEach(key => {
-					if (typeof(this.product[key]) == "string") {
-						this.product[key] = '';
-					} else if (typeof(this.product[key]) == "number") {
-						this.product[key] = 0;
-					}
-				})
+				this.product = {
+					Product_SlNo: '',
+					Product_Code: "",
+					Product_Name: '',
+					ProductCategory_ID: '',
+					brand: '',
+					Product_ReOrederLevel: 0,
+					Product_Purchase_Rate: 0,
+					Product_SellingPrice: 0,
+					Product_WholesaleRate: 0,
+					Unit_ID: '',
+					vat: 0,
+					discount: 0,
+					discountAmount: 0,
+					note: '',
+					is_service: false,
+					Product_Description: '',
+					images: '',
+					tags: '',
+					is_mrp: 'no',
+					is_slab: 'yes'
+				}
 
 				this.imageUrl = '';
 				this.selectedFile = null;

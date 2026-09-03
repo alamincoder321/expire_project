@@ -570,6 +570,21 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
+				
+				<?php if (array_search("sale_slab", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 col-xs-6 custom-padding ">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>sale_slab">
+								<div class="logo">
+									<i class="menu-icon ri-drag-move-fill"></i>
+								</div>
+								<div class="textModule" style="margin: 0;">
+									Sale Slab Entry
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
 
 				<!-- <?php if (array_search("quotation", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 custom-padding ">

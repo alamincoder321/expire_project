@@ -555,6 +555,16 @@ if ($panel == 'dashboard' or $panel == '') {
 			</li>
 		<?php endif; ?>
 
+		<?php if (array_search("sale_slab", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+			<li class="">
+				<a href="<?php echo base_url(); ?>sale_slab">
+					<i class="menu-icon ri-drag-move-fill"></i>
+					<span class="menu-text"> Sale Slab Entry </span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		<?php endif; ?>
+
 	</ul>
 
 <?php } elseif ($panel == 'InventoryPanel') { ?>

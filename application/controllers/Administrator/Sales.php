@@ -106,6 +106,10 @@ class Sales extends CI_Controller
                 'SaleMaster_branchid'            => $this->session->userdata("BRANCHid")
             );
 
+            if(isset($data->sales->sale_slab_id) && $data->sales->sale_slab_id != null){
+                $sales['sale_slab_id'] = $data->sales->sale_slab_id;
+            }
+
             if ($data->customer->Customer_Type == 'G') {
                 $sales['SalseCustomer_IDNo']    = Null;
                 $sales['customerType']    = "G";

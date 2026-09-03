@@ -75,6 +75,14 @@ $route['add_campaign_product'] = 'Administrator/Products/addCampaignProduct';
 $route['update_campaign_product'] = 'Administrator/Products/updateCampaignProduct';
 $route['delete_campaign_product'] = 'Administrator/Products/deleteCampaignProduct';
 
+// sale slab
+$route['sale_slab'] = 'Administrator/Products/saleSlab';
+$route['get_sale_slabs'] = 'Administrator/Products/getSaleSlabs';
+$route['add_sale_slab'] = 'Administrator/Products/addSaleSlab';
+$route['update_sale_slab'] = 'Administrator/Products/updateSaleSlab';
+$route['delete_sale_slab'] = 'Administrator/Products/deleteSaleSlab';
+$route['get_active_sale_slabs'] = 'Administrator/Products/getActiveSalesSlabs';
+
 // $route['GenerateBarcode/(:any)'] = 'BarcodeController/barcode_create/$1';
 $route['barcode/(:any)'] = 'BarcodeController/barcode_create/$1';
 

@@ -874,4 +874,193 @@ class Products extends CI_Controller
 
         echo json_encode($res);
     }
+
+    // slab program
+    public function saleSlab()
+    {
+        $access = $this->mt->userAccess();
+        if (!$access) {
+            redirect(base_url());
+        }
+        $data['title'] = "Sale Slab Entry";
+        $data['content'] = $this->load->view('Administrator/products/sale_slab', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
+    }
+
+    public function getSaleSlabs()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+
+        $clauses = "";
+        if (isset($data->slabId) && $data->slabId != null) {
+            $clauses .= " and sp.id = '$data->slabId'";
+        }
+
+        $programs = $this->db->query("
+                                select
+                                    sp.*
+                                from tbl_sales_slab sp
+                                where sp.branch_id = ?
+                                $clauses
+                                order by sp.id desc", [$this->brunch])->result();
+
+        echo json_encode($programs);
+    }
+
+    public function addSaleSlab()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+
+            $SaleSlab = [
+                'name' => $data->slab->name,
+                'start_date' => $data->slab->dateFrom,
+                'end_date' => $data->slab->dateTo,
+                'amount' => $data->slab->amount,
+                'discount' => $data->slab->discount,
+                'AddBy' => $this->session->userdata("FullName"),
+                'AddTime' => date('Y-m-d H:i:s'),
+                'branch_id' => $this->brunch
+            ];
+
+            $this->db->insert('tbl_sales_slab', $SaleSlab);
+
+            $res = ['success' => true, 'message' => 'Slab program added successfully'];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+    public function updateSaleSlab()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+
+            $SaleSlab = [
+                'name' => $data->slab->name,
+                'start_date' => $data->slab->dateFrom,
+                'end_date' => $data->slab->dateTo,
+                'amount' => $data->slab->amount,
+                'discount' => $data->slab->discount,
+                'UpdateBy' => $this->session->userdata("FullName"),
+                'UpdateTime' => date('Y-m-d H:i:s'),
+            ];
+
+            $this->db->where('id', $data->slab->id)->update('tbl_sales_slab', $SaleSlab);
+
+            $res = ['success' => true, 'message' => 'Slab program updated successfully'];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+    public function deleteSaleSlab()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+
+            $this->db->where('id', $data->slabId)->delete('tbl_sales_slab');
+
+            $res = ['success' => true, 'message' => 'Slab program deleted successfully'];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+    public function getActiveSalesSlabs()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+        $today = date('Y-m-d');
+        $customerId = $data->customerId;
+        $branchId   = $this->session->userdata('BRANCHid');
+
+        $slabs = $this->db->query("
+                    SELECT
+                        ss.id,
+                        ss.name,
+                        ss.start_date,
+                        ss.end_date,
+                        ss.amount AS slab_amount,
+                        ss.discount,
+                        COALESCE(SUM(
+                            CASE
+                                WHEN p.is_slab = 'yes'
+                                THEN sd.SaleDetails_TotalAmount
+                                ELSE 0
+                            END
+                        ), 0) AS customer_total_purchase
+
+                    FROM tbl_sales_slab ss
+
+                    LEFT JOIN tbl_salesmaster sm
+                        ON sm.SalseCustomer_IDNo = ?
+                        AND sm.SaleMaster_branchid = ?
+                        AND sm.Status = 'a'
+                        AND DATE(sm.SaleMaster_SaleDate) BETWEEN ss.start_date AND ss.end_date
+
+                    LEFT JOIN tbl_saledetails sd
+                        ON sd.SaleMaster_IDNo = sm.SaleMaster_SlNo
+                        AND sd.SaleDetails_BranchId = ?
+                        AND sd.Status = 'a'
+
+                    LEFT JOIN tbl_product p
+                        ON p.Product_SlNo = sd.Product_IDNo
+                        AND p.is_slab = 'yes'
+
+                    WHERE ss.status = 'a'
+                    AND ss.branch_id = ?
+                    AND ss.end_date < ?
+
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM tbl_salesmaster asm
+                        INNER JOIN tbl_sales_slab ass
+                            ON ass.id = asm.sale_slab_id
+                        WHERE asm.SalseCustomer_IDNo = ?
+                        AND asm.SaleMaster_branchid = ?
+                        AND asm.Status = 'a'
+                        AND ass.start_date = ss.start_date
+                        AND ass.end_date = ss.end_date
+                    )
+
+                    GROUP BY
+                        ss.id,
+                        ss.name,
+                        ss.start_date,
+                        ss.end_date,
+                        ss.amount,
+                        ss.discount
+
+                    HAVING COALESCE(SUM(
+                        CASE
+                            WHEN p.is_slab = 'yes'
+                            THEN sd.SaleDetails_TotalAmount
+                            ELSE 0
+                        END
+                    ), 0) >= ss.amount
+
+                    ORDER BY
+                        ss.end_date DESC,
+                        ss.amount DESC
+                ", [
+                    $customerId,
+                    $branchId,
+                    $branchId,
+                    $branchId,
+                    $today,
+                    $customerId,
+                    $branchId
+                ])->row();
+
+        echo json_encode($slabs);
+    }
 }
