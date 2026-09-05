@@ -362,7 +362,7 @@
 											<div class="form-group">
 												<label class="col-xs-12 control-label no-padding-right">Use Point</label>
 												<div class="col-xs-12">
-													<input type="number" id="total" class="form-control" v-model="sales.pointAmount" v-on:input="calculateTotal" />
+													<input type="number" min="0" step="any" id="pointAmount" class="form-control" v-model="sales.pointAmount" v-on:input="calculateTotal" />
 												</div>
 											</div>
 										</td>
@@ -1063,7 +1063,7 @@
 					return pr + parseFloat((cu.amount / cu.per_amount) * cu.charge);
 				}, 0).toFixed(2);
 
-				if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid') {
+				if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscount' && event.target.id != 'pointAmount') {
 					this.sales.vat = this.cart.reduce((prev, curr) => {
 						return +prev + +(curr.total * (curr.vat / 100))
 					}, 0);
@@ -1072,7 +1072,7 @@
 				if (event.target.id == 'slabDiscount' && this.slabStatus == false) {
 					this.discountPercent = 0;
 					this.sales.sale_slab_id = null;
-				}else{
+				}else if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscount' && event.target.id != 'pointAmount' && this.slabStatus == true) {
 					await this.getActiveSlab();
 					this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent)) / 100).toFixed(2);
 				}
@@ -1081,7 +1081,7 @@
 					this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent)) / 100).toFixed(2);
 				} else if (event.target.id == 'discount') {
 					this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
-				} else if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' || event.target.id != 'slabDiscount') {
+				} else if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscount' && event.target.id != 'pointAmount') {
 					if (parseFloat(this.discountPercent) > 0) {
 						this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent)) / 100).toFixed(2);
 					} else {
