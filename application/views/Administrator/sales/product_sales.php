@@ -339,8 +339,8 @@
 										<td>
 											<div class="form-group">
 												<label class="col-xs-12 control-label no-padding-right" style="display: flex; align-items: center; gap: 3px; margin-top: 4px;cursor: pointer;">
-													<input type="checkbox" style="width: 16px; height: 16px; margin: 0;" id="slabDiscount" v-model="slabStatus" v-if="sales.sale_slab_id != null || slabStatus == false" @change="calculateTotal" />
-													<span v-if="sales.sale_slab_id != null || slabStatus == false">Slab</span> Discount
+													<input type="checkbox" style="width: 16px; height: 16px; margin: 0;" id="slabDiscountAmount" v-model="slabStatus" v-if="sale_slab_id != null || slabStatus == true" @change="calculateTotal" />
+													<span v-if="sale_slab_id != null || slabStatus == true">Slab</span> Discount
 												</label>
 
 												<div class="col-xs-4">
@@ -553,7 +553,9 @@
 				},
 				vatPercent: 0,
 				discountPercent: 0,
-				slabStatus: true,
+				slabStatus: false,
+				sale_slab_id: null,
+				slab_discount_amount: 0,
 				isFree: 'no',
 				cart: [],
 				bankCart: [],
@@ -768,8 +770,8 @@
 				await axios.post('/get_active_sale_slabs', {
 					customerId: this.selectedCustomer.Customer_SlNo
 				}).then(res => {
-					this.discountPercent = res.data ? parseFloat(res.data.discount) : 0;
-					this.sales.sale_slab_id = res.data?.id || null;
+					this.slab_discount_amount = res.data ? parseFloat(res.data.discountAmount).toFixed(2) : 0;
+					this.sale_slab_id = res.data?.id || null;
 				})
 			},
 
@@ -1063,32 +1065,40 @@
 					return pr + parseFloat((cu.amount / cu.per_amount) * cu.charge);
 				}, 0).toFixed(2);
 
-				if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscount' && event.target.id != 'pointAmount') {
+				if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscountAmount' && event.target.id != 'pointAmount') {
 					this.sales.vat = this.cart.reduce((prev, curr) => {
 						return +prev + +(curr.total * (curr.vat / 100))
 					}, 0);
 				}
 
-				if (event.target.id == 'slabDiscount' && this.slabStatus == false) {
-					this.discountPercent = 0;
-					this.sales.sale_slab_id = null;
-				}else if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscount' && event.target.id != 'pointAmount' && this.slabStatus == true) {
+				if (event.target.id == 'slabDiscountAmount') {
+					if (this.slabStatus == true) {
+						this.sales.discount = this.slab_discount_amount;
+						this.sales.sale_slab_id = this.sale_slab_id;
+						this.discountPercent = parseFloat(parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
+					} else {
+						this.sales.discount = 0;
+						this.sales.sale_slab_id = null;
+					}
+				} else if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscountAmount' && event.target.id != 'pointAmount' && this.slabStatus == false) {
 					await this.getActiveSlab();
-					this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent)) / 100).toFixed(2);
+					this.sales.discount = 0;
+					this.sales.sale_slab_id = null;
 				}
+
 
 				if (event.target.id == 'discountPercent') {
 					this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent)) / 100).toFixed(2);
 				} else if (event.target.id == 'discount') {
 					this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
-				} else if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscount' && event.target.id != 'pointAmount') {
-					if (parseFloat(this.discountPercent) > 0) {
-						this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent)) / 100).toFixed(2);
+				} else if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid' && event.target.id != 'slabDiscountAmount' && event.target.id != 'pointAmount') {
+					if (parseFloat(this.sales.discount) > 0) {
+						this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal || 0) * 100).toFixed(2);
 					} else {
 						this.sales.discount = this.cart.reduce((prev, curr) => {
 							return prev + parseFloat(curr.quantity * curr.discountAmount)
 						}, 0);
-						this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
+						this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal || 0) * 100).toFixed(2);
 					}
 				}
 				this.sales.total = ((parseFloat(this.sales.subTotal) + parseFloat(this.sales.vat) + parseFloat(this.sales.transportCost)) - parseFloat(+this.sales.discount + +this.sales.pointAmount)).toFixed(2);

@@ -1052,14 +1052,16 @@ class Products extends CI_Controller
                         ss.end_date DESC,
                         ss.amount DESC
                 ", [
-                    $customerId,
-                    $branchId,
-                    $branchId,
-                    $branchId,
-                    $today,
-                    $customerId,
-                    $branchId
-                ])->row();
+            $customerId,
+            $branchId,
+            $branchId,
+            $branchId,
+            $today,
+            $customerId,
+            $branchId
+        ])->row();
+
+        $slabs->discountAmount = $slabs ? ($slabs->customer_total_purchase * $slabs->discount / 100) : 0;
 
         echo json_encode($slabs);
     }
