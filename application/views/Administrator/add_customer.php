@@ -170,11 +170,16 @@
 	</form>
 
 	<div class="row">
-		<div class="col-sm-12 form-inline">
+		<div class="col-sm-6 form-inline">
 			<div class="form-group">
 				<label for="filter" class="sr-only">Filter</label>
 				<input type="text" class="form-control" v-model="filter" placeholder="Filter">
 			</div>
+		</div>
+		<div class="col-sm-6 text-right">
+			<a href="" v-on:click.prevent="excelExport">
+				<i class="fa fa-file-excel-o"></i> Excel
+			</a>
 		</div>
 		<div class="col-md-12">
 			<div class="table-responsive">
@@ -216,6 +221,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/vuejs-datatable.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -430,6 +436,26 @@
 				}
 				this.imageUrl = '';
 				this.selectedFile = null;
+			},
+
+			excelExport() {
+				let onlyData = this.customers.map(item => {
+					return {
+						'Customer Code': item.Customer_Code,
+						'Customer Name': item.Customer_Name,
+						'Mobile': item.Customer_Mobile,
+						'Address': item.Customer_Address,
+						'Area': item.District_Name,
+						'Is Member': item.is_member == 'yes' ? 'Member' : 'Non Member',
+						'Point': item.point
+					}
+				})
+
+				const worksheet = XLSX.utils.json_to_sheet(onlyData);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Customer List");
+				// Excel download
+				XLSX.writeFile(workbook, "Customer_List.xlsx");
 			}
 		}
 	})

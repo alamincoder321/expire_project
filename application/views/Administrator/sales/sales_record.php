@@ -86,7 +86,7 @@
 					</select>
 				</div>
 
-				<div class="form-group" style="display:none;" v-bind:style="{display: searchType == 'customer' && customers.length > 0 ? '' : 'none'}">
+				<div class="form-group" style="display:none;" v-bind:style="{display: searchType == 'customer' || searchType == 'quantity' ? '' : 'none'}">
 					<label>Customer</label>
 					<v-select v-bind:options="customers" v-model="selectedCustomer" label="display_name"></v-select>
 				</div>
@@ -96,7 +96,7 @@
 					<v-select v-bind:options="employees" v-model="selectedEmployee" label="Employee_Name"></v-select>
 				</div>
 
-				<div class="form-group" style="display:none;" v-bind:style="{display: searchType == 'quantity' && products.length > 0 ? '' : 'none'}">
+				<div class="form-group" style="display:none;" v-bind:style="{display: searchType == 'quantity' ? '' : 'none'}">
 					<label>Product</label>
 					<v-select v-bind:options="products" v-model="selectedProduct" label="display_text" @input="sales = []"></v-select>
 				</div>
@@ -367,7 +367,7 @@
 					v-if="searchTypesForDetails.includes(searchType)"
 					style="display:none;"
 					v-bind:style="{display: searchTypesForDetails.includes(searchType) ? '' : 'none'}">
-					<table class="record-table" v-if="selectedProduct != null">
+					<table class="record-table">
 						<thead>
 							<tr>
 								<th>Invoice No.</th>
@@ -376,45 +376,24 @@
 								<th>Product Name</th>
 								<th>Sales Rate</th>
 								<th>Quantity</th>
+								<th>Total Amount</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="sale in sales" :style="{background: (sale.Status == 'p' && sale.web_order == '1') ? 'rgb(252 179 179)' : ''}">
+							<tr v-for="sale in sales">
 								<td>{{ sale.SaleMaster_InvoiceNo }}</td>
 								<td>{{ sale.SaleMaster_SaleDate }}</td>
 								<td>{{ sale.Customer_Name }}</td>
 								<td>{{ sale.Product_Name }}</td>
 								<td style="text-align:right;">{{ sale.SaleDetails_Rate }}</td>
 								<td style="text-align:right;">{{ sale.SaleDetails_TotalQuantity }}</td>
+								<td style="text-align:right;">{{ sale.SaleDetails_TotalAmount }}</td>
 							</tr>
-						</tbody>
-						<tfoot>
 							<tr style="font-weight:bold;">
 								<td colspan="5" style="text-align:right;">Total Quantity</td>
-								<td style="text-align:right;">{{ sales.reduce((prev, curr) => { return prev + parseFloat(curr.SaleDetails_TotalQuantity)}, 0) }}</td>
+								<td style="text-align:right;">{{ sales.reduce((prev, curr) => { return prev + parseFloat(curr.SaleDetails_TotalQuantity)}, 0).toFixed(2) }}</td>
+								<td style="text-align:right;">{{ sales.reduce((prev, curr) => { return prev + parseFloat(curr.SaleDetails_TotalAmount)}, 0).toFixed(2) }}</td>
 							</tr>
-						</tfoot>
-					</table>
-
-					<table class="record-table" v-if="selectedProduct == null">
-						<thead>
-							<tr>
-								<th>Product Id</th>
-								<th>Product Information</th>
-								<th>Quantity</th>
-							</tr>
-						</thead>
-						<tbody>
-							<template v-for="sale in sales">
-								<tr>
-									<td colspan="3" style="text-align:center;background: #ccc;">{{ sale.category_name }}</td>
-								</tr>
-								<tr v-for="product in sale.products">
-									<td>{{ product.product_code }}</td>
-									<td>{{ product.product_name }}</td>
-									<td style="text-align:right;">{{ product.quantity }}</td>
-								</tr>
-							</template>
 						</tbody>
 					</table>
 				</template>
@@ -510,7 +489,12 @@
 			},
 			onChangeSearchType() {
 				this.sales = [];
+				this.selectedCustomer = null;
+				this.selectedEmployee = null;
+				this.selectedProduct = null;
+				this.selectedCategory = null;
 				if (this.searchType == 'quantity') {
+					this.getCustomers();
 					this.getProducts();
 				} else if (this.searchType == 'user') {
 					this.getUsers();
@@ -548,22 +532,6 @@
 				})
 			},
 			getSearchResult() {
-				if (this.searchType != 'customer') {
-					this.selectedCustomer = null;
-				}
-
-				if (this.searchType != 'employee') {
-					this.selectedEmployee = null;
-				}
-
-				if (this.searchType != 'quantity') {
-					this.selectedProduct = null;
-				}
-
-				if (this.searchType != 'category') {
-					this.selectedCategory = null;
-				}
-
 				if (this.searchTypesForRecord.includes(this.searchType)) {
 					this.getSalesRecord();
 				} else {
@@ -595,14 +563,10 @@
 							this.sales = res.data.sales;
 						}
 					})
-					.catch(error => {
-						if (error.response) {
-							alert(`${error.response.status}, ${error.response.statusText}`);
-						}
-					})
 			},
 			getSaleDetails() {
 				let filter = {
+					customerId: this.selectedCustomer == null || this.selectedCustomer.Customer_SlNo == '' ? '' : this.selectedCustomer.Customer_SlNo,
 					categoryId: this.selectedCategory == null || this.selectedCategory.ProductCategory_SlNo == '' ? '' : this.selectedCategory.ProductCategory_SlNo,
 					productId: this.selectedProduct == null || this.selectedProduct.Product_SlNo == '' ? '' : this.selectedProduct.Product_SlNo,
 					dateFrom: this.dateFrom,
@@ -611,34 +575,7 @@
 
 				axios.post('/get_saledetails', filter)
 					.then(res => {
-						let sales = res.data;
-
-						if (this.selectedProduct == null) {
-							sales = _.chain(sales)
-								.groupBy('ProductCategory_ID')
-								.map(sale => {
-									return {
-										category_name: sale[0].ProductCategory_Name,
-										products: _.chain(sale)
-											.groupBy('Product_IDNo')
-											.map(product => {
-												return {
-													product_code: product[0].Product_Code,
-													product_name: product[0].Product_Name,
-													quantity: _.sumBy(product, item => Number(item.SaleDetails_TotalQuantity))
-												}
-											})
-											.value()
-									}
-								})
-								.value();
-						}
-						this.sales = sales;
-					})
-					.catch(error => {
-						if (error.response) {
-							alert(`${error.response.status}, ${error.response.statusText}`);
-						}
+						this.sales = res.data;
 					})
 			},
 			deleteSale(saleId) {
