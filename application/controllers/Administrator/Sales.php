@@ -2280,10 +2280,6 @@ class Sales extends CI_Controller
     // ===================================== hold sale =========================================
     public function holdSale($referenceNo)
     {
-        $access = $this->mt->userAccess();
-        if (!$access) {
-            redirect(base_url());
-        }
         $data['title'] = "Product Sales";
 
         $data['isService'] = 'false';

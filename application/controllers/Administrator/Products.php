@@ -28,62 +28,184 @@ class Products extends CI_Controller
 
     public function addProduct()
     {
-        $res = ['success' => false, 'message' => ''];
+        $res = [
+            'success' => false,
+            'message' => ''
+        ];
+
         try {
-            $productObj = json_decode($this->input->post('data'));
 
-            $productNameCount = $this->db->query("select * from tbl_product where Product_Name = ?", $productObj->Product_Name)->num_rows();
+            $data = $this->input->post('data');
+
+            if (empty($data)) {
+                throw new Exception('Product data is required');
+            }
+
+            $productObj = json_decode($data);
+
+            if (!$productObj) {
+                throw new Exception('Invalid product data');
+            }
+
+            if (empty($productObj->Product_Name)) {
+                throw new Exception('Product name is required');
+            }
+
+            if (empty($productObj->Product_Code)) {
+                throw new Exception('Product code is required');
+            }
+
+            $productNameCount = $this->db
+                ->where('Product_Name', $productObj->Product_Name)
+                ->where('status', 'a')
+                ->count_all_results('tbl_product');
+
             if ($productNameCount > 0) {
-                $res = ['success' => false, 'message' => 'Product name already exists'];
-                echo json_encode($res);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Product name already exists'
+                ]);
                 exit;
             }
 
-            $productCodeCount = $this->db->query("select * from tbl_product where Product_Code = ?", $productObj->Product_Code)->num_rows();
+            $productCodeCount = $this->db
+                ->where('Product_Code', $productObj->Product_Code)
+                ->where('status', 'a')
+                ->count_all_results('tbl_product');
+
             if ($productCodeCount > 0) {
-                $res = ['success' => false, 'message' => 'Product code already exists'];
-                echo json_encode($res);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Product code already exists'
+                ]);
                 exit;
             }
 
-            $product = (array)$productObj;
-            $product['is_service'] = $productObj->is_service == true ? 'true' : 'false';
+            $checkProduct = $this->db
+                ->where('Product_Code', $productObj->Product_Code)
+                ->where('status', 'd')
+                ->get('tbl_product')
+                ->row();
+
+            $product = (array) $productObj;
+
+            unset(
+                $product['Product_SlNo'],
+                $product['image_name'],
+                $product['images']
+            );
+
+            $product['is_service'] =
+                isset($productObj->is_service) && $productObj->is_service
+                ? 'true'
+                : 'false';
+
             $product['status'] = 'a';
-            $product['AddBy'] = $this->session->userdata("FullName");
-            $product['AddTime'] = date('Y-m-d H:i:s');
             $product['Product_branchid'] = $this->brunch;
 
-            $this->db->insert('tbl_product', $product);
+            if ($checkProduct) {
 
-            $productId = $this->db->insert_id();
+                $product['UpdateBy'] = $this->session->userdata('FullName');
+                $product['UpdateTime'] = date('Y-m-d H:i:s');
 
-            if (!empty($_FILES)) {
-                $config['upload_path'] = './uploads/products/';
-                $config['allowed_types'] = '*';
+                $this->db
+                    ->where('Product_SlNo', $checkProduct->Product_SlNo)
+                    ->update('tbl_product', $product);
 
-                $imageName = trim($product['Product_Code']);
-                $config['file_name'] = $imageName;
-                $this->load->library('upload', $config);
-                $this->upload->do_upload('image');
+                $productId = $checkProduct->Product_SlNo;
+            } else {
 
-                $config['image_library'] = 'gd2';
-                $config['source_image'] = './uploads/products/' . $imageName;
-                $config['new_image'] = './uploads/products/';
-                $config['maintain_ratio'] = TRUE;
-                $config['width']    = 200;
-                $config['height']   = 200;
+                $product['AddBy'] = $this->session->userdata('FullName');
+                $product['AddTime'] = date('Y-m-d H:i:s');
 
-                $this->load->library('image_lib', $config);
-                $this->image_lib->resize();
+                $this->db->insert('tbl_product', $product);
 
-                $imageName = trim($product['Product_Code']) . $this->upload->data('file_ext');
+                if ($this->db->affected_rows() <= 0) {
+                    throw new Exception('Product insert failed');
+                }
 
-                $this->db->query("update tbl_product set image_name = ? where Product_SlNo = ?", [$imageName, $productId]);
+                $productId = $this->db->insert_id();
             }
 
-            $res = ['success' => true, 'message' => 'Product added successfully', 'productId' => $this->mt->generateProductCode()];
+            $uploadPath = './uploads/products/';
+
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+
+            if (
+                isset($_FILES['image']) &&
+                isset($_FILES['image']['name']) &&
+                !empty($_FILES['image']['name']) &&
+                $_FILES['image']['error'] == UPLOAD_ERR_OK
+            ) {
+
+                $config = [
+                    'upload_path' => $uploadPath,
+                    'allowed_types' => 'jpg|jpeg|png|gif|webp',
+                    'file_name' => trim($product['Product_Code']) . '_' . time(),
+                    'overwrite' => false
+                ];
+
+                $this->load->library('upload');
+                $this->upload->initialize($config, true);
+
+                if (!$this->upload->do_upload('image')) {
+                    throw new Exception(
+                        'Image upload failed: ' .
+                            strip_tags($this->upload->display_errors('', ''))
+                    );
+                }
+
+                $uploadData = $this->upload->data();
+
+                $uploadedImage = $uploadData['file_name'];
+                $sourceImage = $uploadData['full_path'];
+
+                $resizeConfig = [
+                    'image_library' => 'gd2',
+                    'source_image' => $sourceImage,
+                    'new_image' => $sourceImage,
+                    'maintain_ratio' => true,
+                    'width' => 200,
+                    'height' => 200
+                ];
+
+                $this->load->library('image_lib');
+                $this->image_lib->initialize($resizeConfig);
+
+                if (!$this->image_lib->resize()) {
+                    $resizeError = strip_tags(
+                        $this->image_lib->display_errors('', '')
+                    );
+
+                    $this->image_lib->clear();
+
+                    throw new Exception(
+                        'Image resize failed: ' . $resizeError
+                    );
+                }
+
+                $this->image_lib->clear();
+
+                $this->db
+                    ->where('Product_SlNo', $productId)
+                    ->update('tbl_product', [
+                        'image_name' => $uploadedImage
+                    ]);
+            }
+
+            $res = [
+                'success' => true,
+                'message' => 'Product added successfully',
+                'productId' => $this->mt->generateProductCode()
+            ];
         } catch (Exception $ex) {
-            $res = ['success' => false, 'message' => $ex->getMessage()];
+
+            $res = [
+                'success' => false,
+                'message' => $ex->getMessage()
+            ];
         }
 
         echo json_encode($res);
@@ -91,131 +213,275 @@ class Products extends CI_Controller
 
     public function updateProduct()
     {
-        $res = ['success' => false, 'message' => ''];
+        $res = [
+            'success' => false,
+            'message' => ''
+        ];
+
         try {
-            $productObj = json_decode($this->input->post('data'));
+            $data = $this->input->post('data');
 
-            $productNameCount = $this->db->query("select * from tbl_product where Product_Name = ? and Product_SlNo != ?", [$productObj->Product_Name, $productObj->Product_SlNo])->num_rows();
+            if (empty($data)) {
+                throw new Exception('Product data is required');
+            }
+
+            $productObj = json_decode($data);
+
+            if (!$productObj) {
+                throw new Exception('Invalid product data');
+            }
+
+            if (empty($productObj->Product_SlNo)) {
+                throw new Exception('Product ID is required');
+            }
+
+            if (empty($productObj->Product_Name)) {
+                throw new Exception('Product name is required');
+            }
+
+            if (empty($productObj->Product_Code)) {
+                throw new Exception('Product code is required');
+            }
+
+            $productId = (int) $productObj->Product_SlNo;
+
+            $existingProduct = $this->db
+                ->where('Product_SlNo', $productId)
+                ->get('tbl_product')
+                ->row();
+
+            if (!$existingProduct) {
+                throw new Exception('Product not found');
+            }
+
+            $productNameCount = $this->db
+                ->where('Product_Name', $productObj->Product_Name)
+                ->where('Product_SlNo !=', $productId)
+                ->where('status', 'a')
+                ->count_all_results('tbl_product');
+
             if ($productNameCount > 0) {
-                $res = ['success' => false, 'message' => 'Product name already exists'];
-                echo json_encode($res);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Product name already exists'
+                ]);
                 exit;
             }
 
-            $productCodeCount = $this->db->query("select * from tbl_product where Product_Code = ? and Product_SlNo != ?", [$productObj->Product_Code, $productObj->Product_SlNo])->num_rows();
+            $productCodeCount = $this->db
+                ->where('Product_Code', $productObj->Product_Code)
+                ->where('Product_SlNo !=', $productId)
+                ->where('status', 'a')
+                ->count_all_results('tbl_product');
+
             if ($productCodeCount > 0) {
-                $res = ['success' => false, 'message' => 'Product code already exists'];
-                echo json_encode($res);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Product code already exists'
+                ]);
                 exit;
             }
 
-            $product = (array)$productObj;
-            unset($product['Product_SlNo']);
-            $product['is_service'] = $productObj->is_service == true ? 'true' : 'false';
-            $product['UpdateBy'] = $this->session->userdata("FullName");
+            $product = (array) $productObj;
+
+            unset(
+                $product['Product_SlNo'],
+                $product['images'],
+                $product['image_name']
+            );
+
+            $product['is_service'] = isset($productObj->is_service) && $productObj->is_service
+                ? 'true'
+                : 'false';
+
+            $product['UpdateBy'] = $this->session->userdata('FullName');
             $product['UpdateTime'] = date('Y-m-d H:i:s');
 
-            $this->db->where('Product_SlNo', $productObj->Product_SlNo)->update('tbl_product', $product);
-            $productId = $productObj->Product_SlNo;
+            $this->db->where('Product_SlNo', $productId);
+            $updated = $this->db->update('tbl_product', $product);
 
+            if (!$updated) {
+                throw new Exception('Product update failed');
+            }
 
+            $uploadPath = './uploads/products/';
 
-            $output_imges = [];
-            $output_images_string = '';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
 
-            if (isset($_FILES['new_images']['name']) && !empty($_FILES['new_images']['name'][0])) {
+            $existingImages = [];
+
+            if (!empty($existingProduct->images)) {
+                $existingImages = array_filter(
+                    array_map('trim', explode(',', $existingProduct->images))
+                );
+            }
+
+            $removeImages = $this->input->post('remove_image');
+
+            if (!empty($removeImages)) {
+
+                if (!is_array($removeImages)) {
+                    $removeImages = [$removeImages];
+                }
+
+                foreach ($removeImages as $removeImage) {
+
+                    $removeImage = basename($removeImage);
+
+                    if (in_array($removeImage, $existingImages)) {
+
+                        $imagePath = $uploadPath . $removeImage;
+
+                        if (file_exists($imagePath)) {
+                            unlink($imagePath);
+                        }
+
+                        $existingImages = array_values(
+                            array_diff($existingImages, [$removeImage])
+                        );
+                    }
+                }
+            }
+
+            $newImages = [];
+
+            if (
+                isset($_FILES['new_images']) &&
+                isset($_FILES['new_images']['name']) &&
+                is_array($_FILES['new_images']['name'])
+            ) {
+
                 $filesCount = count($_FILES['new_images']['name']);
 
                 for ($i = 0; $i < $filesCount; $i++) {
-                    // Remap one file at a time
-                    $_FILES['file']['name']     = $_FILES['new_images']['name'][$i];
-                    $_FILES['file']['type']     = $_FILES['new_images']['type'][$i];
-                    $_FILES['file']['tmp_name'] = $_FILES['new_images']['tmp_name'][$i];
-                    $_FILES['file']['error']    = $_FILES['new_images']['error'][$i];
-                    $_FILES['file']['size']     = $_FILES['new_images']['size'][$i];
 
-                    $config['upload_path']   = './uploads/products/';
-                    $config['allowed_types'] = '*';
-                    $file_size = round($_FILES['new_images']['size'][$i]);
-                    // $file_ext_array = explode('.', $_FILES['new_images']['name'][$i]);
-                    $config['file_name']     = $productObj->Product_Code . $file_size . time(); //. end($file_ext_array);
-                    $config['overwrite']     = true;
+                    if (
+                        empty($_FILES['new_images']['name'][$i]) ||
+                        $_FILES['new_images']['error'][$i] != UPLOAD_ERR_OK
+                    ) {
+                        continue;
+                    }
 
-                    $this->load->library('upload', $config);
-                    $this->upload->initialize($config);
+                    $_FILES['file'] = [
+                        'name' => $_FILES['new_images']['name'][$i],
+                        'type' => $_FILES['new_images']['type'][$i],
+                        'tmp_name' => $_FILES['new_images']['tmp_name'][$i],
+                        'error' => $_FILES['new_images']['error'][$i],
+                        'size' => $_FILES['new_images']['size'][$i]
+                    ];
+
+                    $config = [
+                        'upload_path' => $uploadPath,
+                        'allowed_types' => 'jpg|jpeg|png|gif|webp',
+                        'encrypt_name' => true,
+                        'overwrite' => false
+                    ];
+
+                    $this->load->library('upload');
+                    $this->upload->initialize($config, true);
 
                     if ($this->upload->do_upload('file')) {
-                        $uploadData   = $this->upload->data();
-                        $output_imges[] = $uploadData['file_name'];
+
+                        $uploadData = $this->upload->data();
+
+                        $newImages[] = $uploadData['file_name'];
+                    } else {
+
+                        throw new Exception(
+                            'Image upload failed: ' .
+                                strip_tags($this->upload->display_errors('', ''))
+                        );
                     }
-                }
 
-                $output_images_string = implode(',', $output_imges);
-
-                if ($productObj->images != null && $productObj->images != '') {
-                    $output_images_string = $productObj->images . ',' . $output_images_string;
-                }
-
-
-                if (in_array($this->input->post('remove_image'),  $output_imges)) {
-                    unlink('./uploads/products/' . $productObj->removeImages);
+                    unset($_FILES['file']);
                 }
             }
 
+            $allImages = array_merge($existingImages, $newImages);
 
+            $allImages = array_values(
+                array_unique(
+                    array_filter($allImages)
+                )
+            );
 
-            if ($output_images_string != '') {
-                $this->db->query("update tbl_product set images =  ? where Product_SlNo = ?", [$output_images_string, $productId]);
-            }
+            $imagesString = implode(',', $allImages);
 
-            if (!empty($_FILES['image'])) {
-                $oldImage = $this->db->query("select image_name from tbl_product where Product_SlNo = ?", $productObj->Product_SlNo)->row()->image_name;
+            $this->db
+                ->where('Product_SlNo', $productId)
+                ->update('tbl_product', [
+                    'images' => $imagesString
+                ]);
 
+            if (
+                isset($_FILES['image']) &&
+                isset($_FILES['image']['name']) &&
+                !empty($_FILES['image']['name']) &&
+                $_FILES['image']['error'] == UPLOAD_ERR_OK
+            ) {
 
+                $oldImage = $existingProduct->image_name;
 
-                $config['upload_path'] = './uploads/products/';
-                $config['allowed_types'] = '*';
+                $config = [
+                    'upload_path' => $uploadPath,
+                    'allowed_types' => 'jpg|jpeg|png|gif|webp',
+                    'encrypt_name' => true,
+                    'overwrite' => false
+                ];
 
-                $imageName = trim($product['Product_Code']) . time();
-                $config['file_name'] = $imageName;
-                $this->load->library('upload', $config);
+                $this->load->library('upload');
+                $this->upload->initialize($config, true);
 
                 if ($this->upload->do_upload('image')) {
 
-                    $uploadData   = $this->upload->data();
-                    $imageName =  $uploadData['file_name'];
-                    $this->db->query("update tbl_product set image_name = ? where Product_SlNo = ?", [$imageName, $productId]);
+                    $uploadData = $this->upload->data();
+                    $imageName = $uploadData['file_name'];
 
-                    if (file_exists('./uploads/products/' . $oldImage) && $oldImage != null && $oldImage != '') {
-                        unlink('./uploads/products/' . $oldImage);
+                    $this->db
+                        ->where('Product_SlNo', $productId)
+                        ->update('tbl_product', [
+                            'image_name' => $imageName
+                        ]);
+
+                    if (
+                        !empty($oldImage) &&
+                        $oldImage != $imageName
+                    ) {
+
+                        $oldImage = basename($oldImage);
+                        $oldImagePath = $uploadPath . $oldImage;
+
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath);
+                        }
                     }
+                } else {
+
+                    throw new Exception(
+                        'Main image upload failed: ' .
+                            strip_tags($this->upload->display_errors('', ''))
+                    );
                 }
-
-                // $config['image_library'] = 'gd2';
-                // $config['source_image'] = './uploads/products/' . $imageName;
-                // $config['new_image'] = './uploads/products/';
-                // $config['maintain_ratio'] = TRUE;
-                // $config['width']    = 200;
-                // $config['height']   = 200;
-
-                // $this->load->library('image_lib', $config);
-                // $this->image_lib->resize();
-
-                // $imageName =  $imageName . $this->upload->data('file_ext');
-
-                // $this->db->query("update tbl_product set image_name = ? where Product_SlNo = ?", [$imageName, $productId]);
             }
 
-
-
-
-            $res = ['success' => true, 'message' => 'Product updated successfully', 'productId' => $this->mt->generateProductCode()];
+            $res = [
+                'success' => true,
+                'message' => 'Product updated successfully',
+                'productId' => $this->mt->generateProductCode()
+            ];
         } catch (Exception $ex) {
-            $res = ['success' => false, 'message' => $ex->getMessage()];
+
+            $res = [
+                'success' => false,
+                'message' => $ex->getMessage()
+            ];
         }
 
         echo json_encode($res);
     }
+
     public function deleteProduct()
     {
         $res = ['success' => false, 'message' => ''];
