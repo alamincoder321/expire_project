@@ -93,7 +93,7 @@ class Sales extends CI_Controller
                 'SaleMaster_cashPaid'            => $data->sales->cashPaid,
                 'SaleMaster_bankPaid'            => $data->sales->bankPaid,
                 'bank_id'                        => $data->sales->bankPaid > 0 ? $data->sales->bank_id : NULL,
-                'SaleMaster_PaidAmount'          => $data->sales->paid,
+                'SaleMaster_PaidAmount'          => ($data->sales->cashPaid + $data->sales->bankPaid),
                 'returnAmount'                   => $data->sales->returnAmount,
                 'bankCharge'                     => $data->sales->bankCharge,
                 'SaleMaster_DueAmount'           => $data->sales->due,
@@ -105,7 +105,7 @@ class Sales extends CI_Controller
                 'AddTime'                        => date("Y-m-d H:i:s"),
                 'SaleMaster_branchid'            => $this->session->userdata("BRANCHid")
             );
-
+            
             if(isset($data->sales->sale_slab_id) && $data->sales->sale_slab_id != null){
                 $sales['sale_slab_id'] = $data->sales->sale_slab_id;
             }
@@ -298,13 +298,14 @@ class Sales extends CI_Controller
                 pc.ProductCategory_Name,
                 sm.SaleMaster_InvoiceNo,
                 sm.SaleMaster_SaleDate,
-                c.Customer_Code,
-                c.Customer_Name
+                ifnull(c.Customer_Name, 'General Customer') as Customer_Code,
+                ifnull(c.Customer_Name, sm.customerName) as Customer_Name,
+                ifnull(c.Customer_Mobile, sm.customerMobile) as Customer_Mobile
             from tbl_saledetails sd
-            join tbl_product p on p.Product_SlNo = sd.Product_IDNo
-            join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
-            join tbl_salesmaster sm on sm.SaleMaster_SlNo = sd.SaleMaster_IDNo
-            join tbl_customer c on c.Customer_SlNo = sm.SalseCustomer_IDNo
+            left join tbl_product p on p.Product_SlNo = sd.Product_IDNo
+            left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
+            left join tbl_salesmaster sm on sm.SaleMaster_SlNo = sd.SaleMaster_IDNo
+            left join tbl_customer c on c.Customer_SlNo = sm.SalseCustomer_IDNo
             where sd.Status != 'd'
             and sm.SaleMaster_branchid = ?
             $clauses
@@ -800,7 +801,7 @@ class Sales extends CI_Controller
                 'SaleMaster_cashPaid'            => $data->sales->cashPaid,
                 'SaleMaster_bankPaid'            => $data->sales->bankPaid,
                 'bank_id'                        => $data->sales->bankPaid > 0 ? $data->sales->bank_id : NULL,
-                'SaleMaster_PaidAmount'          => $data->sales->paid,
+                'SaleMaster_PaidAmount'          => ($data->sales->cashPaid + $data->sales->bankPaid),
                 'returnAmount'                   => $data->sales->returnAmount,
                 'bankCharge'                     => $data->sales->bankCharge,
                 'SaleMaster_DueAmount'           => $data->sales->due,
@@ -810,6 +811,10 @@ class Sales extends CI_Controller
                 'UpdateTime'                     => date("Y-m-d H:i:s"),
                 "SaleMaster_branchid"            => $this->session->userdata("BRANCHid")
             );
+            
+            if(isset($data->sales->sale_slab_id) && $data->sales->sale_slab_id != null){
+                $sales['sale_slab_id'] = $data->sales->sale_slab_id;
+            }
 
             if ($data->customer->Customer_Type == 'G') {
                 $sales['SalseCustomer_IDNo'] = Null;
@@ -1229,6 +1234,9 @@ class Sales extends CI_Controller
 
         if (isset($data->userFullName) && $data->userFullName != '') {
             $clauses .= " and sr.AddBy = '$data->userFullName'";
+        }
+        if (isset($data->customerId) && $data->customerId != '') {
+            $clauses .= " and sm.SalseCustomer_IDNo = '$data->customerId'";
         }
 
         if (isset($data->id) && $data->id != '') {

@@ -778,26 +778,27 @@ class Purchase extends CI_Controller
             $clauses .= " and pm.PurchaseMaster_OrderDate between '$data->dateFrom' and '$data->dateTo'";
         }
 
-        $saleDetails = $this->db->query("
+        $purchaseDetails = $this->db->query("
             select 
                 pd.*,
                 p.Product_Name,
                 pc.ProductCategory_Name,
                 pm.PurchaseMaster_InvoiceNo,
                 pm.PurchaseMaster_OrderDate,
-                s.Supplier_Code,
-                s.Supplier_Name
+                ifnull(s.Supplier_Code, 'General Supplier') as Supplier_Code,
+                ifnull(s.Supplier_Name, pm.supplierName) as Supplier_Name,
+                ifnull(s.Supplier_Mobile, pm.supplierMobile) as Supplier_Mobile
             from tbl_purchasedetails pd
-            join tbl_product p on p.Product_SlNo = pd.Product_IDNo
-            join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
-            join tbl_purchasemaster pm on pm.PurchaseMaster_SlNo = pd.PurchaseMaster_IDNo
-            join tbl_supplier s on s.Supplier_SlNo = pm.Supplier_SlNo
+            left join tbl_product p on p.Product_SlNo = pd.Product_IDNo
+            left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
+            left join tbl_purchasemaster pm on pm.PurchaseMaster_SlNo = pd.PurchaseMaster_IDNo
+            left join tbl_supplier s on s.Supplier_SlNo = pm.Supplier_SlNo
             where pd.Status != 'd'
             and pd.PurchaseDetails_branchID = '$this->brunch'
             $clauses
         ")->result();
 
-        echo json_encode($saleDetails);
+        echo json_encode($purchaseDetails);
     }
 
     /*Delete Purchase Record*/
