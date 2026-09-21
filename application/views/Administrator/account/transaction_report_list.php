@@ -1,6 +1,10 @@
 <link href="<?php echo base_url()?>css/prints.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <div class="content_scroll" style="">
-    <h4><a style="cursor:pointer" id="printIcon"><i class="fa fa-print" style="font-size:24px;color:green"></i> Print</a></h4>
+    <h4>
+        <a style="cursor:pointer" id="printIcon"><i class="fa fa-print" style="font-size:24px;color:green"></i> Print</a>
+        <a style="cursor:pointer;margin-left:15px;" id="exportExcelIcon"><i class="fa fa-file-excel-o" style="font-size:24px;color:green"></i> Export Excel</a>
+    </h4>
 
     <div id="reportContent">
         <table class="table table-bordered" cellspacing="0" cellpadding="0" width="80%">
@@ -49,3 +53,10 @@
     </div>
 
 </div>
+
+<script>
+    $('#exportExcelIcon').on('click', function(e) {
+        const workbook = XLSX.utils.table_to_book(document.querySelector('#reportContent table'));
+        XLSX.writeFile(workbook, "TransactionReport.xlsx");
+    });
+</script>

@@ -122,7 +122,7 @@
 							<label class="col-md-4 control-label">Amount</label>
 							<label class="col-md-1">:</label>
 							<div class="col-md-7">
-								<input type="number" class="form-control" v-model="payment.CPayment_amount" required>
+								<input type="number" step="any" min="0" class="form-control" v-model="payment.CPayment_amount" required>
 							</div>
 						</div>
 						<div class="form-group">
@@ -138,11 +138,16 @@
 	</div>
 
 	<div class="row">
-		<div class="col-sm-12 form-inline">
+		<div class="col-sm-8 form-inline">
 			<div class="form-group">
 				<label for="filter" class="sr-only">Filter</label>
 				<input type="text" class="form-control" v-model="filter" placeholder="Filter">
 			</div>
+		</div>
+		<div class="col-md-4 text-right">
+			<button type="button" @click="exportToExcel">
+				<i class="ri-file-excel-line"></i> Excel
+			</button>
 		</div>
 		<div class="col-md-12">
 			<div class="table-responsive">
@@ -184,6 +189,7 @@
 <script src="<?php echo base_url();?>assets/js/vue/vuejs-datatable.js"></script>
 <script src="<?php echo base_url();?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url();?>assets/js/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -357,6 +363,26 @@
 				}
 				
 				this.payment.CPayment_previous_due = 0;
+			},
+
+			exportToExcel(){
+				let onlyData = this.payments.map((item, index) => {
+					return {
+						'Sl': index + 1,
+						'Transaction Id': item.CPayment_invoice,
+						'Date': item.CPayment_date,
+						'Customer': item.Customer_Name,
+						'Transaction Type': item.transaction_type,
+						'Payment by': item.payment_by,
+						'Amount': Number(item.CPayment_amount),
+						'Description': item.CPayment_notes,
+						'Saved By': item.CPayment_Addby
+					}
+				})
+				let ws = XLSX.utils.json_to_sheet(onlyData);
+				let wb = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(wb, ws, "Customer Payments");
+				XLSX.writeFile(wb, "customer_payments.xlsx");
 			}
 		}
 	})

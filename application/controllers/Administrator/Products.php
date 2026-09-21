@@ -481,7 +481,6 @@ class Products extends CI_Controller
 
         echo json_encode($res);
     }
-
     public function deleteProduct()
     {
         $res = ['success' => false, 'message' => ''];
@@ -503,8 +502,13 @@ class Products extends CI_Controller
         $res = ['success' => false, 'message' => ''];
         try {
             $productId = $this->input->post('productId');
+            if (empty($productId)) {
+                $data = json_decode($this->input->raw_input_stream);
+                $productId = isset($data->productId) ? $data->productId : null;
+            }
+
             $this->db->query("update tbl_product set status = 'a' where Product_SlNo = ?", $productId);
-            $res = ['success' => true, 'message' => 'Product activated'];
+            $res = ['success' => true, 'message' => 'Product restored successfully'];
         } catch (Exception $ex) {
             $res = ['success' => false, 'message' => $ex->getMessage()];
         }
@@ -571,7 +575,7 @@ class Products extends CI_Controller
             } else {
                 $product->sale_rates = [];
             }
-
+            
             $campaign = $this->db->query(
                 "select * from tbl_campaign where product_id = ? and branch_id = ?",
                 [$product->Product_SlNo, $this->brunch]
@@ -672,6 +676,8 @@ class Products extends CI_Controller
             $clauses .= " and p.brand = '$data->brandId'";
         }
 
+        $status = (isset($data->status) && $data->status == 'd') ? 'd' : 'a';
+
         $stock = $this->db->query("
             select
                 p.*,
@@ -763,7 +769,7 @@ class Products extends CI_Controller
             left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
             left join tbl_brand b on b.brand_SiNo = p.brand
             left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
-            where p.status = 'a' and p.is_service = 'false' $clauses
+            where p.status = '$status' and p.is_service = 'false' $clauses
         ")->result();
 
         $res['stock'] = $stock;
@@ -1140,7 +1146,7 @@ class Products extends CI_Controller
 
         echo json_encode($res);
     }
-
+    
     // slab program
     public function saleSlab()
     {

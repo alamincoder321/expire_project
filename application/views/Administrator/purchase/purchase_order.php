@@ -567,7 +567,7 @@
 				}
 			},
 			productTotal() {
-				this.selectedProduct.total = parseFloat(this.selectedProduct.quantity * this.selectedProduct.Product_Purchase_Rate).toFixed(2);
+				this.selectedProduct.total = this.selectedProduct.quantity * this.selectedProduct.Product_Purchase_Rate;
 			},
 
 			onChangeOrder() {

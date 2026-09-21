@@ -80,49 +80,114 @@
 			}
 		});
 
-		function getLocation(callback) {
-			if (!navigator.geolocation) {
-				callback();
-				return;
-			}
+	function getLocation(callback) {
 
-			navigator.geolocation.getCurrentPosition(
-				function(position) {
-					$("#latitude").val(position.coords.latitude);
-					$("#longitude").val(position.coords.longitude);
-					callback();
-				},
-				function(error) {
-					callback();
-				}
-			);
-		}
+    if (!navigator.geolocation) {
+        toastr.error("Your browser does not support location services.");
+        return;
+    }
 
-		function Login(event) {
-			event.preventDefault();
+    navigator.geolocation.getCurrentPosition(
 
-			getLocation(function() {
+        function(position) {
+            $("#latitude").val(position.coords.latitude);
+            $("#longitude").val(position.coords.longitude);
 
-				let formdata = new FormData(event.target);
+            callback();
+        },
 
-				$.ajax({
-					url: "/Login/procedure",
-					method: "POST",
-					data: formdata,
-					dataType: "JSON",
-					processData: false,
-					contentType: false,
-					success: function(res) {
-						if (res.status) {
-							location.href = "/Administrator/";
-						} else {
-							toastr.error(res.message);
-						}
-					}
-				});
+        function(error) {
 
-			});
-		}
+            switch (error.code) {
+
+                case error.PERMISSION_DENIED:
+                    toastr.error("Please allow location access to login.");
+                    break;
+
+                case error.POSITION_UNAVAILABLE:
+                    toastr.error("Location information is unavailable.");
+                    break;
+
+                case error.TIMEOUT:
+                    toastr.error("Location request timed out.");
+                    break;
+
+                default:
+                    toastr.error("Unable to get your location.");
+            }
+
+            // callback() দেওয়া হবে না।
+            // তাই Login() আর এগোবে না।
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+
+    );
+}
+
+
+
+function Login(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const submitBtn = $(form).find('input[type="submit"]');
+
+    // Save original button text
+    const originalText = submitBtn.val();
+
+    // Loading state
+    submitBtn.prop("disabled", true);
+    submitBtn.val("Logging in...");
+
+    getLocation(function () {
+
+        let formdata = new FormData(form);
+
+        $.ajax({
+            url: "/Login/procedure",
+            type: "POST",
+            data: formdata,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+
+            success: function (res) {
+
+                if (res.status) {
+
+                    submitBtn.val("Login Successful...");
+
+                    setTimeout(function () {
+                        window.location.href = "/Administrator/";
+                    }, 300);
+
+                } else {
+
+                    toastr.error(res.message || "Login failed.");
+
+                    submitBtn.prop("disabled", false);
+                    submitBtn.val(originalText);
+                }
+            },
+
+            error: function (xhr) {
+
+                console.error(xhr.responseText);
+
+                toastr.error("Unable to connect to the server.");
+
+                submitBtn.prop("disabled", false);
+                submitBtn.val(originalText);
+            }
+        });
+
+    });
+}
 
 		// show password
 		function passwordShow(event) {

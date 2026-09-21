@@ -84,8 +84,11 @@
     </div>
 
     <div class="row" style="display:none;" v-bind:style="{display: transactions.length > 0 ? '' : 'none'}">
-        <div class="col-md-12" style="margin-top:15px;margin-bottom:15px;">
+        <div class="col-md-6">
             <a href="" @click.prevent="print"><i class="fa fa-print"></i> Print</a>
+        </div>
+        <div class="col-md-6 text-right" v-on:click.prevent="exportToExcel">
+            <a href=""><i class="ri-file-excel-line"></i> Excel</a>
         </div>
         <div class="col-md-12">
             <div class="table-responsive" id="printContent">
@@ -138,6 +141,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
     Vue.component('v-select', VueSelect.VueSelect);
@@ -210,8 +214,26 @@
                 printWindow.focus();
                 await new Promise(r => setTimeout(r, 1000));
                 printWindow.print();
-                await new Promise(resolve => setTimeout(resolve, 1000));
                 printWindow.close();
+            },
+
+            exportToExcel() {
+                let data = this.transactions.map(transaction => {
+                    return {
+                        'Tr. Id': transaction.Tr_Id,
+                        'Date': transaction.Tr_date,
+                        'Tr. Type': transaction.Tr_Type == 'In Cash' ? 'Cash Received' : 'Cash Payment',
+                        'Account Name': transaction.Acc_Name,
+                        'Description': transaction.Tr_Description,
+                        'Received Amount': Number(transaction.In_Amount),
+                        'Payment Amount': Number(transaction.Out_Amount)
+                    }
+                });
+
+                let worksheet = XLSX.utils.json_to_sheet(data);
+                let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+                XLSX.writeFile(workbook, "Cash_Transaction_Report.xlsx");
             }
         }
     })

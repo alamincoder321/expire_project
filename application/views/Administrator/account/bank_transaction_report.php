@@ -82,8 +82,13 @@
     </div>
 
     <div class="row" style="display:none;" v-bind:style="{display: transactions.length > 0 ? '' : 'none'}">
-        <div class="col-md-12" style="margin-bottom: 10px;">
+        <div class="col-md-6" style="margin-bottom: 3px;">
             <a href="" @click.prevent="print"><i class="fa fa-print"></i> Print</a>
+        </div>
+        <div class="col-md-6 text-right" style="margin-bottom: 3px;">
+            <a href="" v-on:click.prevent="excelExport">
+				<i class="fa fa-file-excel-o"></i> Excel
+			</a>
         </div>
         <div class="col-md-12">
             <div class="table-responsive" id="reportContent">
@@ -133,6 +138,7 @@
 <script src="<?php echo base_url();?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url();?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url();?>assets/js/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
     Vue.component('v-select', VueSelect.VueSelect);
@@ -240,9 +246,29 @@
 				printWindow.focus();
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 printWindow.print();
-                await new Promise(resolve => setTimeout(resolve, 1000));
                 printWindow.close();
-            }
+            },
+            excelExport() {
+				let onlyData = this.transactions.map((item, index) => {
+					return {
+                        'Sl': index + 1,
+                        'Description': item.description,
+                        'Transaction Date': item.transaction_date,
+                        'Account Name': item.account_name,
+                        'Account Number': item.account_number,
+                        'Bank Name': item.bank_name,
+                        'Note': item.note,
+                        'Deposit': Number(item.deposit),
+                        'Withdraw': Number(item.withdraw)
+					}
+				})
+
+				const worksheet = XLSX.utils.json_to_sheet(onlyData);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Skipped Rows");
+				// Excel download
+				XLSX.writeFile(workbook, "BankTransactionReport.xlsx");
+			}
         }
     })
 </script>

@@ -430,6 +430,26 @@
 									<tr>
 										<td>
 											<div class="form-group" style="margin-top: 6px;">
+												<div class="col-xs-12" style="display: flex;align-items: center;gap: 8px;">
+													<label style="margin: 0;font-weight: normal;"><input type="checkbox" v-model="sales.notify"> Notify (SMS)</label>
+													<button type="button" class="btn btn-default btn-sm" v-on:click="toggleDueNotify" style="margin-left: auto;">
+														<i class="fa fa-send"></i> Send Due Notify
+													</button>
+												</div>
+												<div class="col-xs-12" style="margin-top: 6px;" v-show="showDueNotify">
+													<textarea class="form-control" v-model="dueMessageText" style="height: 70px;" placeholder="Type due reminder message..."></textarea>
+													<p class="help-block" style="margin-bottom: 5px;">Use <code>{name}</code> and <code>{due}</code> in the message, they will be replaced with the customer's name and due amount. <a href="" v-on:click.prevent="resetDueMessage">Reset to default</a></p>
+													<button type="button" class="btn btn-primary btn-sm" v-on:click="sendDueNotify" v-bind:disabled="sendingDueMessage">
+														<i class="fa fa-send"></i> {{ sendingDueMessage ? 'Sending...' : 'Send' }}
+													</button>
+												</div>
+											</div>
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+											<div class="form-group" style="margin-top: 6px;">
 												<div class="col-xs-12" style="display: flex;gap: 3px;">
 													<input type="button" class="btn btn-default btn-sm" value="Sale" v-on:click="saveSales" v-bind:disabled="saleOnProgress ? true : false" style="background: rgb(0, 126, 187) !important; outline: none; border: 0px !important; color: rgb(255, 255, 255) !important; margin-top: 0px; width: 100%; padding: 7px 5px; font-weight: bold; border-radius: 5px;">
 
@@ -549,8 +569,13 @@
 					returnAmount: 0,
 					bankCharge: 0,
 					isService: '<?php echo $isService; ?>',
-					note: ''
+					note: '',
+					notify: true
 				},
+				dueMessageTemplate: 'Dear Sir/Madam, \nGreetings from Bandhon Departmental Store. Your current outstanding due is BDT {due}. For your acknowledgement. \n\nBandhon Team',
+				dueMessageText: '',
+				showDueNotify: false,
+				sendingDueMessage: false,
 				vatPercent: 0,
 				discountPercent: 0,
 				slabStatus: false,
@@ -610,6 +635,7 @@
 			}
 		},
 		async created() {
+			this.dueMessageText = this.dueMessageTemplate;
 			await this.getBank();
 			await this.getCategory();
 			await this.getEmployees();
@@ -1185,6 +1211,48 @@
 					return pr + parseFloat(cu.amount)
 				}, 0).toFixed(2);
 				this.calculateTotal();
+			},
+			toggleDueNotify() {
+				this.showDueNotify = !this.showDueNotify;
+			},
+			resetDueMessage() {
+				this.dueMessageText = this.dueMessageTemplate;
+			},
+			sendDueNotify() {
+				if (this.selectedCustomer == null || this.selectedCustomer.Customer_SlNo == '' || this.selectedCustomer.Customer_SlNo == null) {
+					alert('Select customer');
+					return;
+				}
+
+				if (!this.selectedCustomer.Customer_Mobile) {
+					alert('Customer mobile number not available');
+					return;
+				}
+
+				if (this.dueMessageText.trim().length == 0) {
+					alert('Enter due message text');
+					return;
+				}
+
+				let smsText = this.dueMessageText
+					.replace(/{name}/g, this.selectedCustomer.Customer_Name)
+					.replace(/{due}/g, Number(parseFloat(this.sales.previousDue || 0).toFixed(2)).toLocaleString('en-US'));
+
+				this.sendingDueMessage = true;
+				axios.post('/send_sms', {
+					number: this.selectedCustomer.Customer_Mobile,
+					smsText: smsText
+				}).then(res => {
+					let r = res.data;
+					alert(r.message);
+					this.sendingDueMessage = false;
+					if (r.success) {
+						this.showDueNotify = false;
+					}
+				}).catch(() => {
+					this.sendingDueMessage = false;
+					alert('Failed to send message');
+				});
 			},
 			async saveSales(print = 0) {
 				if (this.selectedCustomer == null) {

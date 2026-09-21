@@ -39,6 +39,7 @@ if ($panel == 'dashboard' or $panel == '') { ?>
 					</div>
 				</div>
 
+				
 				<div class="col-md-3 col-xs-6 section4">
 					<div class="col-md-12 section122">
 						<a href="<?php echo base_url(); ?>panel/InventoryPanel">

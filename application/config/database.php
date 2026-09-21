@@ -10,7 +10,7 @@ $db['default'] = array(
 
 	'username' => 'root',
 	'password' => '',
-	'database' => 'expire_project',
+	'database' => 'bdsoftte_xyz_db',
 
 
 	'dbdriver' => 'mysqli',

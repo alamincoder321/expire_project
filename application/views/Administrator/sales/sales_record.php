@@ -738,13 +738,13 @@
 						'Customer Name': item.Customer_Name,
 						'Employee Name': item.Employee_Name,
 						'Saved By': item.AddBy,
-						'SubTotal': item.SaleMaster_SubTotalAmount,
-						'Discount': item.SaleMaster_TotalDiscountAmount,
-						'Point': item.pointAmount,
-						'Total': item.SaleMaster_TotalSaleAmount,
-						'Paid': item.SaleMaster_PaidAmount,
-						'Return': item.returnAmount,
-						'Due': item.SaleMaster_DueAmount,
+						'SubTotal': Number(item.SaleMaster_SubTotalAmount),
+						'Discount': Number(item.SaleMaster_TotalDiscountAmount),
+						'Point': Number(item.pointAmount),
+						'Total': Number(item.SaleMaster_TotalSaleAmount),
+						'Paid': Number(item.SaleMaster_PaidAmount),
+						'Return': Number(item.returnAmount),
+						'Due': Number(item.SaleMaster_DueAmount),
 						'Note': item.SaleMaster_Description
 					}
 				})

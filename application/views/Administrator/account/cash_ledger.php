@@ -47,9 +47,12 @@
 	</div>
 
 	<div class="col-sm-12" style="display:none;" v-bind:style="{display: showTable ? '' : 'none'}">
-		<a href="" style="margin: 7px 0;display:block;width:50px;" v-on:click.prevent="print">
+		<a href="" style="margin: 7px 0;display:inline-block;width:50px;" v-on:click.prevent="print">
 			<i class="fa fa-print"></i> Print
 		</a>
+		<button type="button" class="btn btn-success btn-sm" style="margin-bottom:7px;" v-on:click.prevent="excelExport">
+			<i class="fa fa-file-excel-o"></i> Export Excel
+		</button>
 		<div class="table-responsive" id="reportTable">
 			<table class="table table-bordered">
 				<thead>
@@ -90,6 +93,7 @@
 <script src="<?php echo base_url();?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url();?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url();?>assets/js/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -121,6 +125,31 @@
 					this.showTable = true;
 				})
 			},
+
+			excelExport(){
+				let onlyData = [{
+					'Date': '',
+					'Description': 'Previous Balance',
+					'Cash In': '',
+					'Cash Out': '',
+					'Balance': parseFloat(this.previousBalance).toFixed(2)
+				}];
+
+				this.ledger.forEach(row => {
+					onlyData.push({
+						'Date': row.date,
+						'Description': row.description,
+						'Cash In': Number(row.in_amount),
+						'Cash Out': Number(row.out_amount),
+						'Balance': Number(row.balance)
+					});
+				});
+
+				const worksheet = XLSX.utils.json_to_sheet(onlyData);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Cash Ledger");
+				XLSX.writeFile(workbook, "CashLedgerReport.xlsx");
+			},
 			async print(){
 				let reportContent = `
 					<div class="container">
@@ -150,7 +179,6 @@
 				mywindow.focus();
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				mywindow.print();
-				await new Promise(resolve => setTimeout(resolve, 1000));
 				mywindow.close();
 			}
 		}

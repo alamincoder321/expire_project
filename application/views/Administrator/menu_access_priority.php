@@ -162,6 +162,7 @@
                     <li><input type="checkbox" class="access" value="sms" v-model="access"> Send SMS</li>
                     <li><input type="checkbox" class="access" value="product" v-model="access"> Product Entry</li>
                     <li><input type="checkbox" class="access" value="productlist" v-model="access"> Product List</li>
+                    <li><input type="checkbox" class="access" value="deletedproductlist" v-model="access"> Deleted Product List</li>
                     <li><input type="checkbox" class="access" value="product_ledger" v-model="access"> Product Ledger</li>
                     <li><input type="checkbox" class="access" value="damageEntry" v-model="access"> Damage Entry</li>
                     <li><input type="checkbox" class="access" value="damageList" v-model="access"> Damage List</li>

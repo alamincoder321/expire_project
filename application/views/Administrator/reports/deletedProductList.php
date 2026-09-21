@@ -37,7 +37,7 @@
         overflow-y: auto;
     }
 </style>
-<div id="productList">
+<div id="deletedProductList">
     <div class="row">
         <div class="col-xs-12 col-md-12 col-lg-12" style="border-bottom:1px #ccc solid;">
             <form class="form-inline">
@@ -61,21 +61,6 @@
     </div>
     <div style="display:none;" v-bind:style="{display: products.length > 0 ? '' : 'none'}">
         <div class="row">
-            <div class="col-md-6">
-                <a href="" v-on:click.prevent="print">
-                    <i class="fa fa-print"></i> Print
-                </a>
-            </div>
-            <div class="col-md-6 text-right">
-                <a href="<?php echo base_url(); ?>deletedproductlist" style="margin-right: 15px;">
-                    <i class="fa fa-trash"></i> Deleted Products
-                </a>
-                <a href="" v-on:click.prevent="excelExport">
-                    <i class="fa fa-file-excel-o"></i> Export Excel
-                </a>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-md-12">
                 <div class="table-responsive" id="reportTable">
                     <table class="table table-bordered table-condensed">
@@ -85,10 +70,9 @@
                                 <th>Product Id</th>
                                 <th>Product Name</th>
                                 <th>Category</th>
-                                <th>Stock</th>
                                 <th style="text-align: right;">Purchase Price</th>
                                 <th style="text-align: right;">Sale Price</th>
-                                <th>Profit(%)</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -97,14 +81,12 @@
                                 <td>{{ product.Product_Code }}</td>
                                 <td>{{ product.Product_Name }}</td>
                                 <td>{{ product.ProductCategory_Name }}</td>
-                                <td>{{ Number(product.current_quantity) % 1 ? parseFloat(product.current_quantity).toFixed(2) : product.current_quantity }}</td>
                                 <td style="text-align:right;">{{ product.Product_Purchase_Rate }}</td>
                                 <td style="text-align:right;">{{ product.Product_SellingPrice }}</td>
                                 <td>
-                                    {{ product.Product_Purchase_Rate > 0
-                                        ? (((product.Product_SellingPrice - product.Product_Purchase_Rate) / product.Product_Purchase_Rate) * 100).toFixed(2)
-                                        : '0.00'
-                                    }}%
+                                    <button type="button" class="btn btn-success btn-xs" v-on:click="restoreProduct(product)" v-bind:disabled="restoringId == product.Product_SlNo">
+                                        <i class="fa fa-undo"></i> {{ restoringId == product.Product_SlNo ? 'Restoring...' : 'Restore' }}
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -113,24 +95,27 @@
             </div>
         </div>
     </div>
+    <div style="display:none;" v-bind:style="{display: searched && products.length == 0 ? '' : 'none'}">
+        <p class="text-muted">No deleted products found.</p>
+    </div>
 </div>
 
 <script src="<?php echo base_url(); ?>assets/js/vue/vue.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
     Vue.component('v-select', VueSelect.VueSelect);
     new Vue({
-        el: '#productList',
+        el: '#deletedProductList',
         data() {
             return {
                 searchType: '',
                 categories: [],
                 selectedCategory: null,
-                areas: [],
                 products: [],
+                searched: false,
+                restoringId: null
             }
         },
         methods: {
@@ -147,64 +132,34 @@
             },
             getProducts() {
                 let filter = {
-                    categoryId: this.selectedCategory == null ? null : this.selectedCategory.ProductCategory_SlNo
+                    categoryId: this.selectedCategory == null ? null : this.selectedCategory.ProductCategory_SlNo,
+                    status: 'd'
                 }
                 axios.post('/get_total_stock', filter).then(res => {
                     this.products = res.data.stock;
+                    this.searched = true;
                 })
             },
-            async print() {
-                let reportContent = `
-					<div class="container">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <h4 style="text-align:center">Product List</h4 style="text-align:center">
-                            </div>
-                        </div>
-					</div>
-					<div class="container">
-						<div class="row">
-							<div class="col-xs-12">
-								${document.querySelector('#reportTable').innerHTML}
-							</div>
-						</div>
-					</div>
-				`;
+            restoreProduct(product) {
+                let confirmRestore = confirm(`Restore product "${product.Product_Name}"?`);
+                if (!confirmRestore) {
+                    return;
+                }
 
-                var mywindow = window.open('', 'PRINT', `width=${screen.width}, height=${screen.height}`);
-                mywindow.document.write(`
-					<?php $this->load->view('Administrator/reports/reportHeader.php'); ?>
-				`);
-
-                mywindow.document.body.innerHTML += reportContent;
-
-                mywindow.focus();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                mywindow.print();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                mywindow.close();
-            },
-            excelExport() {
-                let onlyData = this.products.map((item, ind) => {
-                    return {
-                        'SlNo': ind + 1,
-                        'Product Id': item.Product_Code,
-                        'Product Name': item.Product_Name,
-                        'Category': item.ProductCategory_Name,
-                        'Stock': item.current_quantity,
-                        'Purchase Price': item.Product_Purchase_Rate,
-                        'Sale Price': item.Product_SellingPrice,
-                        'Profit(%)': (item.Product_Purchase_Rate > 0
-                                        ? (((item.Product_SellingPrice - item.Product_Purchase_Rate) / item.Product_Purchase_Rate) * 100).toFixed(2)
-                                        : '0.00')+'%'
+                this.restoringId = product.Product_SlNo;
+                axios.post('/restore_product', {
+                    productId: product.Product_SlNo
+                }).then(res => {
+                    let r = res.data;
+                    alert(r.message);
+                    this.restoringId = null;
+                    if (r.success) {
+                        this.getProducts();
                     }
-                })
-
-                const worksheet = XLSX.utils.json_to_sheet(onlyData);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Skipped Rows");
-                // Excel download
-                XLSX.writeFile(workbook, "ProductList.xlsx");
+                }).catch(() => {
+                    this.restoringId = null;
+                    alert('Failed to restore product');
+                });
             }
         }
     })

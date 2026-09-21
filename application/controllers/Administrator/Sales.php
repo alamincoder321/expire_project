@@ -229,20 +229,17 @@ class Sales extends CI_Controller
             }
 
             //Send sms
-            $currentDue = $data->sales->previousDue + ($data->sales->total - $data->sales->paid);
-            if ($customerId == '' || $customerId == null) {
-                $customerId = $data->sales->customerId;
-                $sendToName = $data->customer->Customer_Name;
-            } else {
-                $customerInfo = $this->db->query("select * from tbl_customer where Customer_SlNo = ?", $customerId)->row();
-                $sendToName = $customerInfo->owner_name != '' ? $customerInfo->owner_name : $customerInfo->Customer_Name;
-            }
+            $notify = isset($data->sales->notify) ? (bool) $data->sales->notify : false;
+            if ($notify) {
+                if ($customerId == '' || $customerId == null) {
+                    $customerId = $data->sales->customerId;
+                }
 
-            if ($data->customer->Customer_Mobile != '' && $data->customer->Customer_Mobile != null) {
-                $currency = $this->session->userdata('Currency_Name');
-                $message = "Dear {$sendToName},\nYour bill is {$currency} {$data->sales->total}. Received {$currency} {$data->sales->paid} and current due is {$currency} {$currentDue} for invoice {$invoice}";
-                $recipient = $customerInfo->Customer_Mobile;
-                $this->sms->sendBulkSms([$recipient], $message);
+                if ($data->customer->Customer_Mobile != '' && $data->customer->Customer_Mobile != null) {
+                    $message = "Dear Sir/Madam\nThank you for shopping at Bandhon Dep. Store. We truly appreciate your trust and support. We look forward to serving you again.\n\nBandhon Team";
+                    $recipient = $data->customer->Customer_Mobile;
+                    $this->sms->sendBulkSms([$recipient], $message);
+                }
             }
 
 

@@ -50,20 +50,20 @@ $route['areaedit/(:any)'] = 'Administrator/Page/areaedit/$1';
 $route['areaupdate'] = 'Administrator/Page/areaupdate';
 $route['get_districts'] = 'Administrator/Page/getDistricts';
 
-$route['product']               = 'Administrator/Products';
-$route['add_product']           = 'Administrator/Products/addProduct';
-$route['update_product']        = 'Administrator/Products/updateProduct';
-$route['delete_product']        = 'Administrator/Products/deleteProduct';
-$route['productlist']           = 'Administrator/Reports/productlist';
-$route['campaignlist']          = 'Administrator/Reports/campaignlist';
-$route['currentStock']          = 'Administrator/Products/current_stock';
-$route['get_products']          = 'Administrator/Products/getProducts';
-$route['get_product_stock']     = 'Administrator/Products/getProductStock';
-$route['get_current_stock']     = 'Administrator/Products/getCurrentStock';
-$route['get_total_stock']       = 'Administrator/Products/getTotalStock';
-$route['product_ledger']        = 'Administrator/Products/productLedger';
-$route['get_product_ledger']    = 'Administrator/Products/getProductLedger';
-$route['reorder_list']          = 'Administrator/Reports/reOrderList';
+$route['product']            = 'Administrator/Products';
+$route['add_product']        = 'Administrator/Products/addProduct';
+$route['update_product']     = 'Administrator/Products/updateProduct';
+$route['delete_product']     = 'Administrator/Products/deleteProduct';
+$route['productlist']        = 'Administrator/Reports/productlist';
+$route['campaignlist']       = 'Administrator/Reports/campaignlist';
+$route['currentStock']       = 'Administrator/Products/current_stock';
+$route['get_products']       = 'Administrator/Products/getProducts';
+$route['get_product_stock']  = 'Administrator/Products/getProductStock';
+$route['get_current_stock']  = 'Administrator/Products/getCurrentStock';
+$route['get_total_stock']    = 'Administrator/Products/getTotalStock';
+$route['product_ledger']     = 'Administrator/Products/productLedger';
+$route['get_product_ledger'] = 'Administrator/Products/getProductLedger';
+$route['reorder_list']       = 'Administrator/Reports/reOrderList';
 
 $route['totalStock'] = 'Administrator/Products/total_stock';
 $route['totalStockPrint'] = 'Administrator/Reports/total_stock';
@@ -85,6 +85,7 @@ $route['get_active_sale_slabs'] = 'Administrator/Products/getActiveSalesSlabs';
 
 // $route['GenerateBarcode/(:any)'] = 'BarcodeController/barcode_create/$1';
 $route['barcode/(:any)'] = 'BarcodeController/barcode_create/$1';
+
 
 $route['supplier'] = 'Administrator/Supplier';
 $route['add_supplier'] = 'Administrator/Supplier/addSupplier';
@@ -211,7 +212,6 @@ $route['salesrecord'] = 'Administrator/Sales/sales_record';
 $route['sales_record_print/(:any)'] = 'Administrator/Reports/sales_record_print/$1';
 $route['customerPaymentReport'] = 'Administrator/Customer/customer_payment_report';
 $route['chalan/(:any)'] = 'Administrator/Sales/chalan/$1';
-
 
 // day close
 $route['dayclose'] = 'Administrator/DayClose';
@@ -417,6 +417,11 @@ $route['send_bulk_sms'] = 'Administrator/SMS/sendBulkSms';
 $route['sms_settings'] = 'Administrator/SMS/smsSettings';
 $route['get_sms_settings'] = 'Administrator/SMS/getSmsSettings';
 $route['save_sms_settings'] = 'Administrator/SMS/saveSmsSettings';
+$route['get_sms_providers'] = 'Administrator/SMS/getSmsProviders';
+$route['save_sms_provider'] = 'Administrator/SMS/saveSmsProvider';
+$route['set_default_sms_provider'] = 'Administrator/SMS/setDefaultSmsProvider';
+$route['delete_sms_provider'] = 'Administrator/SMS/deleteSmsProvider';
+$route['test_sms_provider'] = 'Administrator/SMS/testSmsProvider';
 
 $route['user_login'] = 'Login/userLogin';
 $route['database_backup'] = 'Administrator/Page/databaseBackup';

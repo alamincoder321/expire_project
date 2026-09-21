@@ -74,6 +74,17 @@ class Reports extends CI_Controller
         $this->load->view('Administrator/index', $data);
     }
 
+    public function deletedProductList()
+    {
+        $access = $this->mt->userAccess();
+        if (!$access) {
+            redirect(base_url());
+        }
+        $data['title']  = 'Deleted Product List';
+        $data['content'] = $this->load->view('Administrator/reports/deletedProductList', $data, true);
+        $this->load->view('Administrator/index', $data);
+    }
+
     public function campaignlist()
     {
         $data['title']  = 'Campaign Product List';

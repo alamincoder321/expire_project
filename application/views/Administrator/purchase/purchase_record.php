@@ -129,8 +129,13 @@
 	</div>
 
 	<div class="row" style="margin-top:15px;display:none;" v-bind:style="{display: purchases.length > 0 ? '' : 'none'}">
-		<div class="col-md-12" style="margin-bottom: 10px;">
+		<div class="col-md-6" style="margin-bottom: 10px;">
 			<a href="" @click.prevent="print"><i class="fa fa-print"></i> Print</a>
+		</div>
+		<div class="col-md-6 text-right" style="margin-bottom: 10px;">
+			<button type="button" class="btn btn-success btn-sm" v-on:click.prevent="excelExport">
+				<i class="fa fa-file-excel-o"></i> Export Excel
+			</button>
 		</div>
 		<div class="col-md-12">
 			<div class="table-responsive" id="reportContent">
@@ -233,6 +238,8 @@
 								<?php } ?>
 							</td>
 						</tr>
+					</tbody>
+					<tfoot>
 						<tr style="font-weight:bold;">
 							<td colspan="3" style="text-align:right;">Total</td>
 							<td style="text-align:right;">{{ purchases.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_SubTotalAmount)}, 0).toFixed(2) }}</td>
@@ -245,7 +252,7 @@
 							<td></td>
 							<td></td>
 						</tr>
-					</tbody>
+					</tfoot>
 				</table>
 
 				<table
@@ -272,11 +279,13 @@
 							<td style="text-align:right;">{{ purchase.PurchaseDetails_Rate }}</td>
 							<td style="text-align:right;">{{ purchase.PurchaseDetails_TotalQuantity }}</td>
 						</tr>
+					</tbody>
+					<tfoot>
 						<tr style="font-weight:bold;">
 							<td colspan="5" style="text-align:right;">Total Quantity</td>
 							<td style="text-align:right;">{{ purchases.reduce((prev, curr) => { return prev + parseFloat(curr.PurchaseDetails_TotalQuantity)}, 0) }}</td>
 						</tr>
-					</tbody>
+					</tfoot>
 				</table>
 			</div>
 		</div>
@@ -287,6 +296,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -530,6 +540,29 @@
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				reportWindow.print();
 				reportWindow.close();
+			},
+
+			excelExport() {
+				let onlyData = this.purchases.map(item => {
+					return {
+						'Invoice No.': item.PurchaseMaster_InvoiceNo,
+						'Date': item.PurchaseMaster_OrderDate,
+						'Supplier Name': item.Supplier_Name,
+						'Sub Total': Number(item.PurchaseMaster_SubTotalAmount),
+						'VAT': Number(item.PurchaseMaster_Tax),
+						'Discount': Number(item.PurchaseMaster_DiscountAmount),
+						'Transport Cost': Number(item.PurchaseMaster_Freight),
+						'Total': Number(item.PurchaseMaster_TotalAmount),
+						'Paid': Number(item.PurchaseMaster_PaidAmount),
+						'Due': Number(item.PurchaseMaster_DueAmount),
+						'Note': item.PurchaseMaster_Description
+					}
+				})
+
+				const worksheet = XLSX.utils.json_to_sheet(onlyData);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Purchase Record");
+				XLSX.writeFile(workbook, "PurchaseRecord.xlsx");
 			}
 		}
 	})

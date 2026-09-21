@@ -80,8 +80,11 @@
 		</div>
 	</div>
 	<div class="row" v-if="searchType != null" style="display:none" v-bind:style="{display: searchType == null ? 'none' : ''}">
-		<div class="col-md-12">
+		<div class="col-md-6" style="margin-bottom: 3px;">
 			<a href="" v-on:click.prevent="print"><i class="fa fa-print"></i> Print</a>
+		</div>
+		<div class="col-md-6 text-right" style="margin-bottom: 3px;">
+			<a href="" v-on:click.prevent="excelExport"><i class="fa fa-file-excel-o"></i> Excel</a>
 		</div>
 	</div>
 	<div class="row">
@@ -171,6 +174,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -321,6 +325,24 @@
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				reportWindow.print();
 				reportWindow.close();
+			},
+			excelExport() {
+				let onlyData = this.stock.map((item, index) => {
+					return {
+						'Sl': index + 1,
+						'Product Id': item.Product_Code,
+						'Product Name': item.Product_Name,
+						'Category': item.ProductCategory_Name,
+						'Current Qty': Number(item.current_quantity),
+						'Rate': Number(item.Product_Purchase_Rate),
+						'Stock Value': Number(item.stock_value)
+					}
+				})
+
+				let wb = XLSX.utils.book_new();
+				let ws = XLSX.utils.json_to_sheet(onlyData);
+				XLSX.utils.book_append_sheet(wb, ws, "Stock Report");
+				XLSX.writeFile(wb, `${this.selectedSearchType.text} Report.xlsx`);
 			}
 		}
 	})

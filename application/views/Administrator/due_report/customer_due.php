@@ -36,6 +36,12 @@
 		width: auto;
 		overflow-y: auto;
 	}
+
+	@media print {
+		.no-print {
+			display: none !important;
+		}
+	}
 </style>
 
 <div class="row" id="customerDueList">
@@ -70,13 +76,31 @@
 	</div>
 
 	<div class="col-md-12" style="display: none" v-bind:style="{display: dues.length > 0 ? '' : 'none'}">
-		<a href="" style="margin: 7px 0;display:block;width:50px;" v-on:click.prevent="print">
+		<a href="" style="margin: 7px 0;display:inline-block;width:50px;" v-on:click.prevent="print">
 			<i class="fa fa-print"></i> Print
 		</a>
+		<button type="button" class="btn btn-success btn-sm" style="margin-bottom:7px;" v-on:click.prevent="excelExport">
+			<i class="fa fa-file-excel-o"></i> Export Excel
+		</button>
+
+		<div class="row no-print" style="margin: 0 0 15px;" v-bind:style="{display: selectedCustomers.length > 0 ? '' : 'none'}">
+			<div class="col-md-12">
+				<div class="form-group">
+					<label>Due Message ({{ selectedCustomers.length }} customer(s) selected)</label>
+					<textarea class="form-control" v-model="dueMessageText" style="height:80px;" placeholder="Type due reminder message..."></textarea>
+					<p class="help-block" style="margin-bottom:5px;">Use <code>{name}</code> and <code>{due}</code> in the message, they will be replaced with each customer's name and due amount. <a href="" v-on:click.prevent="resetDueMessage">Reset to default</a></p>
+				</div>
+				<button type="button" class="btn btn-primary btn-sm" v-on:click="sendDueMessage" v-bind:disabled="sendingMessage">
+					<i class="fa fa-send"></i> {{ sendingMessage ? 'Sending...' : 'Send Due Message' }}
+				</button>
+			</div>
+		</div>
+
 		<div class="table-responsive" id="reportTable">
 			<table class="table table-bordered">
 				<thead>
 					<tr>
+						<th class="no-print"><input type="checkbox" v-on:click="selectAllDue" title="Select customers with due amount 5 taka or more"></th>
 						<th>Customer Id</th>
 						<th>Customer Name</th>
 						<th>Owner Name</th>
@@ -87,6 +111,11 @@
 				</thead>
 				<tbody>
 					<tr v-for="data in dues">
+						<td class="no-print">
+							<input type="checkbox" v-bind:value="data.Customer_Mobile" v-model="selectedCustomers"
+								v-bind:disabled="parseFloat(data.dueAmount) < minDueForSelect"
+								v-bind:title="parseFloat(data.dueAmount) < minDueForSelect ? 'Minimum ' + minDueForSelect + ' taka due needed to select' : ''">
+						</td>
 						<td>{{ data.Customer_Code }}</td>
 						<td>{{ data.Customer_Name }}</td>
 						<td>{{ data.owner_name }}</td>
@@ -97,6 +126,7 @@
 				</tbody>
 				<tfoot>
 					<tr style="font-weight:bold;">
+						<td class="no-print"></td>
 						<td colspan="5" style="text-align:right">Total Due</td>
 						<td style="text-align:right">{{ parseFloat(totalDue).toFixed(2) }}</td>
 					</tr>
@@ -109,6 +139,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/vue.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -124,11 +155,16 @@
 				areas: [],
 				selectedArea: null,
 				dues: [],
-				totalDue: 0.00
+				totalDue: 0.00,
+				selectedCustomers: [],
+				dueMessageTemplate: 'Dear Sir/Madam, \nGreetings from Bandhon Departmental Store. Your current outstanding due is BDT {due}. For your acknowledgement. \n\nBandhon Team',
+				dueMessageText: '',
+				minDueForSelect: 5,
+				sendingMessage: false
 			}
 		},
 		created() {
-
+			this.dueMessageText = this.dueMessageTemplate;
 		},
 		methods: {
 			onChangeSearchType() {
@@ -168,6 +204,8 @@
 					return;
 				}
 
+				this.selectedCustomers = [];
+
 				let customerId = this.selectedCustomer == null ? null : this.selectedCustomer.Customer_SlNo;
 				let districtId = this.selectedArea == null ? null : this.selectedArea.District_SlNo;
 				let employeeId = this.selectedEmployee == null ? null : this.selectedEmployee.Employee_SlNo;
@@ -185,6 +223,75 @@
 						return prev + parseFloat(cur.dueAmount)
 					}, 0);
 				})
+			},
+			selectAllDue() {
+				let checked = event.target.checked;
+				if (checked) {
+					this.selectedCustomers = [...new Set(
+						this.dues
+							.filter(d => parseFloat(d.dueAmount) >= this.minDueForSelect)
+							.map(d => d.Customer_Mobile)
+					)];
+				} else {
+					this.selectedCustomers = [];
+				}
+			},
+			resetDueMessage() {
+				this.dueMessageText = this.dueMessageTemplate;
+			},
+			sendDueMessage() {
+				if (this.selectedCustomers.length == 0) {
+					alert('Select at least one customer');
+					return;
+				}
+
+				if (this.dueMessageText.trim().length == 0) {
+					alert('Enter due message text');
+					return;
+				}
+
+				let selectedDues = this.dues.filter(d => this.selectedCustomers.includes(d.Customer_Mobile));
+
+				this.sendingMessage = true;
+				let requests = selectedDues.map(data => {
+					let smsText = this.dueMessageText
+						.replace(/{name}/g, data.Customer_Name)
+						.replace(/{due}/g, Number(parseFloat(data.dueAmount).toFixed(2)).toLocaleString('en-US'));
+
+					return axios.post('/send_sms', {
+						number: data.Customer_Mobile,
+						smsText: smsText
+					});
+				});
+
+				Promise.all(requests).then(results => {
+					this.sendingMessage = false;
+					let successCount = results.filter(res => res.data.success).length;
+					alert(`Message sent to ${successCount} of ${selectedDues.length} customer(s)`);
+					if (successCount > 0) {
+						this.selectedCustomers = [];
+					}
+				}).catch(() => {
+					this.sendingMessage = false;
+					alert('Failed to send message');
+				});
+			},
+			excelExport() {
+				let onlyData = this.dues.map(data => {
+					return {
+						'Customer Id': data.Customer_Code,
+						'Customer Name': data.Customer_Name,
+						'Owner Name': data.owner_name,
+						'Address': data.Customer_Address,
+						'Customer Mobile': data.Customer_Mobile,
+						'Due Amount': Number(data.dueAmount)
+					}
+				})
+
+				const worksheet = XLSX.utils.json_to_sheet(onlyData);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Due");
+				XLSX.writeFile(workbook, "CustomerDueReport.xlsx");
 			},
 			async print() {
 				let reportContent = `
@@ -208,7 +315,6 @@
 				mywindow.focus();
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				mywindow.print();
-				await new Promise(resolve => setTimeout(resolve, 1000));
 				mywindow.close();
 			}
 		}

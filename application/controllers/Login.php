@@ -63,7 +63,7 @@ class Login extends CI_Controller
 
 
 
-				$distance = $this->distance($userLat, $userLng, $data->latitude, $data->longitude);
+				$distance = $this->distance($userLat, $userLng, $data->latitude ?? 0, $data->longitude ?? 0);
 				$allowedRadius = 100;
 
 				if (in_array($data->UserType, ['e', 'u'])) {
@@ -92,24 +92,32 @@ class Login extends CI_Controller
 		echo json_encode($res);
 	}
 
-	function distance($lat1, $lon1, $lat2, $lon2)
-	{
-		$earth = 6371000;
+    function distance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earth = 6371000; // Earth radius in meters
+    
+      if (
+            !is_numeric($lat1) ||
+            !is_numeric($lon1) ||
+            !is_numeric($lat2) ||
+            !is_numeric($lon2)
+        ) {
+            return 0;
+        }
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
 
-		$dLat = deg2rad($lat2 - $lat1);
-		$dLon = deg2rad($lon2 - $lon1);
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) *
+            cos(deg2rad($lat2)) *
+            sin($dLon / 2) *
+            sin($dLon / 2);
 
-		$a = sin($dLat / 2) * sin($dLat / 2) +
-			cos(deg2rad($lat1)) *
-			cos(deg2rad($lat2)) *
-			sin($dLon / 2) *
-			sin($dLon / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
-		$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-		return $earth * $c;
-	}
-
+        return $earth * $c;
+       
+    }
 
 	public function forgotpassword()
 	{

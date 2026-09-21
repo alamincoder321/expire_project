@@ -56,9 +56,12 @@
 	</div>
 	<div class="row" style="display:none;" v-bind:style="{display: dueList.length > 0 ? '' : 'none'}">
 		<div class="col-md-12">
-			<a href="" style="margin: 7px 0;display:block;width:50px;" v-on:click.prevent="print">
+			<a href="" style="margin: 7px 0;display:inline-block;width:50px;" v-on:click.prevent="print">
 				<i class="fa fa-print"></i> Print
 			</a>
+			<button type="button" class="btn btn-success btn-sm" style="margin-bottom:7px;" v-on:click.prevent="excelExport">
+				<i class="fa fa-file-excel-o"></i> Export Excel
+			</button>
 			<div class="table-responsive" id="reportTable">
 				<table class="table table-bordered">
 					<thead>
@@ -96,6 +99,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/vue.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -143,6 +147,23 @@
 					this.total = this.dueList.reduce((prev, curr) => {return prev + parseFloat(curr.due)}, 0);
 				})
 			},
+			excelExport() {
+				let onlyData = this.dueList.map(due => {
+					return {
+						'Supplier Code': due.Supplier_Code,
+						'Supplier Name': due.Supplier_Name,
+						'Owner Name': due.contact_person,
+						'Address': due.Supplier_Address,
+						'Mobile': due.Supplier_Mobile,
+						'Due': Number(due.due)
+					}
+				})
+
+				const worksheet = XLSX.utils.json_to_sheet(onlyData);
+				const workbook = XLSX.utils.book_new();
+				XLSX.utils.book_append_sheet(workbook, worksheet, "Supplier Due");
+				XLSX.writeFile(workbook, "SupplierDueReport.xlsx");
+			},
 			async print(){
 				let reportContent = `
 					<div class="container">
@@ -164,7 +185,6 @@
 				mywindow.focus();
 				await new Promise(resolve => setTimeout(resolve, 1000));
 				mywindow.print();
-				await new Promise(resolve => setTimeout(resolve, 1000));
 				mywindow.close();
 			}
 		}

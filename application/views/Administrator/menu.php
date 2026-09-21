@@ -31,7 +31,6 @@ if ($panel == 'dashboard' or $panel == '') {
 			</a>
 			<b class="arrow"></b>
 		</li>
-
 		
 		<li class="">
 			<a href="<?php echo base_url(); ?>panel/InventoryPanel">
@@ -107,6 +106,15 @@ if ($panel == 'dashboard' or $panel == '') {
 				</a>
 				<b class="arrow"></b>
 			</li>
+			<?php if (isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+				<li class="">
+					<a href="<?php echo base_url(); ?>sms_settings">
+						<i class="menu-icon ri-settings-3-line"></i>
+						<span class="menu-text"> SMS Settings </span>
+					</a>
+					<b class="arrow"></b>
+				</li>
+			<?php endif; ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>pages/terms_condition/Terms%20Conditions">
 					<i class="menu-icon fa-solid fa-image"></i>
@@ -126,6 +134,7 @@ if ($panel == 'dashboard' or $panel == '') {
 		<?php if (
 			array_search("product", $access) > -1
 			|| array_search("productlist", $access) > -1
+			|| array_search("deletedproductlist", $access) > -1
 			|| array_search("product_ledger", $access) > -1
 			|| isset($CheckSuperAdmin)
 			|| isset($CheckAdmin)
@@ -159,6 +168,16 @@ if ($panel == 'dashboard' or $panel == '') {
 							<a href="<?php echo base_url(); ?>productlist">
 								<i class="menu-icon fa fa-caret-right"></i>
 								Product List
+							</a>
+							<b class="arrow"></b>
+						</li>
+					<?php endif; ?>
+
+					<?php if (array_search("deletedproductlist", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+						<li class="">
+							<a href="<?php echo base_url(); ?>deletedproductlist">
+								<i class="menu-icon fa fa-caret-right"></i>
+								Deleted Product List
 							</a>
 							<b class="arrow"></b>
 						</li>
@@ -554,7 +573,7 @@ if ($panel == 'dashboard' or $panel == '') {
 				<b class="arrow"></b>
 			</li>
 		<?php endif; ?>
-
+		
 		<?php if (array_search("sale_slab", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>sale_slab">
@@ -678,6 +697,16 @@ if ($panel == 'dashboard' or $panel == '') {
 				<a href="<?php echo base_url(); ?>currentStock">
 					<i class="menu-icon ri-store-line"></i>
 					<span class="menu-text"> Stock Report </span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		<?php endif; ?>
+		
+		<?php if (array_search("expiry_product_report", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+			<li class="">
+				<a href="<?php echo base_url(); ?>expiry_product_report">
+					<i class="menu-icon ri-list-radio"></i>
+					<span class="menu-text"> Expiry Product </span>
 				</a>
 				<b class="arrow"></b>
 			</li>
@@ -921,16 +950,6 @@ if ($panel == 'dashboard' or $panel == '') {
 						</li>
 					<?php endif; ?>
 
-					<?php if (array_search("balance_sheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
-						<li class="">
-							<a href="<?php echo base_url(); ?>balance_sheet">
-								<i class="menu-icon fa fa-caret-right"></i>
-								Balance Sheet
-							</a>
-							<b class="arrow"></b>
-						</li>
-					<?php endif; ?>
-
 					<!-- <?php if (array_search("day_book", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
 							<a href="<?php echo base_url(); ?>day_book">
@@ -1138,15 +1157,15 @@ if ($panel == 'dashboard' or $panel == '') {
 						</li>
 					<?php endif; ?>
 
-					<!-- <?php if (array_search("BalanceSheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<?php if (array_search("balance_sheet", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
-							<a href="<?php echo base_url(); ?>BalanceSheet">
+							<a href="<?php echo base_url(); ?>balance_sheet">
 								<i class="menu-icon fa fa-caret-right"></i>
-								Balance In Out
+								Balance Sheet
 							</a>
 							<b class="arrow"></b>
 						</li>
-					<?php endif; ?> -->
+					<?php endif; ?>
 
 					<!-- <?php if (array_search("day_book", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 						<li class="">
