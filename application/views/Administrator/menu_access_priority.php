@@ -46,6 +46,7 @@
                     <li><input type="checkbox" class="access" value="special_report" v-model="access"> Special Report </li>
                     <li><input type="checkbox" class="access" value="currentStock" v-model="access"> Stock Report </li>
                     <li><input type="checkbox" class="access" value="sale_slab" v-model="access"> Sale Slab Entry </li>
+                    <li><input type="checkbox" class="access" value="product_sale_rates" v-model="access"> Update Sale Rates </li>
                     <!-- <li><input type="checkbox" class="access" value="quotation" v-model="access"> Quotation Entry</li> -->
                 </ul>
             </div>

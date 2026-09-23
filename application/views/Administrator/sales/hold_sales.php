@@ -760,6 +760,7 @@
 			getProducts() {
 				axios.post('/get_products', {
 					isService: this.sales.isService,
+					forSale: 'yes',
 					categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo
 				}).then(res => {
 					if (this.sales.salesType == 'wholesale') {
@@ -778,6 +779,7 @@
 					await axios.post("/get_products", {
 							name: val,
 							isService: this.sales.isService,
+					forSale: 'yes',
 							categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo
 						})
 						.then(res => {
@@ -857,6 +859,7 @@
 				if (this.barcode && this.barcodeVal != '') {
 					await axios.post('/get_products', {
 						isService: this.sales.isService,
+					forSale: 'yes',
 						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
 						name: this.barcodeVal,
 						fromBarcode: 'yes'

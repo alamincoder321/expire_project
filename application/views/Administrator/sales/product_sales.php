@@ -191,7 +191,7 @@
 								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Sale Rate </label>
 									<div class="col-xs-4">
-										<input type="number" id="salesRate" placeholder="Rate" step="any" :disabled="selectedProduct.sale_rates?.length > 1" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
+										<input type="number" id="salesRate" placeholder="Rate" step="any" :disabled="selectedProduct.is_mrp == 'yes'" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
 									</div>
 									<label class="col-xs-1 control-label no-padding-right"> Qty </label>
 									<div class="col-xs-4">
@@ -208,7 +208,7 @@
 
 								<div class="form-group">
 									<div class="col-xs-6">
-										<label :style="{display: selectedProduct.sale_rates.length > 1 && selectedProduct.is_mrp == 'yes' ? '' : 'none'}" :for="rate" v-for="rate in selectedProduct.sale_rates" style="display: none;margin: 0; background: #b7b7b7; padding: 1px 7px; margin-right: 5px; cursor: pointer; border-radius: 4px;">
+										<label :style="{display: selectedProduct.sale_rates.length > 1 && selectedProduct.is_mrp == 'yes' ? '' : 'none'}" :for="rate" v-for="rate in selectedProduct.sale_rates" style="margin: 0px 5px 0px 0px; padding: 0px 10px; cursor: pointer; border-radius: 4px; border: 1px solid gray; margin-bottom: 4px;">
 											<input type="checkbox" @change.prevent="addToCart($event, rate);" :id="rate" style="display: none;">
 											<span v-text="parseFloat(rate)"></span>
 										</label>
@@ -804,6 +804,7 @@
 			getProducts() {
 				axios.post('/get_products', {
 					isService: this.sales.isService,
+					forSale: 'yes',
 					categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo
 				}).then(res => {
 					if (this.sales.salesType == 'wholesale') {
@@ -822,6 +823,7 @@
 					await axios.post("/get_products", {
 							name: val,
 							isService: this.sales.isService,
+							forSale: 'yes',
 							categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo
 						})
 						.then(res => {
@@ -900,6 +902,7 @@
 				if (this.barcode && this.barcodeVal != '') {
 					await axios.post('/get_products', {
 						isService: this.sales.isService,
+					forSale: 'yes',
 						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
 						name: this.barcodeVal,
 						fromBarcode: 'yes'
@@ -1021,12 +1024,17 @@
 					return;
 				}
 
-				if (cartInd > -1) {
-					this.cart.splice(cartInd, 1);
+				if (this.selectedProduct.is_mrp == 'yes' && this.selectedProduct.sale_rates.length == 0) {
+					alert('No active sale rate available for this product');
+					return;
 				}
 
 				if (this.selectedProduct.sale_rates.length > 1 && sale_rate == '' && this.selectedProduct.is_mrp == 'yes') {
 					return;
+				}
+
+				if (cartInd > -1) {
+					this.cart.splice(cartInd, 1);
 				}
 
 				this.cart.unshift(product);

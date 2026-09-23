@@ -115,6 +115,11 @@
 	}
 </style>
 <div id="products">
+<div style="display:flex;justify-content:flex-end;margin:10px 0;">
+    <a href="/product_sale_rates" target="_blank" class="btn btn-info btn-sm">
+        <i class="fa fa-tags"></i> Manage Sale Rates
+    </a>
+</div>
 	<form @submit.prevent="saveProduct">
 		<div class="row"
 			style="margin-top: 10px;margin-bottom:15px;border-bottom: 1px solid #ccc;padding-bottom: 15px;">
@@ -198,6 +203,15 @@
 					</div>
 				</div> -->
 				<div class="form-group clearfix">
+					<label class="control-label col-md-4">Status:</label>
+					<div class="col-md-7">
+						<select class="form-control" v-model="product.status">
+							<option value="a">Active</option>
+							<option value="p">Inactive</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group clearfix">
 					<label for="is_mrp" class="col-md-4" style="display: flex;align-items:center;gap:5px;cursor:pointer;margin-top: 5px;">
 						<input type="checkbox" style="width: 18px;height:18px;margin:0;" id="is_mrp" v-model="product.is_mrp" :true-value="`yes`" :false-value="`no`">
 						<span style="margin: 0;margin-top: 1px;">Is MRP</span>
@@ -242,8 +256,12 @@
 							<td>{{ row.Product_ReOrederLevel }}</td>
 							<td>{{ row.Unit_Name }}</td>
 							<td>
-								<span v-if="row.is_mrp == 'yes'" class="badge">MRP</span>
-								<span v-if="row.is_mrp == 'no'" class="badge">Non MRP</span>
+								<span v-if="row.is_mrp == 'yes'" class="badge badge-success">MRP</span>
+								<span v-if="row.is_mrp == 'no'" class="badge badge-danger">Non MRP</span>
+							</td>
+							<td>
+								<span v-if="row.status == 'a'" class="badge badge-success">Active</span>
+								<span v-if="row.status == 'p'" class="badge badge-danger">Inactive</span>
 							</td>
 							<td>
 								<!-- <button type="button" class="button" @click="editProduct(row)" data-toggle="modal"
@@ -392,7 +410,8 @@
 					images: '',
 					tags: '',
 					is_mrp: 'no',
-					is_slab: 'yes'
+					is_slab: 'yes',
+					status: 'a'
 				},
 				imageUrl: '',
 				selectedFile: null,
@@ -458,6 +477,11 @@
 						align: 'center'
 					},
 					{
+						label: 'Status',
+						field: 'status',
+						align: 'center'
+					},
+					{
 						label: 'Action',
 						align: 'center',
 						filterable: false
@@ -519,7 +543,9 @@
 				})
 			},
 			getProducts() {
-				axios.get('/get_products').then(res => {
+				axios.post('/get_products',{
+					status: 'all'
+				}).then(res => {
 					this.products = res.data.map((item, index) => {
 						item.imageSrc = item.image_name ? `/uploads/products/${item.image_name}` : '/uploads/noImage.png';
 						item.sl = index + 1;
@@ -655,7 +681,8 @@
 					images: '',
 					tags: '',
 					is_mrp: 'no',
-					is_slab: 'yes'
+					is_slab: 'yes',
+					status: 'a'
 				}
 
 				this.imageUrl = '';

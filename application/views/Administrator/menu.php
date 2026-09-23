@@ -583,6 +583,16 @@ if ($panel == 'dashboard' or $panel == '') {
 				<b class="arrow"></b>
 			</li>
 		<?php endif; ?>
+		
+		<?php if (array_search("product_sale_rates", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+			<li class="">
+				<a href="<?php echo base_url(); ?>product_sale_rates">
+					<i class="menu-icon ri-layout-grid-2-line"></i>
+					<span class="menu-text"> Update Sale Rates </span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		<?php endif; ?>
 
 	</ul>
 

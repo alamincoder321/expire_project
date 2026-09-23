@@ -14,6 +14,163 @@ class Products extends CI_Controller
         $this->load->model('Model_table', "mt", TRUE);
         $this->load->model('Billing_model');
     }
+    
+    private function ensureProductSaleRateTable()
+    {
+        static $ready = false;
+        if ($ready) {
+            return;
+        }
+
+        if (!$this->db->table_exists('tbl_product_sale_rates')) {
+            $this->db->query("
+                CREATE TABLE tbl_product_sale_rates (
+                    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                    product_id INT NOT NULL,
+                    sale_rate DECIMAL(18,2) NOT NULL,
+                    status CHAR(1) NOT NULL DEFAULT 'a',
+                    branch_id INT NOT NULL,
+                    AddBy VARCHAR(100) NULL,
+                    AddTime DATETIME NULL,
+                    UpdateBy VARCHAR(100) NULL,
+                    UpdateTime DATETIME NULL,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uq_product_sale_rate (product_id, sale_rate, branch_id),
+                    KEY idx_product_branch_status (product_id, branch_id, status)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            ");
+        }
+
+        $ready = true;
+    }
+
+    private function syncProductSaleRates($productId)
+    {
+        $this->ensureProductSaleRateTable();
+    
+        $branchId = (int)$this->brunch;
+    
+        $rates = $this->db->query("
+            SELECT DISTINCT ROUND(Product_SellingPrice, 2) AS sale_rate
+            FROM tbl_purchasedetails
+            WHERE Status = 'a'
+              AND Product_IDNo = ?
+              AND PurchaseDetails_branchID = ?
+              AND Product_SellingPrice > 0
+        ", [$productId, $branchId])->result();
+    
+        foreach ($rates as $rate) {
+    
+            $saleRate = (float)$rate->sale_rate;
+    
+            if ($saleRate <= 0) {
+                continue;
+            }
+    
+            $exists = $this->db->query("
+                SELECT id
+                FROM tbl_product_sale_rates
+                WHERE product_id = ?
+                  AND sale_rate = ?
+                  AND branch_id = ?
+                LIMIT 1
+            ", [$productId, $saleRate, $branchId])->row();
+    
+            if (!$exists) {
+                $this->db->insert('tbl_product_sale_rates', [
+                    'product_id' => $productId,
+                    'sale_rate' => $saleRate,
+                    'status' => 'a',
+                    'branch_id' => $branchId,
+                    'AddBy' => $this->session->userdata('FullName'),
+                    'AddTime' => date('Y-m-d H:i:s')
+                ]);
+            }
+        }
+    }
+
+    public function productSaleRates()
+    {
+        $access = $this->mt->userAccess();
+        if (!$access) {
+            redirect(base_url());
+        }
+
+        $data['title'] = "Sale Rate Management";
+        $data['content'] = $this->load->view('Administrator/products/sale_rate_management', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
+    }
+
+    public function getProductSaleRates()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+        $productId = isset($data->productId) ? (int)$data->productId : 0;
+
+        if ($productId <= 0) {
+            echo json_encode([]);
+            return;
+        }
+
+        $this->ensureProductSaleRateTable();
+        $this->syncProductSaleRates($productId);
+
+        $rates = $this->db->query("
+            select id, product_id, sale_rate, status
+            from tbl_product_sale_rates
+            where product_id = ?
+              and branch_id = ?
+            order by sale_rate desc
+        ", [$productId, $this->brunch])->result();
+
+        echo json_encode($rates);
+    }
+
+    public function toggleProductSaleRate()
+    {
+        $res = ['success' => false, 'message' => ''];
+
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+            $rateId = isset($data->id) ? (int)$data->id : 0;
+            $status = isset($data->status) && $data->status == 'a' ? 'a' : 'd';
+
+            if ($rateId <= 0) {
+                throw new Exception('Invalid sale rate');
+            }
+
+            $this->ensureProductSaleRateTable();
+
+            $rate = $this->db->query("
+                select id
+                from tbl_product_sale_rates
+                where id = ?
+                  and branch_id = ?
+                limit 1
+            ", [$rateId, $this->brunch])->row();
+
+            if (empty($rate)) {
+                throw new Exception('Sale rate not found');
+            }
+
+            $this->db->where('id', $rateId);
+            $this->db->where('branch_id', $this->brunch);
+            $this->db->update('tbl_product_sale_rates', [
+                'status' => $status,
+                'UpdateBy' => $this->session->userdata('FullName'),
+                'UpdateTime' => date('Y-m-d H:i:s')
+            ]);
+
+            $res = [
+                'success' => true,
+                'message' => $status == 'a' ? 'Sale rate activated successfully' : 'Sale rate deactivated successfully'
+            ];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+    
     public function index()
     {
         $access = $this->mt->userAccess();
@@ -531,6 +688,16 @@ class Products extends CI_Controller
             $clauses .= " and p.is_service = '$data->isService'";
         }
 
+        if (isset($data->isMRP) && $data->isMRP != null && $data->isMRP != '') {
+            $clauses .= " and p.is_mrp = '$data->isMRP'";
+        }
+
+        if (!empty($data->status)) {
+            $clauses .= " and p.status != 'd'";
+        } else {
+            $clauses .= " and p.status = 'a'";
+        }
+
         if (isset($data->forSearch) && $data->forSearch != '') {
             $limit .= "limit 100";
         }
@@ -556,26 +723,39 @@ class Products extends CI_Controller
                                 left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
                                 left join tbl_brand br on br.brand_SiNo = p.brand
                                 left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
-                                where p.status = 'a'
+                                where 1 = 1
                                 $clauses
                                 order by p.Product_SlNo desc
                                 $limit")->result();
 
         foreach ($products as $product) {
-            if ($product->is_mrp == 'yes') {
-                $product->sale_rates = array_column(
-                    $this->db->query("select pd.Product_SellingPrice
-                                    from tbl_purchasedetails pd
-                                    where pd.Status = 'a'
-                                    and pd.Product_IDNo = ?
-                                    group by pd.Product_SellingPrice
-                                ", [$product->Product_SlNo])->result_array(),
-                    'Product_SellingPrice'
-                );
+            if ($product->is_mrp == 'yes' && isset($data->forSale) && $data->forSale == 'yes') {
+                $this->syncProductSaleRates($product->Product_SlNo);
+
+                $activeRates = $this->db->query("
+                    select sale_rate
+                    from tbl_product_sale_rates
+                    where product_id = ?
+                      and branch_id = ?
+                      and status = 'a'
+                    order by sale_rate desc
+                ", [$product->Product_SlNo, $this->brunch])->result_array();
+
+                $product->sale_rates = array_map(function ($row) {
+                    return (float)$row['sale_rate'];
+                }, $activeRates);
+
+                if (count($product->sale_rates) == 1) {
+                    $product->Product_SellingPrice = $product->sale_rates[0];
+                } elseif (count($product->sale_rates) > 1) {
+                    $product->Product_SellingPrice = 0;
+                } else {
+                    $product->Product_SellingPrice = 0;
+                }
             } else {
                 $product->sale_rates = [];
             }
-            
+
             $campaign = $this->db->query(
                 "select * from tbl_campaign where product_id = ? and branch_id = ?",
                 [$product->Product_SlNo, $this->brunch]
