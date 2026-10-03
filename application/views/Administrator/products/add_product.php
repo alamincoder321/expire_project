@@ -115,11 +115,11 @@
 	}
 </style>
 <div id="products">
-<div style="display:flex;justify-content:flex-end;margin:10px 0;">
-    <a href="/product_sale_rates" target="_blank" class="btn btn-info btn-sm">
-        <i class="fa fa-tags"></i> Manage Sale Rates
-    </a>
-</div>
+	<div style="display:flex;justify-content:flex-end;margin:10px 0;">
+		<a href="/product_sale_rates" target="_blank" class="btn btn-info btn-sm">
+			<i class="fa fa-tags"></i> Manage Sale Rates
+		</a>
+	</div>
 	<form @submit.prevent="saveProduct">
 		<div class="row"
 			style="margin-top: 10px;margin-bottom:15px;border-bottom: 1px solid #ccc;padding-bottom: 15px;">
@@ -260,14 +260,15 @@
 								<span v-if="row.is_mrp == 'no'" class="badge badge-danger">Non MRP</span>
 							</td>
 							<td>
-								<span v-if="row.status == 'a'" class="badge badge-success">Active</span>
-								<span v-if="row.status == 'p'" class="badge badge-danger">Inactive</span>
+								<button type="button" class="badge" :class="row.status == 'a' ? 'badge-success' : 'badge-danger'" @click="activateInactive(row)">
+									{{ row.status == 'a' ? 'Active' : 'Inactive' }}
+								</button>
 							</td>
 							<td>
 								<!-- <button type="button" class="button" @click="editProduct(row)" data-toggle="modal"
-								data-target="#staticBackdrop">
-								<i class="fa fa-info-circle"></i>
-							</button> -->
+									data-target="#staticBackdrop">
+									<i class="fa fa-info-circle"></i>
+								</button> -->
 								<button type="button" class="button edit" @click="editProduct(row)">
 									<i class="ri-edit-2-line"></i>
 									<?php if ($this->session->userdata('accountType') != 'u') { ?>
@@ -543,7 +544,7 @@
 				})
 			},
 			getProducts() {
-				axios.post('/get_products',{
+				axios.post('/get_products', {
 					status: 'all'
 				}).then(res => {
 					this.products = res.data.map((item, index) => {
@@ -691,6 +692,22 @@
 				this.newMultipleImages = [];
 				document.querySelector('.preview-images .instant_preview').innerHTML = '';
 
+			},
+			activateInactive(row) {
+				let newStatus = row.status == 'a' ? 'p' : 'a';
+				let confirmMsg = row.status == 'a' ? 'Are you sure you want to deactivate this product?' : 'Are you sure you want to activate this product?';
+				if (confirm(confirmMsg)) {
+					axios.post('/update_product_status', {
+						productId: row.Product_SlNo,
+						status: newStatus
+					}).then(res => {
+						let r = res.data;
+						alert(r.message);
+						if (r.success) {
+							this.getProducts();
+						}
+					})
+				}
 			},
 			previewImage(event) {
 				const WIDTH = 200;

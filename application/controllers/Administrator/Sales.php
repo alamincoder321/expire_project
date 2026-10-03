@@ -44,6 +44,11 @@ class Sales extends CI_Controller
             $data = json_decode($this->input->raw_input_stream);
 
             foreach ($data->cart as $key => $item) {
+                if(($item->salesRate * $item->quantity) != $item->total){
+                    $productName = $item->name . '-' . $item->productCode;
+                    echo json_encode(['success' => false, 'message' => "Total amount mismatch for product: {$productName}"]);
+                    exit;
+                }
                 $curentstock = $this->mt->productStock($item->productId);
                 if ($item->quantity > $curentstock) {
                     $productName = $item->name . '-' . $item->productCode;
@@ -95,7 +100,7 @@ class Sales extends CI_Controller
                 'bank_id'                        => $data->sales->bankPaid > 0 ? $data->sales->bank_id : NULL,
                 'SaleMaster_PaidAmount'          => ($data->sales->cashPaid + $data->sales->bankPaid),
                 'returnAmount'                   => $data->sales->returnAmount,
-                'bankCharge'                     => $data->sales->bankCharge,
+                'bankCharge'                     => isset($data->sales->bankCharge) ? $data->sales->bankCharge : 0,
                 'SaleMaster_DueAmount'           => $data->sales->due,
                 'SaleMaster_Previous_Due'        => $data->sales->previousDue,
                 'SaleMaster_Description'         => $data->sales->note,
@@ -220,12 +225,14 @@ class Sales extends CI_Controller
             }
 
             if (!empty($data->sales->referenceNo)) {
-                $holdSaleId = $this->db->query("select * from tbl_hold_sale where SaleMaster_InvoiceNo = ?", $data->sales->referenceNo)->row()->SaleMaster_SlNo;
-                $this->db->where('SaleMaster_InvoiceNo', $data->sales->referenceNo);
-                $this->db->delete('tbl_hold_sale');
+                $holdSaleId = $this->findHoldSaleId($data->sales->referenceNo);
+                if ($holdSaleId) {
+                    $this->db->where('SaleMaster_SlNo', $holdSaleId);
+                    $this->db->delete('tbl_hold_sale');
 
-                $this->db->where('SaleMaster_IDNo', $holdSaleId);
-                $this->db->delete('tbl_hold_sale_detail');
+                    $this->db->where('SaleMaster_IDNo', $holdSaleId);
+                    $this->db->delete('tbl_hold_sale_detail');
+                }
             }
 
             //Send sms
@@ -240,6 +247,15 @@ class Sales extends CI_Controller
                     $recipient = $data->customer->Customer_Mobile;
                     $this->sms->sendBulkSms([$recipient], $message);
                 }
+            }
+
+            //Send due sms
+            if ($data->sales->due >= 5 && $data->customer->Customer_Mobile != '' && $data->customer->Customer_Mobile != null) {
+                $currency = $this->session->userdata('Currency_Name');
+                $currentDue = $data->sales->previousDue + $data->sales->due;
+                $dueMessage = "Dear Sir/Madam\nYour due for invoice {$invoice} is {$currency} {$data->sales->due}. Total due is {$currency} {$currentDue}. Please clear your due soon.\n\nBandhon Team";
+                $recipient = $data->customer->Customer_Mobile;
+                $this->sms->sendBulkSms([$recipient], $dueMessage);
             }
 
 
@@ -800,7 +816,7 @@ class Sales extends CI_Controller
                 'bank_id'                        => $data->sales->bankPaid > 0 ? $data->sales->bank_id : NULL,
                 'SaleMaster_PaidAmount'          => ($data->sales->cashPaid + $data->sales->bankPaid),
                 'returnAmount'                   => $data->sales->returnAmount,
-                'bankCharge'                     => $data->sales->bankCharge,
+                'bankCharge'                     => isset($data->sales->bankCharge) ? $data->sales->bankCharge : 0,
                 'SaleMaster_DueAmount'           => $data->sales->due,
                 'SaleMaster_Previous_Due'        => $data->sales->previousDue,
                 'SaleMaster_Description'         => $data->sales->note,
@@ -855,9 +871,14 @@ class Sales extends CI_Controller
             }
 
             foreach ($data->cart as $key => $item) {
+                if(($item->salesRate * $item->quantity) != $item->total){
+                    $productName = $item->name . '-' . $item->productCode;
+                    echo json_encode(['success' => false, 'message' => "Total amount mismatch for product: {$productName}"]);
+                    exit;
+                }
                 $curentstock = $this->mt->productStock($item->productId);
                 if ($item->quantity > $curentstock) {
-                    $productName = $item->Product_Name;
+                    $productName = $item->name . '-' . $item->productCode;
                     echo json_encode(['success' => false, 'message' => "Stock unavailable. Please check {$productName}"]);
                     exit;
                 }
@@ -2288,7 +2309,7 @@ class Sales extends CI_Controller
         $data['title'] = "Product Sales";
 
         $data['isService'] = 'false';
-        $data['referenceNo'] = $referenceNo;
+        $data['referenceNo'] = urldecode($referenceNo);
         $data['salesId'] = 0;
         $data['invoice'] = $this->mt->generateSalesInvoice();
         $data['content'] = $this->load->view('Administrator/sales/hold_sales', $data, TRUE);
@@ -2301,12 +2322,6 @@ class Sales extends CI_Controller
         try {
             $this->db->trans_begin();
             $data = json_decode($this->input->raw_input_stream);
-
-            $checkInvoice = $this->db->query("select * from tbl_hold_sale where SaleMaster_InvoiceNo = ?", $data->sales->referenceNo)->row();
-            if ($checkInvoice) {
-                echo json_encode(['success' => false, 'message' => 'This invoice already hold. Please change invoice number']);
-                exit;
-            }
 
             $customerId = $data->sales->customerId;
             if (isset($data->customer)) {
@@ -2419,6 +2434,12 @@ class Sales extends CI_Controller
                 }
             }
 
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                echo json_encode(['success' => false, 'message' => 'Sale hold failed. Please try again']);
+                exit;
+            }
+
             $this->db->trans_commit();
 
             $res = ['success' => true, 'message' => 'Sales Hold On Successfully inserted'];
@@ -2452,6 +2473,38 @@ class Sales extends CI_Controller
         echo json_encode(['success' => true, 'message' => 'Hold sale deleted successfully']);
     }
 
+    public function deleteHoldSaleBulk()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+        $ids = isset($data->holdSaleIds) && is_array($data->holdSaleIds) ? array_map('intval', $data->holdSaleIds) : [];
+        if (count($ids) == 0) {
+            echo json_encode(['success' => false, 'message' => 'Please select at least one hold sale']);
+            exit;
+        }
+
+        // only this branch's holds
+        $ids = array_column($this->db
+            ->select('SaleMaster_SlNo')
+            ->where_in('SaleMaster_SlNo', $ids)
+            ->where('SaleMaster_branchid', $this->session->userdata('BRANCHid'))
+            ->get('tbl_hold_sale')
+            ->result_array(), 'SaleMaster_SlNo');
+
+        if (count($ids) > 0) {
+            $this->db->trans_begin();
+            $this->db->where_in('SaleMaster_IDNo', $ids)->delete('tbl_hold_sale_detail');
+            $this->db->where_in('SaleMaster_SlNo', $ids)->delete('tbl_hold_sale');
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                echo json_encode(['success' => false, 'message' => 'Delete failed. Please try again']);
+                exit;
+            }
+            $this->db->trans_commit();
+        }
+
+        echo json_encode(['success' => true, 'message' => count($ids) . ' hold sale deleted successfully']);
+    }
+
     public function getHoldSale()
     {
         $data = json_decode($this->input->raw_input_stream);
@@ -2459,9 +2512,7 @@ class Sales extends CI_Controller
 
         $limit = "";
         $clauses = "";
-        if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
-            $clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
-        }
+        // no date filter: held sales from any date stay in the list until completed or deleted
 
         if (isset($data->userFullName) && $data->userFullName != '') {
             $clauses .= " and sm.AddBy = '$data->userFullName'";
@@ -2486,8 +2537,12 @@ class Sales extends CI_Controller
             $clauses .= " and c.Customer_Code like '%$data->name%'";
         }
 
-        if (isset($data->referenceNo) && $data->referenceNo != 0 && $data->referenceNo != '') {
-            $clauses .= " and SaleMaster_InvoiceNo = '$data->referenceNo'";
+        // string compare: on PHP 7 a text reference like 'rahim' != 0 is false
+        $hasReference = isset($data->referenceNo) && (string) $data->referenceNo !== '' && (string) $data->referenceNo !== '0';
+        if ($hasReference) {
+            // same reference no can be held more than once; load only one hold, never merge carts
+            $holdSaleId = (int) $this->findHoldSaleId($data->referenceNo);
+            $clauses .= " and sm.SaleMaster_SlNo = '$holdSaleId'";
             $saleDetails = $this->db->query("
                 select 
                     sd.*,
@@ -2501,10 +2556,9 @@ class Sales extends CI_Controller
                 join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
                 join tbl_unit u on u.Unit_SlNo = p.Unit_ID
                 left join tbl_exchange_detail ed on ed.sale_detail_id = sd.SaleDetails_SlNo
-                join tbl_hold_sale sm on sm.SaleMaster_SlNo = sd.SaleMaster_IDNo
-                where sm.SaleMaster_InvoiceNo = ?
+                where sd.SaleMaster_IDNo = ?
                 order by sd.SaleDetails_SlNo desc
-            ", $data->referenceNo)->result();
+            ", $holdSaleId)->result();
 
             $res['saleDetails'] = $saleDetails;
         }
@@ -2516,8 +2570,7 @@ class Sales extends CI_Controller
         if (isset($data->type) && $data->type == 'online') {
             $status_clause = " and sm.web_order = 1";
         } else {
-            if (isset($data->referenceNo) && $data->referenceNo != '0') {
-            } else {
+            if (!$hasReference) {
                 $status_clause = " and sm.web_order = 0";
             }
         }
@@ -2562,5 +2615,19 @@ class Sales extends CI_Controller
         $res['sales'] = $sales;
 
         echo json_encode($res);
+    }
+
+    // latest hold of this branch with the given reference no
+    private function findHoldSaleId($referenceNo)
+    {
+        $hold = $this->db->query("
+            select SaleMaster_SlNo from tbl_hold_sale
+            where SaleMaster_InvoiceNo = ?
+            and SaleMaster_branchid = ?
+            order by SaleMaster_SlNo desc
+            limit 1
+        ", [$referenceNo, $this->session->userdata('BRANCHid')])->row();
+
+        return $hold ? $hold->SaleMaster_SlNo : null;
     }
 }

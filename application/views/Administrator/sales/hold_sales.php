@@ -526,7 +526,7 @@
 				sales: {
 					salesId: parseInt('<?php echo $salesId; ?>'),
 					invoiceNo: '<?php echo $invoice; ?>',
-					referenceNo: '<?php echo $referenceNo; ?>',
+					referenceNo: <?php echo json_encode((string) $referenceNo); ?>,
 					salesBy: '<?php echo $this->session->userdata("FullName"); ?>',
 					salesType: 'retail',
 					salesFrom: '',
@@ -546,6 +546,7 @@
 					previousDue: 0,
 					due: 0,
 					returnAmount: 0,
+					bankCharge: 0,
 					isService: '<?php echo $isService; ?>',
 					note: ''
 				},
@@ -760,7 +761,6 @@
 			getProducts() {
 				axios.post('/get_products', {
 					isService: this.sales.isService,
-					forSale: 'yes',
 					categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo
 				}).then(res => {
 					if (this.sales.salesType == 'wholesale') {
@@ -779,7 +779,6 @@
 					await axios.post("/get_products", {
 							name: val,
 							isService: this.sales.isService,
-					forSale: 'yes',
 							categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo
 						})
 						.then(res => {
@@ -859,7 +858,6 @@
 				if (this.barcode && this.barcodeVal != '') {
 					await axios.post('/get_products', {
 						isService: this.sales.isService,
-					forSale: 'yes',
 						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
 						name: this.barcodeVal,
 						fromBarcode: 'yes'
@@ -1036,6 +1034,10 @@
 				this.sales.subTotal = this.cart.reduce((prev, curr) => {
 					return prev + parseFloat(curr.salesRate * curr.quantity)
 				}, 0).toFixed(2);
+
+				this.sales.bankCharge = this.bankCart.filter(b => b.per_amount > 0).reduce((pr, cu) => {
+					return pr + parseFloat((cu.amount / cu.per_amount) * cu.charge);
+				}, 0).toFixed(2);
 				if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid') {
 					this.sales.vat = this.cart.reduce((prev, curr) => {
 						return +prev + +(curr.total * (curr.vat / 100))
@@ -1203,6 +1205,10 @@
 				}).then(res => {
 					let r = res.data;
 					let sales = r.sales[0];
+					if (sales == undefined) {
+						alert('Hold sale not found. It may be completed or deleted already.');
+						return;
+					}
 					this.sales.salesBy = sales.AddBy;
 					this.sales.salesFrom = sales.SaleMaster_branchid;
 					this.sales.salesDate = sales.SaleMaster_SaleDate;

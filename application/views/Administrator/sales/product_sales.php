@@ -570,7 +570,7 @@
 					bankCharge: 0,
 					isService: '<?php echo $isService; ?>',
 					note: '',
-					notify: true
+					notify: false
 				},
 				dueMessageTemplate: 'Dear Sir/Madam, \nGreetings from Bandhon Departmental Store. Your current outstanding due is BDT {due}. For your acknowledgement. \n\nBandhon Team',
 				dueMessageText: '',

@@ -77,6 +77,9 @@
 			<a href="" v-on:click.prevent="print">
 				<i class="fa fa-print"></i> Print
 			</a>
+			<?php if ($this->session->userdata('accountType') != 'u') { ?>
+			<button type="button" class="btn btn-danger btn-xs" style="margin-left:10px;" :disabled="selectedIds.length == 0" @click="bulkDelete"><i class="fa fa-trash"></i> Delete Selected ({{ selectedIds.length }})</button>
+			<?php } ?>
 		</div>
 		<div class="col-md-5 text-right">
 			<strong>Total Hold Sale: </strong> <span v-text="sales.length"></span>
@@ -95,6 +98,7 @@
 					v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'without_details' ? '' : 'none'}">
 					<thead>
 						<tr>
+							<?php if ($this->session->userdata('accountType') != 'u') { ?><th class="no-print"><input type="checkbox" :checked="sales.length > 0 && selectedIds.length == sales.length" @change="toggleAll($event)"></th><?php } ?>
 							<th>Invoice No.</th>
 							<th>Date</th>
 							<th>Customer Name</th>
@@ -108,6 +112,7 @@
 					</thead>
 					<tbody>
 						<tr v-for="sale in sales" :style="{background: (sale.Status == 'p' && sale.web_order == '1') ? 'rgb(252 179 179)' : ''}">
+							<?php if ($this->session->userdata('accountType') != 'u') { ?><td class="no-print" style="text-align:center;"><input type="checkbox" :value="sale.SaleMaster_SlNo" v-model="selectedIds"></td><?php } ?>
 							<td>{{ sale.SaleMaster_InvoiceNo }}</td>
 							<td>{{ sale.SaleMaster_SaleDate }}</td>
 							<td>{{ sale.Customer_Name }}</td>
@@ -117,13 +122,14 @@
 							<td style="text-align:right;">{{ sale.SaleMaster_TotalSaleAmount }}</td>
 							<td style="text-align:left;">{{ sale.SaleMaster_Description }}</td>
 							<td style="text-align:center;">
-								<a href="" title="Sale Invoice" v-bind:href="`/hold_sale/${sale.SaleMaster_InvoiceNo}`" target="_blank"><i style="font-size: 20px;" class="ri-shopping-cart-line"></i></a>
+								<a href="" title="Sale Invoice" v-bind:href="`/hold_sale/${encodeURIComponent(sale.SaleMaster_InvoiceNo)}`" target="_blank"><i style="font-size: 20px;" class="ri-shopping-cart-line"></i></a>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
 									<a v-if="sale.Status != 'c' && sale.Status != 'd'" href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i style="font-size: 20px;" class="fa fa-trash"></i></a>
 								<?php } ?>
 							</td>
 						</tr>
 						<tr style="font-weight:bold;">
+							<?php if ($this->session->userdata('accountType') != 'u') { ?><td class="no-print"></td><?php } ?>
 							<td colspan="5" style="text-align:right;">Total</td>
 							<td style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_SubTotalAmount)}, 0).toFixed(2) }}</td>
 							<td style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_TotalSaleAmount)}, 0).toFixed(2) }}</td>
@@ -131,6 +137,7 @@
 							<td></td>
 						</tr>
 						<tr style="font-weight:bold;" v-if="sales.length > 0">
+							<?php if ($this->session->userdata('accountType') != 'u') { ?><td class="no-print"></td><?php } ?>
 							<td colspan="5"></td>
 							<td style="text-align:right;">SubTotal</td>
 							<td style="text-align:right;">Total</td>
@@ -180,7 +187,8 @@
 				sales: [],
 				searchTypesForRecord: ['', 'user', 'customer', 'employee'],
 				searchTypesForDetails: ['quantity', 'category'],
-				status: 'a'
+				status: 'a',
+				selectedIds: []
 			}
 		},
 
@@ -298,6 +306,7 @@
 				}
 			},
 			getSalesRecord() {
+				this.selectedIds = [];
 				let filter = {
 					userFullName: this.selectedUser == null || this.selectedUser.FullName == '' ? '' : this.selectedUser.FullName,
 					customerId: this.selectedCustomer == null || this.selectedCustomer.Customer_SlNo == '' ? '' : this.selectedCustomer.Customer_SlNo,
@@ -334,6 +343,29 @@
 						let r = res.data;
 						alert(r.message);
 						if (r.success) {
+							this.getSalesRecord();
+						}
+					})
+			},
+			toggleAll(e) {
+				this.selectedIds = e.target.checked ? this.sales.map(s => s.SaleMaster_SlNo) : [];
+			},
+			bulkDelete() {
+				if (this.selectedIds.length == 0) {
+					alert('Please select at least one hold sale');
+					return;
+				}
+				if (!confirm(`Delete ${this.selectedIds.length} hold sale(s)?`)) {
+					return;
+				}
+				axios.post('/delete_hold_sale_bulk', {
+						holdSaleIds: this.selectedIds
+					})
+					.then(res => {
+						let r = res.data;
+						alert(r.message);
+						if (r.success) {
+							this.selectedIds = [];
 							this.getSalesRecord();
 						}
 					})
@@ -418,6 +450,7 @@
 					</style>
 				`;
 				reportWindow.document.body.innerHTML += reportContent;
+				reportWindow.document.querySelectorAll('.no-print').forEach(el => el.remove());
 
 				if (this.searchType == '' || this.searchType == 'user') {
 					let rows = reportWindow.document.querySelectorAll('.record-table tr');

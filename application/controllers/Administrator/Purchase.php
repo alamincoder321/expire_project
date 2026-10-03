@@ -38,7 +38,6 @@ class Purchase extends CI_Controller
                     p.Product_Name,
                     p.Product_Code,
                     p.ProductCategory_ID,
-                    p.Product_SellingPrice,
                     p.is_mrp,
                     pc.ProductCategory_Name,
                     u.Unit_Name

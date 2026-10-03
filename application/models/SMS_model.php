@@ -11,7 +11,11 @@ class SMS_model extends CI_Model {
     private $senderPhone = "";
 
     private function getSmsFooter(){
-        return "\n\nThank you,\n{$this->senderName}\nPhone: {$this->senderPhone}";
+        $footer = "\n\nThank you,\n{$this->senderName}";
+        if(!empty($this->senderPhone)){
+            $footer .= "\nPhone: {$this->senderPhone}";
+        }
+        return $footer;
     }
 
     private function generateCsmsId(){

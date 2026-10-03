@@ -653,6 +653,28 @@ class Products extends CI_Controller
 
         echo json_encode($res);
     }
+    
+    public function updateProductStatus()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+            $productId = isset($data->productId) ? $data->productId : null;
+            $status = isset($data->status) ? $data->status : null;
+
+            if (empty($productId) || empty($status)) {
+                throw new Exception('Product ID and status are required');
+            }
+
+            $this->db->set(['status' => $status])->where('Product_SlNo', $productId)->update('tbl_product');
+
+            $res = ['success' => true, 'message' => 'Product status updated successfully'];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
 
     public function activeProduct()
     {
