@@ -44,7 +44,7 @@ class Sales extends CI_Controller
             $data = json_decode($this->input->raw_input_stream);
 
             foreach ($data->cart as $key => $item) {
-                if(($item->salesRate * $item->quantity) != $item->total){
+                if(number_format($item->salesRate * $item->quantity, 2) != number_format($item->total, 2)){
                     $productName = $item->name . '-' . $item->productCode;
                     echo json_encode(['success' => false, 'message' => "Total amount mismatch for product: {$productName}"]);
                     exit;
@@ -871,7 +871,7 @@ class Sales extends CI_Controller
             }
 
             foreach ($data->cart as $key => $item) {
-                if(($item->salesRate * $item->quantity) != $item->total){
+                if(number_format($item->salesRate * $item->quantity, 2) != number_format($item->total, 2)){
                     $productName = $item->name . '-' . $item->productCode;
                     echo json_encode(['success' => false, 'message' => "Total amount mismatch for product: {$productName}"]);
                     exit;
