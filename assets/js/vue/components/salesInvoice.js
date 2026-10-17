@@ -130,7 +130,7 @@ const salesInvoice = Vue.component('sales-invoice', {
                      <div class="col-xs-12">
                       <br/>
                     <br/>
-                     Thank you for shopping with. Purchase of defected item must be exchanged by 24 hours with invoice. For any queries, suggestions or complaints, please call: "8809649991010" (7:00 AM - 10:00 PM)</div>
+                     Thank you for shopping with. Purchase of defected item must be exchanged by 24 hours with invoice. For any queries, suggestions or complaints, please call: "8801829002244" (7:00 AM - 10:00 PM)</div>
                 </div>
             </div>
         </div>
