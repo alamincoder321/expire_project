@@ -172,25 +172,23 @@ const salesInvoice = Vue.component('sales-invoice', {
     //     this.getSales();
     //     this.getCurrentBranch();
     // },
-     created() {
+     async created() {
         this.setStyle();
-        this.getSales();
-        this.getCurrentBranch();        
+        await Promise.all([this.getSales(), this.getCurrentBranch()]);
+        if (this.print_confirm == 1) {
+            this.$nextTick(() => {
+                setTimeout(() => this.$refs.printButton.click(), 1000);
+            });
+        }
     },
     methods: {
         async getSales() {
-            await axios.post('/get_sales', { salesId: this.sales_id }).then(async res => {
-                this.sales = res.data.sales[0];
-                this.cart = res.data.saleDetails;
-                if(this.print_confirm == 1){
-                    setTimeout(() => {
-                            this.$refs.printButton.click();
-                    }, 1000)                        
-                }
-            })
+            const res = await axios.post('/get_sales', { salesId: this.sales_id });
+            this.sales = res.data.sales[0];
+            this.cart = res.data.saleDetails;
         },
         getCurrentBranch() {
-            axios.get('/get_current_branch').then(res => {
+            return axios.get('/get_current_branch').then(res => {
                 this.currentBranch = res.data;
             })
         },

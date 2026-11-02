@@ -393,14 +393,27 @@ class Purchase extends CI_Controller
                 unset($supplier['display_name']);
 
                 if ($data->supplier->Supplier_Type == 'N') {
-                    $supplier['Supplier_Code']     = $this->mt->generateSupplierCode();
-                    $supplier['Status']            = 'a';
-                    $supplier['AddBy']             = $this->session->userdata("FullName");
-                    $supplier['AddTime']           = date('Y-m-d H:i:s');
-                    $supplier['Supplier_brinchid'] = $this->session->userdata('BRANCHid');
+                    $supplierMobile = trim((string)$data->supplier->Supplier_Mobile);
+                    $this->db->where('Supplier_brinchid', $this->session->userdata('BRANCHid'));
+                    if ($supplierMobile !== '') {
+                        $this->db->where('Supplier_Mobile', $supplierMobile);
+                    } else {
+                        $this->db->where('Supplier_Name', trim((string)$data->supplier->Supplier_Name));
+                        $this->db->where('Supplier_Address', trim((string)$data->supplier->Supplier_Address));
+                    }
+                    $existingSupplier = $this->db->get('tbl_supplier')->row();
+                    if ($existingSupplier) {
+                        $supplierId = $existingSupplier->Supplier_SlNo;
+                    } else {
+                        $supplier['Supplier_Code']     = $this->mt->generateSupplierCode();
+                        $supplier['Status']            = 'a';
+                        $supplier['AddBy']             = $this->session->userdata("FullName");
+                        $supplier['AddTime']           = date('Y-m-d H:i:s');
+                        $supplier['Supplier_brinchid'] = $this->session->userdata('BRANCHid');
 
-                    $this->db->insert('tbl_supplier', $supplier);
-                    $supplierId = $this->db->insert_id();
+                        $this->db->insert('tbl_supplier', $supplier);
+                        $supplierId = $this->db->insert_id();
+                    }
                 }
             }
 
@@ -540,14 +553,27 @@ class Purchase extends CI_Controller
                 unset($supplier['display_name']);
 
                 if ($data->supplier->Supplier_Type == 'N') {
-                    $supplier['Supplier_Code']     = $this->mt->generateSupplierCode();
-                    $supplier['Status']            = 'a';
-                    $supplier['AddBy']             = $this->session->userdata("FullName");
-                    $supplier['AddTime']           = date('Y-m-d H:i:s');
-                    $supplier['Supplier_brinchid'] = $this->session->userdata('BRANCHid');
+                    $supplierMobile = trim((string)$data->supplier->Supplier_Mobile);
+                    $this->db->where('Supplier_brinchid', $this->session->userdata('BRANCHid'));
+                    if ($supplierMobile !== '') {
+                        $this->db->where('Supplier_Mobile', $supplierMobile);
+                    } else {
+                        $this->db->where('Supplier_Name', trim((string)$data->supplier->Supplier_Name));
+                        $this->db->where('Supplier_Address', trim((string)$data->supplier->Supplier_Address));
+                    }
+                    $existingSupplier = $this->db->get('tbl_supplier')->row();
+                    if ($existingSupplier) {
+                        $supplierId = $existingSupplier->Supplier_SlNo;
+                    } else {
+                        $supplier['Supplier_Code']     = $this->mt->generateSupplierCode();
+                        $supplier['Status']            = 'a';
+                        $supplier['AddBy']             = $this->session->userdata("FullName");
+                        $supplier['AddTime']           = date('Y-m-d H:i:s');
+                        $supplier['Supplier_brinchid'] = $this->session->userdata('BRANCHid');
 
-                    $this->db->insert('tbl_supplier', $supplier);
-                    $supplierId = $this->db->insert_id();
+                        $this->db->insert('tbl_supplier', $supplier);
+                        $supplierId = $this->db->insert_id();
+                    }
                 }
             }
 

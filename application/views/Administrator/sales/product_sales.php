@@ -1311,8 +1311,6 @@
 					if (r.success) {
 						if (print == 1) {
 							location.href = "/sale_invoice_print/" + r.salesId + "?print=1";
-							await new Promise(r => setTimeout(r, 1000));
-							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
 						} else {
 							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
 						}

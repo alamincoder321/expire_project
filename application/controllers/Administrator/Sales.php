@@ -69,18 +69,29 @@ class Sales extends CI_Controller
                 unset($customer['Customer_SlNo']);
                 unset($customer['display_name']);
                 unset($customer['Customer_Type']);
-                $mobile_count = $this->db->query("select * from tbl_customer where Customer_Mobile = ? and Customer_brunchid = ?", [$data->customer->Customer_Mobile, $this->session->userdata("BRANCHid")])->row();
-
-                if ($data->customer->Customer_Type == 'N' && empty($mobile_count)) {
-                    $customer['Customer_Code'] = $this->mt->generateCustomerCode();
-                    $customer['Customer_Type'] = $data->sales->salesType;
-                    $customer['Customer_Credit_Limit'] = $data->sales->total;
-                    $customer['status'] = 'a';
-                    $customer['AddBy'] = $this->session->userdata("FullName");
-                    $customer['AddTime'] = date("Y-m-d H:i:s");
-                    $customer['Customer_brunchid'] = $this->session->userdata("BRANCHid");
-                    $this->db->insert('tbl_customer', $customer);
-                    $customerId = $this->db->insert_id();
+                if ($data->customer->Customer_Type == 'N') {
+                    $customerMobile = trim((string)$data->customer->Customer_Mobile);
+                    $this->db->where('Customer_brunchid', $this->session->userdata('BRANCHid'));
+                    if ($customerMobile !== '') {
+                        $this->db->where('Customer_Mobile', $customerMobile);
+                    } else {
+                        $this->db->where('Customer_Name', trim((string)$data->customer->Customer_Name));
+                        $this->db->where('Customer_Address', trim((string)$data->customer->Customer_Address));
+                    }
+                    $existingCustomer = $this->db->get('tbl_customer')->row();
+                    if ($existingCustomer) {
+                        $customerId = $existingCustomer->Customer_SlNo;
+                    } else {
+                        $customer['Customer_Code'] = $this->mt->generateCustomerCode();
+                        $customer['Customer_Type'] = $data->sales->salesType;
+                        $customer['Customer_Credit_Limit'] = $data->sales->total;
+                        $customer['status'] = 'a';
+                        $customer['AddBy'] = $this->session->userdata("FullName");
+                        $customer['AddTime'] = date("Y-m-d H:i:s");
+                        $customer['Customer_brunchid'] = $this->session->userdata("BRANCHid");
+                        $this->db->insert('tbl_customer', $customer);
+                        $customerId = $this->db->insert_id();
+                    }
                 }
             }
 
@@ -786,18 +797,29 @@ class Sales extends CI_Controller
                 unset($customer['Customer_SlNo']);
                 unset($customer['display_name']);
                 unset($customer['Customer_Type']);
-                $mobile_count = $this->db->query("select * from tbl_customer where Customer_Mobile = ? and Customer_brunchid = ?", [$data->customer->Customer_Mobile, $this->session->userdata("BRANCHid")])->row();
-
-                if ($data->customer->Customer_Type == 'N' && empty($mobile_count)) {
-                    $customer['Customer_Code'] = $this->mt->generateCustomerCode();
-                    $customer['Customer_Type'] = $data->sales->salesType;
-                    $customer['Customer_Credit_Limit'] = $data->sales->total;
-                    $customer['status'] = 'a';
-                    $customer['AddBy'] = $this->session->userdata("FullName");
-                    $customer['AddTime'] = date("Y-m-d H:i:s");
-                    $customer['Customer_brunchid'] = $this->session->userdata("BRANCHid");
-                    $this->db->insert('tbl_customer', $customer);
-                    $customerId = $this->db->insert_id();
+                if ($data->customer->Customer_Type == 'N') {
+                    $customerMobile = trim((string)$data->customer->Customer_Mobile);
+                    $this->db->where('Customer_brunchid', $this->session->userdata('BRANCHid'));
+                    if ($customerMobile !== '') {
+                        $this->db->where('Customer_Mobile', $customerMobile);
+                    } else {
+                        $this->db->where('Customer_Name', trim((string)$data->customer->Customer_Name));
+                        $this->db->where('Customer_Address', trim((string)$data->customer->Customer_Address));
+                    }
+                    $existingCustomer = $this->db->get('tbl_customer')->row();
+                    if ($existingCustomer) {
+                        $customerId = $existingCustomer->Customer_SlNo;
+                    } else {
+                        $customer['Customer_Code'] = $this->mt->generateCustomerCode();
+                        $customer['Customer_Type'] = $data->sales->salesType;
+                        $customer['Customer_Credit_Limit'] = $data->sales->total;
+                        $customer['status'] = 'a';
+                        $customer['AddBy'] = $this->session->userdata("FullName");
+                        $customer['AddTime'] = date("Y-m-d H:i:s");
+                        $customer['Customer_brunchid'] = $this->session->userdata("BRANCHid");
+                        $this->db->insert('tbl_customer', $customer);
+                        $customerId = $this->db->insert_id();
+                    }
                 }
             }
 
@@ -2332,18 +2354,29 @@ class Sales extends CI_Controller
                 unset($customer['Customer_SlNo']);
                 unset($customer['display_name']);
                 unset($customer['Customer_Type']);
-                $mobile_count = $this->db->query("select * from tbl_customer where Customer_Mobile = ? and Customer_brunchid = ?", [$data->customer->Customer_Mobile, $this->session->userdata("BRANCHid")])->row();
-
-                if ($data->customer->Customer_Type == 'N' && empty($mobile_count)) {
-                    $customer['Customer_Code'] = $this->mt->generateCustomerCode();
-                    $customer['Customer_Type'] = $data->sales->salesType;
-                    $customer['Customer_Credit_Limit'] = $data->sales->total;
-                    $customer['status'] = 'a';
-                    $customer['AddBy'] = $this->session->userdata("FullName");
-                    $customer['AddTime'] = date("Y-m-d H:i:s");
-                    $customer['Customer_brunchid'] = $this->session->userdata("BRANCHid");
-                    $this->db->insert('tbl_customer', $customer);
-                    $customerId = $this->db->insert_id();
+                if ($data->customer->Customer_Type == 'N') {
+                    $customerMobile = trim((string)$data->customer->Customer_Mobile);
+                    $this->db->where('Customer_brunchid', $this->session->userdata('BRANCHid'));
+                    if ($customerMobile !== '') {
+                        $this->db->where('Customer_Mobile', $customerMobile);
+                    } else {
+                        $this->db->where('Customer_Name', trim((string)$data->customer->Customer_Name));
+                        $this->db->where('Customer_Address', trim((string)$data->customer->Customer_Address));
+                    }
+                    $existingCustomer = $this->db->get('tbl_customer')->row();
+                    if ($existingCustomer) {
+                        $customerId = $existingCustomer->Customer_SlNo;
+                    } else {
+                        $customer['Customer_Code'] = $this->mt->generateCustomerCode();
+                        $customer['Customer_Type'] = $data->sales->salesType;
+                        $customer['Customer_Credit_Limit'] = $data->sales->total;
+                        $customer['status'] = 'a';
+                        $customer['AddBy'] = $this->session->userdata("FullName");
+                        $customer['AddTime'] = date("Y-m-d H:i:s");
+                        $customer['Customer_brunchid'] = $this->session->userdata("BRANCHid");
+                        $this->db->insert('tbl_customer', $customer);
+                        $customerId = $this->db->insert_id();
+                    }
                 }
             }
 

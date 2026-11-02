@@ -731,8 +731,35 @@
 			},
 
 			excelExport() {
-				let onlyData = this.sales.map(item => {
-					return {
+				let onlyData;
+				let sheetName;
+				if (this.searchTypesForDetails.includes(this.searchType)) {
+					onlyData = this.sales.map(item => ({
+						'Invoice No.': item.SaleMaster_InvoiceNo,
+						'Date': item.SaleMaster_SaleDate,
+						'Customer Name': item.Customer_Name,
+						'Product Name': item.Product_Name,
+						'Sales Rate': Number(item.SaleDetails_Rate),
+						'Quantity': Number(item.SaleDetails_TotalQuantity),
+						'Total Amount': Number(item.SaleDetails_TotalAmount)
+					}));
+					sheetName = this.searchType == 'quantity' ? 'Product Sales' : 'Category Sales';
+				} else if (this.recordType == 'with_details') {
+					onlyData = this.sales.flatMap(sale => (sale.saleDetails || []).map(item => ({
+						'Invoice No.': sale.SaleMaster_InvoiceNo,
+						'Date': sale.SaleMaster_SaleDate,
+						'Customer Name': sale.Customer_Name,
+						'Employee Name': sale.Employee_Name,
+						'Saved By': sale.AddBy,
+						'Product Name': item.Product_Name,
+						'Price': Number(item.SaleDetails_Rate),
+						'Quantity': Number(item.SaleDetails_TotalQuantity),
+						'Total': Number(item.SaleDetails_TotalAmount),
+						'Note': sale.SaleMaster_Description
+					})));
+					sheetName = 'Sales Details';
+				} else {
+					onlyData = this.sales.map(item => ({
 						'Invoice No.': item.SaleMaster_InvoiceNo,
 						'Date': item.SaleMaster_SaleDate,
 						'Customer Name': item.Customer_Name,
@@ -742,18 +769,19 @@
 						'Discount': Number(item.SaleMaster_TotalDiscountAmount),
 						'Point': Number(item.pointAmount),
 						'Total': Number(item.SaleMaster_TotalSaleAmount),
-						'Paid': Number(item.SaleMaster_PaidAmount),
+						'Cash': Number(item.SaleMaster_cashPaid),
+						'Bank': Number(item.SaleMaster_bankPaid),
 						'Return': Number(item.returnAmount),
 						'Due': Number(item.SaleMaster_DueAmount),
 						'Note': item.SaleMaster_Description
-					}
-				})
+					}));
+					sheetName = 'Sales Record';
+				}
 
 				const worksheet = XLSX.utils.json_to_sheet(onlyData);
 				const workbook = XLSX.utils.book_new();
-				XLSX.utils.book_append_sheet(workbook, worksheet, "Skipped Rows");
-				// Excel download
-				XLSX.writeFile(workbook, "SaleRecord.xlsx");
+				XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+				XLSX.writeFile(workbook, "SalesRecord.xlsx");
 			}
 		}
 	})

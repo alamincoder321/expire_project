@@ -508,16 +508,16 @@
 							return;
 						}
 					} else if (this.purchase.purchaseId != 0 && this.oldSupplierId == parseInt(this.selectedSupplier.Supplier_SlNo)) {
-						this.purchase.previousDue = this.oldPreviousDue;
+						this.purchase.previousDue = parseFloat(this.oldPreviousDue).toFixed(2);
 						return;
 					}
 					axios.post('/get_supplier_due', {
 						supplierId: this.selectedSupplier.Supplier_SlNo
 					}).then(res => {
 						if (res.data.length > 0) {
-							this.purchase.previousDue = res.data[0].due;
+							this.purchase.previousDue = parseFloat(res.data[0].due).toFixed(2);
 						} else {
-							this.purchase.previousDue = 0;
+							this.purchase.previousDue = (0).toFixed(2);
 						}
 					})
 					this.calculateTotal();
@@ -562,12 +562,12 @@
 				}
 				if (this.selectedProduct.Product_SlNo != '') {
 					this.selectedProduct.Product_Purchase_Rate = 0;
-					this.selectedProduct.total = 0;
+					this.selectedProduct.total = (0).toFixed(2);
 					this.productTotal();
 				}
 			},
 			productTotal() {
-				this.selectedProduct.total = this.selectedProduct.quantity * this.selectedProduct.Product_Purchase_Rate;
+				this.selectedProduct.total = parseFloat(this.selectedProduct.quantity * this.selectedProduct.Product_Purchase_Rate).toFixed(2);
 			},
 
 			onChangeOrder() {
@@ -592,10 +592,10 @@
 								name: product.Product_Name,
 								categoryId: product.ProductCategory_ID,
 								categoryName: product.ProductCategory_Name,
-								purchaseRate: product.PurchaseDetails_Rate,
-								salesRate: product.Product_SellingPrice,
+												purchaseRate: parseFloat(product.PurchaseDetails_Rate).toFixed(2),
+												salesRate: parseFloat(product.Product_SellingPrice).toFixed(2),
 								quantity: product.PurchaseDetails_TotalQuantity,
-								total: product.PurchaseDetails_TotalAmount,
+												total: parseFloat(product.PurchaseDetails_TotalAmount).toFixed(2),
 								is_mrp: product.is_mrp,
 								isFree: 'no'
 							}
@@ -676,7 +676,7 @@
 				this.purchase.total = ((parseFloat(this.purchase.subTotal) + parseFloat(this.purchase.vat) + parseFloat(this.purchase.freight)) - parseFloat(this.purchase.discount)).toFixed(2);
 				if (this.selectedSupplier.Supplier_Type == 'G') {
 					this.purchase.paid = this.purchase.total;
-					this.purchase.due = 0;
+					this.purchase.due = (0).toFixed(2);
 				} else {
 					if (event.target.id != 'paid') {
 						this.purchase.paid = 0;
@@ -756,20 +756,20 @@
 					this.purchase.purchaseFor = purchase.PurchaseMaster_PurchaseFor;
 					this.purchase.purchaseDate = purchase.PurchaseMaster_OrderDate;
 					this.purchase.supplierId = purchase.Supplier_SlNo;
-					this.purchase.subTotal = purchase.PurchaseMaster_SubTotalAmount;
-					this.purchase.vat = purchase.PurchaseMaster_Tax;
-					this.purchase.discount = purchase.PurchaseMaster_DiscountAmount;
-					this.purchase.freight = purchase.PurchaseMaster_Freight;
-					this.purchase.total = purchase.PurchaseMaster_TotalAmount;
-					this.purchase.paid = purchase.PurchaseMaster_PaidAmount;
-					this.purchase.due = purchase.PurchaseMaster_DueAmount;
-					this.purchase.previousDue = purchase.previous_due;
+					this.purchase.subTotal = parseFloat(purchase.PurchaseMaster_SubTotalAmount).toFixed(2);
+					this.purchase.vat = parseFloat(purchase.PurchaseMaster_Tax).toFixed(2);
+					this.purchase.discount = parseFloat(purchase.PurchaseMaster_DiscountAmount).toFixed(2);
+					this.purchase.freight = parseFloat(purchase.PurchaseMaster_Freight).toFixed(2);
+					this.purchase.total = parseFloat(purchase.PurchaseMaster_TotalAmount).toFixed(2);
+					this.purchase.paid = parseFloat(purchase.PurchaseMaster_PaidAmount).toFixed(2);
+					this.purchase.due = parseFloat(purchase.PurchaseMaster_DueAmount).toFixed(2);
+					this.purchase.previousDue = parseFloat(purchase.previous_due).toFixed(2);
 					this.purchase.note = purchase.PurchaseMaster_Description;
 
 					this.oldSupplierId = purchase.Supplier_SlNo;
 					this.oldPreviousDue = purchase.previous_due;
 
-					this.vatPercent = (this.purchase.vat * 100) / this.purchase.subTotal;
+					this.vatPercent = ((this.purchase.vat * 100) / this.purchase.subTotal).toFixed(2);
 
 					r.purchaseDetails.forEach(product => {
 						let cartProduct = {
@@ -778,10 +778,10 @@
 							name: product.Product_Name,
 							categoryId: product.ProductCategory_ID,
 							categoryName: product.ProductCategory_Name,
-							purchaseRate: product.PurchaseDetails_Rate,
-							salesRate: product.Product_SellingPrice,
+										purchaseRate: parseFloat(product.PurchaseDetails_Rate).toFixed(2),
+										salesRate: parseFloat(product.Product_SellingPrice).toFixed(2),
 							quantity: product.PurchaseDetails_TotalQuantity,
-							total: product.PurchaseDetails_TotalAmount,
+									total: parseFloat(product.PurchaseDetails_TotalAmount).toFixed(2),
 							isFree: product.isFree,
 							is_mrp: product.is_mrp
 						}
