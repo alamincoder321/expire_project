@@ -364,6 +364,8 @@ $route['special_report_all_data'] = 'Administrator/Reports/special_report_all_da
 $route['BalanceSheet'] = 'Administrator/Reports/balanceSheet';
 $route['balance_sheet'] = 'Administrator/Reports/balance_sheet';
 $route['get_balance_sheet'] = 'Administrator/Reports/getBalanceSheet';
+$route['get_stock_valuation_details'] = 'Administrator/Reports/getStockValuationDetails';
+$route['get_stock_valuation_ledger'] = 'Administrator/Reports/getStockValuationLedger';
 $route['price_list'] = 'Administrator/Reports/price_list';
 
 $route['check/pending/list']           = 'Administrator/Check/check_pendaing_date_list';

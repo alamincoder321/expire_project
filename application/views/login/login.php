@@ -83,49 +83,57 @@
 	function getLocation(callback) {
 
     if (!navigator.geolocation) {
-        toastr.error("Your browser does not support location services.");
+        toastr.warning("Your browser does not support location services.");
+        callback();
         return;
     }
 
-    navigator.geolocation.getCurrentPosition(
+    function onSuccess(position) {
+        $("#latitude").val(position.coords.latitude);
+        $("#longitude").val(position.coords.longitude);
+        callback();
+    }
 
-        function(position) {
-            $("#latitude").val(position.coords.latitude);
-            $("#longitude").val(position.coords.longitude);
-
-            callback();
-        },
-
-        function(error) {
-
-            switch (error.code) {
-
-                case error.PERMISSION_DENIED:
-                    toastr.error("Please allow location access to login.");
-                    break;
-
-                case error.POSITION_UNAVAILABLE:
-                    toastr.error("Location information is unavailable.");
-                    break;
-
-                case error.TIMEOUT:
-                    toastr.error("Location request timed out.");
-                    break;
-
-                default:
-                    toastr.error("Unable to get your location.");
-            }
-
-            // callback() দেওয়া হবে না।
-            // তাই Login() আর এগোবে না।
-        },
-
-        {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
+    function onError(error) {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                toastr.warning("Location access denied. Please allow location access.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                toastr.warning("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                toastr.warning("Location request timed out.");
+                break;
+            default:
+                toastr.warning("Unable to get your location.");
         }
 
+        // server decides whether this user can login without location
+        $("#latitude").val('');
+        $("#longitude").val('');
+        callback();
+    }
+
+    // try GPS first, then fall back to network (WiFi/IP) based location
+    navigator.geolocation.getCurrentPosition(
+        onSuccess,
+        function(error) {
+            if (error.code === error.PERMISSION_DENIED) {
+                onError(error);
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+                enableHighAccuracy: false,
+                timeout: 15000,
+                maximumAge: 300000
+            });
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 8000,
+            maximumAge: 60000
+        }
     );
 }
 

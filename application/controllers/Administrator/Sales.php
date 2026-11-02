@@ -2167,6 +2167,9 @@ class Sales extends CI_Controller
             /*Delete Sale Details*/
             $this->db->set('Status', 'd')->where('SaleMaster_IDNo', $saleId)->update('tbl_saledetails');
 
+            /*Delete Sale Bank Payments*/
+            $this->db->set('Status', 'd')->where('sale_id', $saleId)->update('tbl_sales_bank');
+
             /*Delete Sale Master Data*/
             $this->db->set('Status', 'd')->where('SaleMaster_SlNo', $saleId)->update('tbl_salesmaster');
             $res = ['success' => true, 'message' => 'Sale deleted'];
@@ -2512,7 +2515,16 @@ class Sales extends CI_Controller
 
         $limit = "";
         $clauses = "";
-        // no date filter: held sales from any date stay in the list until completed or deleted
+        $dateFrom = isset($data->dateFrom) && is_string($data->dateFrom) ? $data->dateFrom : '';
+        $dateTo = isset($data->dateTo) && is_string($data->dateTo) ? $data->dateTo : '';
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateFrom) && checkdate((int) substr($dateFrom, 5, 2), (int) substr($dateFrom, 8, 2), (int) substr($dateFrom, 0, 4))) {
+            $clauses .= " and sm.SaleMaster_SaleDate >= " . $this->db->escape($dateFrom);
+        }
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateTo) && checkdate((int) substr($dateTo, 5, 2), (int) substr($dateTo, 8, 2), (int) substr($dateTo, 0, 4))) {
+            $clauses .= " and sm.SaleMaster_SaleDate <= " . $this->db->escape($dateTo);
+        }
 
         if (isset($data->userFullName) && $data->userFullName != '') {
             $clauses .= " and sm.AddBy = '$data->userFullName'";

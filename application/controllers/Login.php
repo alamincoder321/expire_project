@@ -67,7 +67,10 @@ class Login extends CI_Controller
 				$allowedRadius = 100;
 
 				if (in_array($data->UserType, ['e', 'u'])) {
-					if ($distance <= $allowedRadius) {
+					if (!is_numeric($userLat) || !is_numeric($userLng)) {
+						$res['status'] = false;
+						$res['message'] = "Location is required. Please allow location access and try again.";
+					} else if ($distance <= $allowedRadius) {
 						$this->session->set_userdata($sdata);
 						$res['status'] = true;
 						$res['message'] = "Login success";

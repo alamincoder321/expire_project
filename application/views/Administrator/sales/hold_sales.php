@@ -174,25 +174,13 @@
 						</div>
 
 						<div class="col-md-5">
-							<form v-on:submit.prevent="barcode ? '' : addToCart()">
-								<!-- <div class="form-group">
-									<label class="col-xs-3 control-label no-padding-right"> Category </label>
-									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
-										<div style="width: 86%;">
-											<v-select v-bind:options="categories" id="category" style="margin: 0;" v-model="selectedCategory" label="ProductCategory_Name" @input="onChangeCategory" placeholder="Select Category"></v-select>
-										</div>
-										<div style="width: 13%;margin-left:2px;">
-											<a href="<?= base_url('category') ?>" class="add-button" target="_blank" title="Add New Category"><i class="fa fa-plus" aria-hidden="true"></i></a>
-										</div>
-									</div>
-								</div> -->
-
+							<form v-on:submit.prevent="barcode ? '' : addToCart($event, '')">
 								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Product </label>
 									<div class="col-xs-9" style="display: flex;align-items:center;margin-bottom:5px;">
 										<div style="width: 86%;">
 											<v-select v-show="!barcode" v-bind:options="products" id="product" style="margin: 0;" v-model="selectedProduct" label="display_text" @input="productOnChange" @search="onSearchProduct"></v-select>
-											<input v-show="barcode" placeholder="barcode here" style="margin-bottom: 0;" @change.enter="addToCart" id="barcode" ref="barcode" v-model="barcodeVal" type="text" class="form-control" />
+											<input v-show="barcode" placeholder="barcode here" style="margin-bottom: 0;" @change.enter="addToCart($event, '')" id="barcode" ref="barcode" v-model="barcodeVal" type="text" class="form-control" />
 										</div>
 										<div style="width: 13%;margin-left:2px;">
 											<a class="add-button" @click="barcode = !barcode"><i class="fa fa-barcode" aria-hidden="true"></i></a>
@@ -203,11 +191,11 @@
 								<div class="form-group">
 									<label class="col-xs-3 control-label no-padding-right"> Sale Rate </label>
 									<div class="col-xs-4">
-										<input type="number" id="salesRate" placeholder="Rate" step="0.01" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
+										<input type="number" id="salesRate" placeholder="Rate" step="any" :disabled="selectedProduct.is_mrp == 'yes'" class="form-control" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
 									</div>
 									<label class="col-xs-1 control-label no-padding-right"> Qty </label>
 									<div class="col-xs-4">
-										<input type="number" step="0.01" id="quantity" placeholder="Qty" class="form-control" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" autocomplete="off" required />
+										<input type="number" step="any" id="quantity" placeholder="Qty" class="form-control" ref="quantity" v-model="selectedProduct.quantity" v-on:input="productTotal" autocomplete="off" required />
 									</div>
 								</div>
 
@@ -219,7 +207,13 @@
 								</div>
 
 								<div class="form-group">
-									<div class="col-xs-12">
+									<div class="col-xs-6">
+										<label :style="{display: selectedProduct.sale_rates.length > 1 && selectedProduct.is_mrp == 'yes' ? '' : 'none'}" :for="rate" v-for="rate in selectedProduct.sale_rates" style="margin: 0px 5px 0px 0px; padding: 0px 10px; cursor: pointer; border-radius: 4px; border: 1px solid gray; margin-bottom: 4px;">
+											<input type="checkbox" @change.prevent="addToCart($event, rate);" :id="rate" style="display: none;">
+											<span v-text="parseFloat(rate)"></span>
+										</label>
+									</div>
+									<div class="col-xs-6">
 										<button type="submit" style="padding: 3px 6px; background: rgb(0, 126, 187) !important; border-color: rgb(0, 126, 187) !important; outline: none; border-radius: 6px;" class="btn pull-right">Add to Cart</button>
 									</div>
 								</div>
@@ -344,16 +338,19 @@
 									<tr>
 										<td>
 											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right">Discount</label>
+												<label class="col-xs-12 control-label no-padding-right" style="display: flex; align-items: center; gap: 3px; margin-top: 4px;cursor: pointer;">
+													<input type="checkbox" style="width: 16px; height: 16px; margin: 0;" id="slabDiscountAmount" v-model="slabStatus" v-if="sale_slab_id != null || slabStatus == true" @change="calculateTotal($event)" />
+													<span v-if="sale_slab_id != null || slabStatus == true">Slab</span> Discount
+												</label>
 
 												<div class="col-xs-4">
-													<input type="number" id="discountPercent" class="form-control" v-model="discountPercent" v-on:input="calculateTotal" />
+													<input type="number" id="discountPercent" class="form-control" v-model="discountPercent" v-on:input="calculateTotal($event)" />
 												</div>
 
 												<label class="col-xs-1 control-label no-padding-right">%</label>
 
 												<div class="col-xs-7">
-													<input type="number" id="discount" class="form-control" v-model="sales.discount" v-on:input="calculateTotal" />
+													<input type="number" id="discount" class="form-control" v-model="sales.discount" v-on:input="calculateTotal($event)" />
 												</div>
 
 											</div>
@@ -365,7 +362,7 @@
 											<div class="form-group">
 												<label class="col-xs-12 control-label no-padding-right">Use Point</label>
 												<div class="col-xs-12">
-													<input type="number" id="total" class="form-control" v-model="sales.pointAmount" v-on:input="calculateTotal" />
+													<input type="number" id="pointAmount" class="form-control" v-model="sales.pointAmount" v-on:input="calculateTotal($event)" />
 												</div>
 											</div>
 										</td>
@@ -388,7 +385,7 @@
 												<label class="col-xs-6 control-label">Cash</label>
 											</div>
 											<div class="col-xs-6">
-												<input type="number" min="0" step="any" id="cashPaid" class="form-control" v-model="sales.cashPaid" v-on:input="calculateTotal" />
+												<input type="number" min="0" step="any" id="cashPaid" class="form-control" v-model="sales.cashPaid" v-on:input="calculateTotal($event)" />
 											</div>
 										</td>
 									</tr>
@@ -425,6 +422,26 @@
 												</div>
 												<div class="col-xs-6">
 													<input type="number" id="previousDue" class="form-control" v-model="sales.previousDue" readonly style="color:red;" />
+												</div>
+											</div>
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+											<div class="form-group" style="margin-top: 6px;">
+												<div class="col-xs-12" style="display: flex;align-items: center;gap: 8px;">
+													<label style="margin: 0;font-weight: normal;"><input type="checkbox" v-model="sales.notify"> Notify (SMS)</label>
+													<button type="button" class="btn btn-default btn-sm" v-on:click="toggleDueNotify" style="margin-left: auto;">
+														<i class="fa fa-send"></i> Send Due Notify
+													</button>
+												</div>
+												<div class="col-xs-12" style="margin-top: 6px;" v-show="showDueNotify">
+													<textarea class="form-control" v-model="dueMessageText" style="height: 70px;" placeholder="Type due reminder message..."></textarea>
+													<p class="help-block" style="margin-bottom: 5px;">Use <code>{name}</code> and <code>{due}</code> in the message, they will be replaced with the customer's name and due amount. <a href="" v-on:click.prevent="resetDueMessage">Reset to default</a></p>
+													<button type="button" class="btn btn-primary btn-sm" v-on:click="sendDueNotify" v-bind:disabled="sendingDueMessage">
+														<i class="fa fa-send"></i> {{ sendingDueMessage ? 'Sending...' : 'Send' }}
+													</button>
 												</div>
 											</div>
 										</td>
@@ -502,6 +519,11 @@
 									<span style="cursor: pointer;color: red;" @click="removeBankCart(index)">X</span>
 								</td>
 							</tr>
+							<tr style="font-weight: 700;">
+								<td colspan="4">ChargeTotal</td>
+								<td v-text="sales.bankCharge"></td>
+								<td></td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
@@ -548,10 +570,19 @@
 					returnAmount: 0,
 					bankCharge: 0,
 					isService: '<?php echo $isService; ?>',
-					note: ''
+					note: '',
+					notify: false,
+					sale_slab_id: null
 				},
+				dueMessageTemplate: 'Dear Sir/Madam, \nGreetings from Bandhon Departmental Store. Your current outstanding due is BDT {due}. For your acknowledgement. \n\nBandhon Team',
+				dueMessageText: '',
+				showDueNotify: false,
+				sendingDueMessage: false,
 				vatPercent: 0,
 				discountPercent: 0,
+				slabStatus: false,
+				sale_slab_id: null,
+				slab_discount_amount: 0,
 				isFree: 'no',
 				cart: [],
 				bankCart: [],
@@ -595,7 +626,8 @@
 					Product_Purchase_Rate: '',
 					Product_SellingPrice: 0,
 					vat: 0,
-					total: 0
+					total: 0,
+					sale_rates: []
 				},
 				productPurchaseRate: '',
 				productStockText: '',
@@ -606,6 +638,7 @@
 			}
 		},
 		async created() {
+			this.dueMessageText = this.dueMessageTemplate;
 			await this.getBank();
 			await this.getCategory();
 			await this.getEmployees();
@@ -758,9 +791,21 @@
 					})
 				}
 			},
+			async getActiveSlab() {
+				if (this.selectedCustomer == null || this.selectedCustomer.Customer_SlNo == '') {
+					return;
+				}
+				await axios.post('/get_active_sale_slabs', {
+					customerId: this.selectedCustomer.Customer_SlNo
+				}).then(res => {
+					this.slab_discount_amount = res.data ? parseFloat(res.data.discountAmount).toFixed(2) : 0;
+					this.sale_slab_id = res.data && res.data.id ? res.data.id : null;
+				})
+			},
 			getProducts() {
 				axios.post('/get_products', {
 					isService: this.sales.isService,
+					forSale: 'yes',
 					categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo
 				}).then(res => {
 					if (this.sales.salesType == 'wholesale') {
@@ -779,6 +824,7 @@
 					await axios.post("/get_products", {
 							name: val,
 							isService: this.sales.isService,
+							forSale: 'yes',
 							categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo
 						})
 						.then(res => {
@@ -827,7 +873,8 @@
 						Product_Purchase_Rate: '',
 						Product_SellingPrice: 0,
 						vat: 0,
-						total: 0
+						total: 0,
+						sale_rates: []
 					}
 					return;
 				}
@@ -854,10 +901,11 @@
 				this.$refs.productPurchaseRate.type = this.$refs.productPurchaseRate.type == 'text' ? 'password' : 'text';
 			},
 
-			async addToCart() {
+			async addToCart(event, sale_rate = '') {
 				if (this.barcode && this.barcodeVal != '') {
 					await axios.post('/get_products', {
 						isService: this.sales.isService,
+						forSale: 'yes',
 						categoryId: this.selectedCategory == null ? "" : this.selectedCategory.ProductCategory_SlNo,
 						name: this.barcodeVal,
 						fromBarcode: 'yes'
@@ -878,12 +926,18 @@
 								quantity: '',
 								Product_Purchase_Rate: '',
 								Product_SellingPrice: 0,
-								total: ''
+								total: '',
+								sale_rates: []
 							}
 							this.barcodeVal = '';
 							return;
 						}
 					})
+				}
+
+				if (sale_rate != '') {
+					this.selectedProduct.Product_SellingPrice = sale_rate;
+					await this.productTotal();
 				}
 
 				let product = {
@@ -974,6 +1028,15 @@
 					return;
 				}
 
+				if (this.selectedProduct.is_mrp == 'yes' && this.selectedProduct.sale_rates.length == 0) {
+					alert('No active sale rate available for this product');
+					return;
+				}
+
+				if (this.selectedProduct.sale_rates.length > 1 && sale_rate == '' && this.selectedProduct.is_mrp == 'yes') {
+					return;
+				}
+
 				if (cartInd > -1) {
 					this.cart.splice(cartInd, 1);
 				}
@@ -1024,47 +1087,74 @@
 					Product_SellingPrice: 0,
 					vat: 0,
 					total: 0,
+					sale_rates: []
 				}
 				this.productStock = '';
 				this.productStockText = '';
 				this.isFree = 'no';
 			},
 
-			calculateTotal() {
+			async calculateTotal(e) {
+				let targetId = e && e.target ? e.target.id : '';
 				this.sales.subTotal = this.cart.reduce((prev, curr) => {
-					return prev + parseFloat(curr.salesRate * curr.quantity)
+					return prev + (Number(curr.salesRate) || 0) * (Number(curr.quantity) || 0)
 				}, 0).toFixed(2);
 
 				this.sales.bankCharge = this.bankCart.filter(b => b.per_amount > 0).reduce((pr, cu) => {
 					return pr + parseFloat((cu.amount / cu.per_amount) * cu.charge);
 				}, 0).toFixed(2);
-				if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid') {
+				if (targetId != 'transportCost' && targetId != 'discountPercent' && targetId != 'discount' && targetId != 'cashPaid' && targetId != 'pointAmount') {
 					this.sales.vat = this.cart.reduce((prev, curr) => {
-						return +prev + +(curr.total * (curr.vat / 100))
+						return prev + (Number(curr.total) || 0) * ((Number(curr.vat) || 0) / 100)
 					}, 0);
 				}
 
-				if (event.target.id == 'discountPercent') {
-					this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent)) / 100).toFixed(2);
-				} else if (event.target.id == 'discount') {
-					this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
-				} else if (event.target.id != 'transportCost' && event.target.id != 'discountPercent' && event.target.id != 'discount' && event.target.id != 'cashPaid') {
-					this.sales.discount = this.cart.reduce((prev, curr) => {
-						return prev + parseFloat(curr.quantity * curr.discountAmount)
-					}, 0);
-
-					this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
+				if (targetId == 'slabDiscountAmount') {
+					if (this.slabStatus == true) {
+						this.sales.discount = this.slab_discount_amount;
+						this.sales.sale_slab_id = this.sale_slab_id;
+						let subTotal = Number(this.sales.subTotal) || 0;
+						this.discountPercent = subTotal > 0 ? (Number(this.sales.discount) / subTotal * 100).toFixed(2) : '0.00';
+					} else {
+						this.sales.discount = 0;
+						this.sales.sale_slab_id = null;
+					}
+				} else if (targetId != 'transportCost' && targetId != 'discountPercent' && targetId != 'discount' && targetId != 'cashPaid' && targetId != 'pointAmount' && this.slabStatus == false) {
+					await this.getActiveSlab();
+					this.sales.discount = 0;
+					this.sales.sale_slab_id = null;
 				}
-				this.sales.total = ((parseFloat(this.sales.subTotal) + parseFloat(this.sales.vat) + parseFloat(this.sales.transportCost)) - parseFloat(+this.sales.discount + +this.sales.pointAmount)).toFixed(2);
 
-				if (event.target.id == 'cashPaid' || this.bankCart.length > 0) {
-					this.sales.paid = parseFloat(parseFloat(this.sales.cashPaid) + parseFloat(this.sales.bankPaid)).toFixed(2);
-					if (parseFloat(this.sales.paid) > parseFloat(this.sales.total)) {
-						this.sales.returnAmount = parseFloat(this.sales.paid - this.sales.total).toFixed(2);
+				if (targetId == 'discountPercent') {
+					this.sales.discount = ((parseFloat(this.sales.subTotal) * parseFloat(this.discountPercent || 0)) / 100).toFixed(2);
+				} else if (targetId == 'discount') {
+					let subTotal = parseFloat(this.sales.subTotal) || 0;
+					this.discountPercent = subTotal > 0 ? (parseFloat(this.sales.discount || 0) / subTotal * 100).toFixed(2) : '0.00';
+				} else if (targetId != 'transportCost' && targetId != 'discountPercent' && targetId != 'discount' && targetId != 'cashPaid' && targetId != 'slabDiscountAmount' && targetId != 'pointAmount') {
+					if (parseFloat(this.sales.discount) > 0) {
+						let subTotal = parseFloat(this.sales.subTotal) || 0;
+						this.discountPercent = subTotal > 0 ? (parseFloat(this.sales.discount) / subTotal * 100).toFixed(2) : '0.00';
+					} else {
+						this.sales.discount = this.cart.reduce((prev, curr) => {
+							return prev + (Number(curr.quantity) || 0) * (Number(curr.discountAmount) || 0)
+						}, 0);
+
+						let subTotal = parseFloat(this.sales.subTotal) || 0;
+						this.discountPercent = subTotal > 0 ? (parseFloat(this.sales.discount || 0) / subTotal * 100).toFixed(2) : '0.00';
+					}
+				}
+				let totalAmount = (Number(this.sales.subTotal) || 0) + (Number(this.sales.vat) || 0) + (Number(this.sales.transportCost) || 0) - (Number(this.sales.discount) || 0) - (Number(this.sales.pointAmount) || 0);
+				this.sales.total = totalAmount.toFixed(2);
+
+				if (targetId == 'cashPaid' || this.bankCart.length > 0) {
+					let paidAmount = (Number(this.sales.cashPaid) || 0) + (Number(this.sales.bankPaid) || 0);
+					this.sales.paid = paidAmount.toFixed(2);
+					if (paidAmount > Number(this.sales.total)) {
+						this.sales.returnAmount = (paidAmount - Number(this.sales.total)).toFixed(2);
 						this.sales.due = 0;
 					} else {
 						this.sales.returnAmount = 0;
-						this.sales.due = parseFloat(+this.sales.total - +this.sales.paid).toFixed(2);
+						this.sales.due = (Number(this.sales.total) - paidAmount).toFixed(2);
 					}
 				} else {
 					this.sales.cashPaid = this.sales.total;
@@ -1112,6 +1202,8 @@
 					bank_name: this.selectedBank.bank_name,
 					account_number: this.selectedBank.account_number,
 					last_digit: this.selectedBank.last_digit,
+					per_amount: this.selectedBank.per_amount,
+					charge: this.selectedBank.charge,
 					amount: this.selectedBank.amount
 				}
 				let findInd = this.bankCart.findIndex(item => item.bank_id == bank.bank_id);
@@ -1137,6 +1229,48 @@
 					return pr + parseFloat(cu.amount)
 				}, 0).toFixed(2);
 				this.calculateTotal();
+			},
+			toggleDueNotify() {
+				this.showDueNotify = !this.showDueNotify;
+			},
+			resetDueMessage() {
+				this.dueMessageText = this.dueMessageTemplate;
+			},
+			sendDueNotify() {
+				if (this.selectedCustomer == null || this.selectedCustomer.Customer_SlNo == '' || this.selectedCustomer.Customer_SlNo == null) {
+					alert('Select customer');
+					return;
+				}
+
+				if (!this.selectedCustomer.Customer_Mobile) {
+					alert('Customer mobile number not available');
+					return;
+				}
+
+				if (this.dueMessageText.trim().length == 0) {
+					alert('Enter due message text');
+					return;
+				}
+
+				let smsText = this.dueMessageText
+					.replace(/{name}/g, this.selectedCustomer.Customer_Name)
+					.replace(/{due}/g, Number(parseFloat(this.sales.previousDue || 0).toFixed(2)).toLocaleString('en-US'));
+
+				this.sendingDueMessage = true;
+				axios.post('/send_sms', {
+					number: this.selectedCustomer.Customer_Mobile,
+					smsText: smsText
+				}).then(res => {
+					let r = res.data;
+					alert(r.message);
+					this.sendingDueMessage = false;
+					if (r.success) {
+						this.showDueNotify = false;
+					}
+				}).catch(() => {
+					this.sendingDueMessage = false;
+					alert('Failed to send message');
+				});
 			},
 			async saveSales(print = 0) {
 				if (this.selectedCustomer == null) {

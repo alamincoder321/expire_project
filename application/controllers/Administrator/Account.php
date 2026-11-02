@@ -1166,8 +1166,9 @@ class Account extends CI_Controller
                     0.00 as balance
                 from tbl_sales_bank smb
                 join tbl_bank_accounts ac on ac.account_id = smb.bank_id
-                left join tbl_salesmaster sm on sm.SaleMaster_SlNo = smb.sale_id
+                join tbl_salesmaster sm on sm.SaleMaster_SlNo = smb.sale_id
                 where smb.Status = 'a'
+                and sm.Status = 'a'
                 and smb.branchId = " . $this->session->userdata('BRANCHid') . "
                 
                 UNION
@@ -1481,7 +1482,7 @@ class Account extends CI_Controller
                 sm.SaleMaster_SlNo as id,
                 sm.SaleMaster_SaleDate as date,
                 concat('Sale - ', sm.SaleMaster_InvoiceNo, ' - ', ifnull(c.Customer_Name, 'General Customer'), ' (', ifnull(c.Customer_Code, ''), ')', ' - Bill: ', sm.SaleMaster_TotalSaleAmount) as description,
-                (sm.SaleMaster_PaidAmount - sm.returnAmount) as in_amount,
+                (sm.SaleMaster_PaidAmount - sm.SaleMaster_bankPaid - sm.returnAmount) as in_amount,
                 0.00 as out_amount
             from tbl_salesmaster sm 
             left join tbl_customer c on c.Customer_SlNo = sm.SalseCustomer_IDNo

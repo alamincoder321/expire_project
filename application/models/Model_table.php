@@ -219,7 +219,7 @@ class Model_Table extends CI_Model
             select
             /* Received */
             (
-                select ifnull(sum(sm.SaleMaster_PaidAmount - sm.returnAmount), 0) from tbl_salesmaster sm
+                select ifnull(sum(sm.SaleMaster_PaidAmount - sm.SaleMaster_bankPaid - sm.returnAmount), 0) from tbl_salesmaster sm
                 where sm.SaleMaster_branchid= " . $this->session->userdata('BRANCHid') . "
                 and sm.Status = 'a'
                 " . ($date == null ? "" : " and sm.SaleMaster_SaleDate < '$date'") . "
@@ -374,18 +374,20 @@ class Model_Table extends CI_Model
                 ba.*,
                 (
                     select ifnull(sum(smb.amount), 0) from tbl_sales_bank smb
-                    left join tbl_salesmaster sm on sm.SaleMaster_SlNo = smb.sale_id
+                    join tbl_salesmaster sm on sm.SaleMaster_SlNo = smb.sale_id
                     where smb.bank_id = ba.account_id
                     and smb.Status = 'a'
+                    and sm.Status = 'a'
                     and smb.branchId = ".$this->session->userdata('BRANCHid')."
                     " . ($date == null ? "" : " and sm.SaleMaster_SaleDate < '$date'") . "
                 ) as sale_receive,
                 
                 (
                     select ifnull(sum(smb.bank_charge), 0) from tbl_sales_bank smb
-                    left join tbl_salesmaster sm on sm.SaleMaster_SlNo = smb.sale_id
+                    join tbl_salesmaster sm on sm.SaleMaster_SlNo = smb.sale_id
                     where smb.bank_id = ba.account_id
                     and smb.Status = 'a'
+                    and sm.Status = 'a'
                     and smb.branchId = ".$this->session->userdata('BRANCHid')."
                     " . ($date == null ? "" : " and sm.SaleMaster_SaleDate < '$date'") . "
                 ) as bankCharge,

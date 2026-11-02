@@ -52,37 +52,215 @@
 
 	.record-table {
 		width: 100%;
-		border-collapse: collapse;
+		min-width: 900px;
+		border-collapse: separate;
+		border-spacing: 0;
+		border: 1px solid #e3e8ef;
+		border-radius: 8px;
+		overflow: hidden;
+		background: #fff;
 	}
 
 	.record-table thead {
-		background-color: #0097df;
-		color: white;
+		background: #f1f6fb;
+	}
+
+	.record-table th {
+		color: #334155;
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: .03em;
+		text-transform: uppercase;
+		white-space: nowrap;
 	}
 
 	.record-table th,
 	.record-table td {
-		padding: 3px;
-		border: 1px solid #454545;
+		padding: 10px 12px;
+		border: 0;
+		border-bottom: 1px solid #e9edf2;
+		vertical-align: middle;
 	}
 
 	.record-table th {
 		text-align: center;
 	}
+
+	.record-table tbody tr:not(.total-row):hover {
+		background: #f8fbff;
+	}
+
+	.record-table .money-cell {
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	.record-table .note-cell {
+		min-width: 140px;
+		max-width: 260px;
+		white-space: normal;
+	}
+
+	.record-table .total-row td {
+		background: #f1f6fb;
+		border-bottom: 0;
+		font-weight: 700;
+	}
+
+	.hold-sale-toolbar {
+		align-items: center;
+		background: #fff;
+		border: 1px solid #e3e8ef;
+		border-radius: 8px;
+		margin: 15px 0 12px;
+		padding: 12px 8px;
+	}
+
+	.hold-sale-count {
+		background: #e8f3ff;
+		border-radius: 14px;
+		color: #1769aa;
+		display: inline-block;
+		font-size: 13px;
+		font-weight: 700;
+		margin-left: 5px;
+		min-width: 28px;
+		padding: 4px 9px;
+		text-align: center;
+	}
+
+	.hold-sale-actions {
+		white-space: nowrap;
+	}
+
+	.hold-sale-actions a {
+		align-items: center;
+		border: 1px solid #e3e8ef;
+		border-radius: 5px;
+		color: #1769aa;
+		display: inline-flex;
+		height: 30px;
+		justify-content: center;
+		margin: 0 2px;
+		text-decoration: none;
+		width: 32px;
+	}
+
+	.hold-sale-actions a:hover {
+		background: #e8f3ff;
+	}
+
+	@media (max-width: 767px) {
+		.hold-sale-toolbar {
+			padding: 10px 4px;
+		}
+
+		.hold-sale-toolbar .text-right {
+			margin-top: 8px;
+			text-align: left;
+		}
+	}
+
+	.hold-sale-filter {
+		background: #fff;
+		border: 1px solid #e3e8ef;
+		border-radius: 8px;
+		margin-top: 15px;
+		padding: 12px;
+	}
+
+	.hold-sale-filter .form-group {
+		margin: 4px 8px 4px 0;
+	}
+
+	.hold-sale-filter label {
+		color: #475569;
+		font-weight: 600;
+		margin-right: 4px;
+	}
+
+	.hold-sale-filter .form-control {
+		min-width: 145px;
+	}
+
+	.v-select {
+		margin-top: -2.5px;
+		float: right;
+		min-width: 180px;
+		margin-left: 5px;
+	}
+
+	.v-select .dropdown-toggle {
+		padding: 0px;
+		height: 25px;
+	}
+
+	.v-select input[type=search],
+	.v-select input[type=search]:focus {
+		margin: 0px;
+	}
+
+	.v-select .vs__selected-options {
+		overflow: hidden;
+		flex-wrap: nowrap;
+	}
+
+	.v-select .selected-tag {
+		margin: 2px 0px;
+		white-space: nowrap;
+		position: absolute;
+		left: 0px;
+	}
+
+	.v-select .vs__actions {
+		margin-top: -5px;
+	}
+
+	.v-select .dropdown-menu {
+		width: auto;
+		overflow-y: auto;
+	}
 </style>
 <div id="salesRecord">
 
-	<div class="row" style="margin-top:15px;display:none;" v-bind:style="{display: sales.length > 0 ? '' : 'none'}">
+	<div class="row hold-sale-filter">
+		<div class="col-md-12">
+			<form class="form-inline" id="searchForm" @submit.prevent="getSalesRecord">
+				<div class="form-group">
+					<label>Customer</label>
+					<v-select :options="customers" v-model="selectedCustomer" label="display_name" placeholder="All customers"></v-select>
+				</div>
+				<div class="form-group">
+					<label>Employee</label>
+					<v-select :options="employees" v-model="selectedEmployee" label="Employee_Name" placeholder="All employees"></v-select>
+				</div>
+				<div class="form-group">
+					<label>From</label>
+					<input type="date" class="form-control" v-model="dateFrom">
+				</div>
+				<div class="form-group">
+					<label>To</label>
+					<input type="date" class="form-control" v-model="dateTo">
+				</div>
+				<div class="form-group">
+					<button type="submit"><i class="fa fa-search"></i> Search</button>
+					<button type="button" @click="clearFilters">Clear</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="row hold-sale-toolbar" style="display:none;" v-bind:style="{display: sales.length > 0 ? '' : 'none'}">
 		<div class="col-md-6">
 			<a href="" v-on:click.prevent="print">
 				<i class="fa fa-print"></i> Print
 			</a>
 			<?php if ($this->session->userdata('accountType') != 'u') { ?>
-			<button type="button" class="btn btn-danger btn-xs" style="margin-left:10px;" :disabled="selectedIds.length == 0" @click="bulkDelete"><i class="fa fa-trash"></i> Delete Selected ({{ selectedIds.length }})</button>
+				<button type="button" class="btn btn-danger btn-xs" style="margin-left:10px;" :disabled="selectedIds.length == 0" @click="bulkDelete"><i class="fa fa-trash"></i> Delete Selected ({{ selectedIds.length }})</button>
 			<?php } ?>
 		</div>
 		<div class="col-md-5 text-right">
-			<strong>Total Hold Sale: </strong> <span v-text="sales.length"></span>
+			<strong>Total Hold Sale</strong> <span class="hold-sale-count" v-text="sales.length"></span>
 		</div>
 		<div class="col-md-1 text-right">
 			<a href="" v-on:click.prevent="excelExport">
@@ -118,29 +296,21 @@
 							<td>{{ sale.Customer_Name }}</td>
 							<td>{{ sale.Employee_Name }}</td>
 							<td>{{ sale.AddBy }}</td>
-							<td style="text-align:right;">{{ sale.SaleMaster_SubTotalAmount }}</td>
-							<td style="text-align:right;">{{ sale.SaleMaster_TotalSaleAmount }}</td>
-							<td style="text-align:left;">{{ sale.SaleMaster_Description }}</td>
-							<td style="text-align:center;">
-								<a href="" title="Sale Invoice" v-bind:href="`/hold_sale/${encodeURIComponent(sale.SaleMaster_InvoiceNo)}`" target="_blank"><i style="font-size: 20px;" class="ri-shopping-cart-line"></i></a>
+							<td class="money-cell" style="text-align:right;">{{ Number(sale.SaleMaster_SubTotalAmount || 0).toFixed(2) }}</td>
+							<td class="money-cell" style="text-align:right;">{{ Number(sale.SaleMaster_TotalSaleAmount || 0).toFixed(2) }}</td>
+							<td class="note-cell" style="text-align:left;">{{ sale.SaleMaster_Description }}</td>
+							<td class="hold-sale-actions" style="text-align:center;">
+								<a href="" title="Resume Hold Sale" v-bind:href="`/hold_sale/${encodeURIComponent(sale.SaleMaster_InvoiceNo)}`" target="_blank"><i class="ri-shopping-cart-line"></i></a>
 								<?php if ($this->session->userdata('accountType') != 'u') { ?>
-									<a v-if="sale.Status != 'c' && sale.Status != 'd'" href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i style="font-size: 20px;" class="fa fa-trash"></i></a>
+									<a v-if="sale.Status != 'c' && sale.Status != 'd'" href="" title="Delete Hold Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="fa fa-trash"></i></a>
 								<?php } ?>
 							</td>
 						</tr>
-						<tr style="font-weight:bold;">
+						<tr class="total-row">
 							<?php if ($this->session->userdata('accountType') != 'u') { ?><td class="no-print"></td><?php } ?>
 							<td colspan="5" style="text-align:right;">Total</td>
-							<td style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_SubTotalAmount)}, 0).toFixed(2) }}</td>
-							<td style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_TotalSaleAmount)}, 0).toFixed(2) }}</td>
-							<td></td>
-							<td></td>
-						</tr>
-						<tr style="font-weight:bold;" v-if="sales.length > 0">
-							<?php if ($this->session->userdata('accountType') != 'u') { ?><td class="no-print"></td><?php } ?>
-							<td colspan="5"></td>
-							<td style="text-align:right;">SubTotal</td>
-							<td style="text-align:right;">Total</td>
+							<td class="money-cell" style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + (Number(curr.SaleMaster_SubTotalAmount) || 0)}, 0).toFixed(2) }}</td>
+							<td class="money-cell" style="text-align:right;">{{ sales.reduce((prev, curr)=>{return prev + (Number(curr.SaleMaster_TotalSaleAmount) || 0)}, 0).toFixed(2) }}</td>
 							<td></td>
 							<td></td>
 						</tr>
@@ -172,8 +342,8 @@
 			return {
 				searchType: '',
 				recordType: 'without_details',
-				dateFrom: moment().format('YYYY-MM-DD'),
-				dateTo: moment().format('YYYY-MM-DD'),
+				dateFrom: '',
+				dateTo: '',
 				customers: [],
 				selectedCustomer: null,
 				employees: [],
@@ -193,11 +363,10 @@
 		},
 
 		created() {
+			this.getCustomers();
+			this.getEmployees();
 			<?php if (isset($_GET['type']) && $_GET['type'] == 'online') { ?>
-				this.dateFrom = '';
-				this.dateTo = '';
 				this.status = 'p';
-
 			<?php } ?>
 			this.getSearchResult();
 		},
@@ -283,53 +452,30 @@
 				})
 			},
 			getSearchResult() {
-				if (this.searchType != 'customer') {
-					this.selectedCustomer = null;
-				}
-
-				if (this.searchType != 'employee') {
-					this.selectedEmployee = null;
-				}
-
-				if (this.searchType != 'quantity') {
-					this.selectedProduct = null;
-				}
-
-				if (this.searchType != 'category') {
-					this.selectedCategory = null;
-				}
-
-				if (this.searchTypesForRecord.includes(this.searchType)) {
-					this.getSalesRecord();
-				} else {
-					this.getSaleDetails();
-				}
+				this.getSalesRecord();
 			},
 			getSalesRecord() {
 				this.selectedIds = [];
 				let filter = {
-					userFullName: this.selectedUser == null || this.selectedUser.FullName == '' ? '' : this.selectedUser.FullName,
-					customerId: this.selectedCustomer == null || this.selectedCustomer.Customer_SlNo == '' ? '' : this.selectedCustomer.Customer_SlNo,
-					employeeId: this.selectedEmployee == null || this.selectedEmployee.Employee_SlNo == '' ? '' : this.selectedEmployee.Employee_SlNo,
+					customerId: this.selectedCustomer == null ? '' : this.selectedCustomer.Customer_SlNo,
+					employeeId: this.selectedEmployee == null ? '' : this.selectedEmployee.Employee_SlNo,
 					dateFrom: this.dateFrom,
 					dateTo: this.dateTo,
-					status: this.status
-
+					status: this.status,
+					type: '<?php echo isset($_GET['type']) && $_GET['type'] == 'online' ? 'online' : ''; ?>'
 				}
 
-				let url = '/get_hold_sale';
-				if (this.recordType == 'with_details') {
-					url = '/get_hold_sale';
-				}
-
-				axios.post(url, filter)
+				axios.post('/get_hold_sale', filter)
 					.then(res => {
-						if (this.recordType == 'with_details') {
-							this.sales = res.data;
-						} else {
-							this.sales = res.data.sales;
-						}
+						this.sales = res.data.sales;
 					})
+			},
+			clearFilters() {
+				this.selectedCustomer = null;
+				this.selectedEmployee = null;
+				this.dateFrom = '';
+				this.dateTo = '';
+				this.getSalesRecord();
 			},
 			deleteSale(saleId) {
 				let deleteConf = confirm('Are you sure?');
@@ -372,8 +518,8 @@
 			},
 			async print() {
 				let dateText = '';
-				if (this.dateFrom != '' && this.dateTo != '') {
-					dateText = `Statement from <strong>${this.dateFrom}</strong> to <strong>${this.dateTo}</strong>`;
+				if (this.dateFrom != '' || this.dateTo != '') {
+					dateText = `Statement ${this.dateFrom != '' ? `from <strong>${this.dateFrom}</strong>` : ''} ${this.dateTo != '' ? `to <strong>${this.dateTo}</strong>` : ''}`;
 				}
 
 				let userText = '';
@@ -382,12 +528,12 @@
 				}
 
 				let customerText = '';
-				if (this.selectedCustomer != null && this.selectedCustomer.Customer_SlNo != '' && this.searchType == 'customer') {
+				if (this.selectedCustomer != null && this.selectedCustomer.Customer_SlNo != '') {
 					customerText = `<strong>Customer: </strong> ${this.selectedCustomer.Customer_Name}<br>`;
 				}
 
 				let employeeText = '';
-				if (this.selectedEmployee != null && this.selectedEmployee.Employee_SlNo != '' && this.searchType == 'employee') {
+				if (this.selectedEmployee != null && this.selectedEmployee.Employee_SlNo != '') {
 					employeeText = `<strong>Employee: </strong> ${this.selectedEmployee.Employee_Name}<br>`;
 				}
 
